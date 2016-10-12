@@ -56,9 +56,12 @@ browser.runtime.onMessage.addListener((mesage) => {
 });
 
 loaded.then(() => {
-    document.getElementById("open").addEventListener("click", () => {
+    const open = document.getElementById("open");
+    open.addEventListener("click", () => {
         browser.runtime.sendMessage({ topic: "open-notifications" });
     });
+    open.textContent = browser.i18n.getMessage("footerAction");
+    document.getElementById("empty-text").textContent = browser.i18n.getMessage("noNotifications");
 });
 
 Promise.all([

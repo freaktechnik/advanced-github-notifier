@@ -13,7 +13,6 @@ const startAuthListener = () => {
 };
 
 const processNewNotifications = (json) => {
-    console.log(json);
     return browser.storage.local.get("notifications").then(({ notifications = [] }) => {
         let stillNotificationIds = [];
         for(let notification of json) {
