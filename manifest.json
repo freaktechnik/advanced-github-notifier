@@ -1,0 +1,24 @@
+{
+    "manifest_version": 2,
+    "background": {
+        "scripts": [ "scripts/background.js" ]
+    },
+    "browser_action": {
+        "browser_style": true,
+        "default_icon": "images/github.svg",
+        "default_title": "__MSG_actionTitle__",
+        "default_popup": "popup.html"
+    },
+    "content_security_policy": "connect-src https://api.github.com https://github.com; object-src 'none'; script-src 'self'; style-src 'self'",
+    "default_locale": "en",
+    "description": "__MSG_description__",
+    "name": "__MSG_name__",
+    "permissions": [
+        "webNavigation",
+        "notifications",
+        "alarms",
+        "storage",
+        "https://github.com/login/oauth/access_token"
+    ],
+    "version": "1.0.0"
+}

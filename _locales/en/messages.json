@@ -1,0 +1,14 @@
+{
+    "name": {
+        "message": "Advanced GitHub Notifier",
+        "description": "Name of the extension"
+    },
+    "description": {
+        "message": "Shows notifications when you get a new notification on HitHub and provides quick access in a popup.",
+        "description": "Description of the extension"
+    },
+    "actionTitle": {
+        "message": "GitHub Notifications",
+        "description": "Button tooltip"
+    }
+}
