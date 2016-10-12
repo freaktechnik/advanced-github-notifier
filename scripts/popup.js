@@ -70,6 +70,8 @@ Promise.all([
 ]).then(([result, l]) => {
     const notifications = result.notifications || [];
     for(let notification of notifications) {
-        createNotification(notification);
+        if(notification.unread) {
+            createNotification(notification);
+        }
     }
 });

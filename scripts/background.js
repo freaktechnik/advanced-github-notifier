@@ -16,19 +16,21 @@ const processNewNotifications = (json) => {
     return browser.storage.local.get("notifications").then(({ notifications = [] }) => {
         let stillNotificationIds = [];
         for(let notification of json) {
-            stillNotificationIds.push(notification.id);
-            if(!notifications.find((n) => n.id == notification.id)) {
-                browser.notifications.create(notification.id, {
-                    type: "basic",
-                    title: notification.subject.title,
-                    message: notification.repository.full_name,
-                    eventTime: Date.parse(notification.updated_at),
-                    iconUrl: browser.extension.getURL("images/github.svg")
-                });
-                browser.runtime.sendMessage({
-                    topic: "new-notification",
-                    notification
-                });
+            if(notification.unread) {
+                stillNotificationIds.push(notification.id);
+                if(!notifications.find((n) => n.id == notification.id)) {
+                    browser.notifications.create(notification.id, {
+                        type: "basic",
+                        title: notification.subject.title,
+                        message: notification.repository.full_name,
+                        eventTime: Date.parse(notification.updated_at),
+                        iconUrl: browser.extension.getURL("images/github.svg")
+                    });
+                    browser.runtime.sendMessage({
+                        topic: "new-notification",
+                        notification
+                    });
+                }
             }
         }
 
@@ -53,7 +55,7 @@ let headers = {
 },
 pollInterval = 60;
 const getNotifications = () => {
-    fetch("https://api.github.com/notifications", {
+    fetch("https://api.github.com/notifications?all=true", {
         headers
     }).then((response) => {
         let p = Promise.resolve();
@@ -164,7 +166,7 @@ const needsAuth = () => {
         }
     }, {
         url: [{
-            hostEquals: "humanoids.be",
+            hostEquals: "localhost",
             pathEquals: "/github-auth",
             schemes: ["https"]
         }]

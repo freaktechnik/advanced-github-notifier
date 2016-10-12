@@ -3,7 +3,8 @@ A Firefox extension, that not only shows a count of notifications, but also show
 
 ## Installation
 This extension is currently unreleased and thus only installable using either
-about:debugging or the `web-ext` tool.
+about:debugging or the `web-ext` tool. Further the API credentials are not
+included in this repo.
 
 ## License
 This extension is licensed under the [MPL-2.0](LICENSE), the octocat and bell
