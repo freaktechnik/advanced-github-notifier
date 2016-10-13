@@ -31,6 +31,7 @@ const createNotification = (notification) => {
     parent.hidden = false;
 
     document.getElementById("empty").hidden = true;
+    document.getElementById("mark-read").classList.remove("disabled");
 }
 
 const deleteNotification = (notificationId) => {
@@ -43,6 +44,7 @@ const deleteNotification = (notificationId) => {
     if(parent.childElementCount == 0) {
         document.getElementById("empty").hidden = false;
         parent.hidden = true;
+        document.getElementById("mark-read").classList.remove("disabled");
     }
 };
 
@@ -59,9 +61,18 @@ loaded.then(() => {
     const open = document.getElementById("open");
     open.addEventListener("click", () => {
         browser.runtime.sendMessage({ topic: "open-notifications" });
+        window.close();
     });
     open.textContent = browser.i18n.getMessage("footerAction");
     document.getElementById("empty-text").textContent = browser.i18n.getMessage("noNotifications");
+
+    const markRead = document.getElementById("mark-read");
+    markRead.textContent = browser.i18n.getMessage("markAllRead");
+    markRead.addEventListener("click", () => {
+        if(!markRead.classList.has("disabled")) {
+            browser.runtime.sendMessage({ topic: "mark-all-read" });
+        }
+    });
 });
 
 Promise.all([
@@ -70,8 +81,6 @@ Promise.all([
 ]).then(([result, l]) => {
     const notifications = result.notifications || [];
     for(let notification of notifications) {
-        if(notification.unread) {
-            createNotification(notification);
-        }
+        createNotification(notification);
     }
 });

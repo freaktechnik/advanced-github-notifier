@@ -2,6 +2,7 @@ const clientId = "",
     clientSecret = "",
     redirectUri = "";
 let authState;
+let lastUpdate;
 
 //TODO pagination
 
@@ -13,6 +14,7 @@ const startAuthListener = () => {
 };
 
 const processNewNotifications = (json) => {
+    console.log(json);
     return browser.storage.local.get("notifications").then(({ notifications = [] }) => {
         let stillNotificationIds = [];
         for(let notification of json) {
@@ -45,7 +47,7 @@ const processNewNotifications = (json) => {
             text: stillNotificationIds.length > 0 ? stillNotificationIds.length.toString() : ""
         });
         return browser.storage.local.set({
-            notifications: json
+            notifications: json.filter((n) => n.unread)
         });
     });
 };
@@ -55,13 +57,16 @@ let headers = {
 },
 pollInterval = 60;
 const getNotifications = () => {
-    fetch("https://api.github.com/notifications?all=true", {
-        headers
+    fetch("https://api.github.com/notifications", {
+        headers,
+        cache: "no-cache"
     }).then((response) => {
         let p = Promise.resolve();
         if(response.ok) {
-            pollInterval = response.headers.get("X-Poll-Interval");
-            // LastModified should be handled by the browser
+            pollInterval = Math.max(response.headers.get("X-Poll-Interval"), Math.ceil((response.headers.get("X-RateLimit-Reset") - Math.floor(Date.now() / 1000)) / response.headers.get("X-RateLimit-Remaining")));
+
+            const now = new Date();
+            lastUpdate = now.toISOString();
 
             if(response.status === 200) {
                 p = response.json().then(processNewNotifications);
@@ -108,15 +113,41 @@ const openNotification = (id) => {
 browser.notifications.onClicked.addListener(openNotification);
 browser.runtime.onMessage.addListener((message) => {
     if(message.topic === "open-notification") {
-        openNotification(message.notificationId);
+        openNotification(message.notificationId).catch((e) => console.error(e));
     }
     else if(message.topic === "open-notifications") {
         browser.tabs.create({ url: "https://github.com/notifications" });
+    }
+    else if(message.topic === "mark-all-read") {
+        if(lastUpdate) {
+            const body = new URLSearchParams();
+            body.append("last_read_at", lastUpdate);
+            fetch("https://api.github.com/notifications", {
+                headers,
+                method: "PUT",
+                body
+            }).catch((e) => console.error(e));
+        }
+    }
+    else if(message.topic === "mark-notification-read") {
+        fetch(`https://api.github.com/notifications/threads/${message.notificationId}`, {
+            method: "PATCH"
+        }).then((response) => {
+            if(response.ok) {
+                browser.runtime.sendMessage({
+                    target: "notification-read",
+                    notificationId: message.notificationId
+                });
+            }
+        }).catch((e) => console.error(e));
     }
 });
 
 const needsAuth = () => {
     browser.browserAction.setPopup({ popup: "" });
+    browser.browserAction.setBadgeText({
+        text: "?"
+    });
     browser.browserAction.onClicked.addListener(startAuthListener);
     browser.webNavigation.onCommitted.addListener((details) => {
         const url = new URL(details.url);

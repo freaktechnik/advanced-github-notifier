@@ -18,5 +18,9 @@
     "noNotifications": {
         "message": "Keine Benachrichtigungen",
         "description": "Empty list text in popup"
+    },
+    "markAllRead": {
+        "message": "Alle als gelesen markieren",
+        "description": "Button to mark all panel items as read"
     }
 }

@@ -5,3 +5,7 @@ body {
 ul {
     margin: 0;
 }
+
+.text-shortcut {
+    margin-left: 4px;
+}
