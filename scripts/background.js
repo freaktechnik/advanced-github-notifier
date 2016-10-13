@@ -1,15 +1,16 @@
 const clientId = "",
     clientSecret = "",
-    redirectUri = "";
+    redirectUri = new URL("");
 let authState;
 let lastUpdate;
 
 //TODO pagination
+//TODO check scopes after every request?
 
 const startAuthListener = () => {
     authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     browser.tabs.create({
-        url: `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=notifications&state=${authState}&redirect_uri=${redirectUri}`
+        url: `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=notifications&state=${authState}&redirect_uri=${redirectUri.toString()}`
     });
 };
 
@@ -158,7 +159,7 @@ const needsAuth = () => {
             params.append("client_id", clientId);
             params.append("client_secret", clientSecret);
             params.append("code", url.searchParams.get("code"));
-            params.append("redirect_uri", redirectUri);
+            params.append("redirect_uri", redirectUri.toString());
             params.append("state", authState);
 
             fetch("https://github.com/login/oauth/access_token", {
@@ -197,9 +198,9 @@ const needsAuth = () => {
         }
     }, {
         url: [{
-            hostEquals: "localhost",
-            pathEquals: "/github-auth",
-            schemes: ["https"]
+            hostEquals: redirectUri.hostname,
+            pathEquals: redirectUri.pathname,
+            schemes: [ redirectUri.protocol.substr(0, redirectUri.protocol.length - 1) ]
         }]
     });
 };
