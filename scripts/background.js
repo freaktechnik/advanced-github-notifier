@@ -215,7 +215,7 @@ browser.storage.local.get("token").then((result) => {
         needsAuth();
     }
     else {
-        fetch(`https://api.github.com/applications/${clientId}/tokens/${result.token}`, {
+        return fetch(`https://api.github.com/applications/${clientId}/tokens/${result.token}`, {
             headers: {
                 Authorization: `Basic ${window.btoa(clientId+":"+clientSecret)}`
             }
@@ -226,6 +226,6 @@ browser.storage.local.get("token").then((result) => {
             else {
                 return clearToken();
             }
-        }, clearToken).catch((e) => console.error(e));
+        }, clearToken);
     }
-});
+}).catch((e) => console.error(e));
