@@ -69,7 +69,7 @@ loaded.then(() => {
     const markRead = document.getElementById("mark-read");
     markRead.textContent = browser.i18n.getMessage("markAllRead");
     markRead.addEventListener("click", () => {
-        if(!markRead.classList.has("disabled")) {
+        if(!markRead.classList.contains("disabled")) {
             browser.runtime.sendMessage({ topic: "mark-all-read" });
         }
     });

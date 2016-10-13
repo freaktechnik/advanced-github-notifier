@@ -47,7 +47,7 @@ const processNewNotifications = (json) => {
             text: stillNotificationIds.length > 0 ? stillNotificationIds.length.toString() : ""
         });
         return browser.storage.local.set({
-            notifications: json.filter((n) => n.unread)
+            notifications: json
         });
     });
 };
@@ -120,7 +120,7 @@ browser.runtime.onMessage.addListener((message) => {
     }
     else if(message.topic === "mark-all-read") {
         if(lastUpdate) {
-            const body = new URLSearchParams();
+            const body = new FormData();
             body.append("last_read_at", lastUpdate);
             fetch("https://api.github.com/notifications", {
                 headers,
@@ -204,6 +204,12 @@ const needsAuth = () => {
     });
 };
 
+const clearToken = () => {
+    browser.storage.local.set({
+        token: ""
+    }).then(() => needsAuth());
+};
+
 browser.storage.local.get("token").then((result) => {
     if(!result.token) {
         needsAuth();
@@ -211,18 +217,15 @@ browser.storage.local.get("token").then((result) => {
     else {
         fetch(`https://api.github.com/applications/${clientId}/tokens/${result.token}`, {
             headers: {
-                Authorization: `Basic ${window.btoa(clientId+":"+clientSecret)}`,
-                Accept: "application/vnd.github.damage-preview"
+                Authorization: `Basic ${window.btoa(clientId+":"+clientSecret)}`
             }
         }).then((response) => {
             if(response.status === 200) {
                 setupNotificationWorker(result.token);
             }
             else {
-                return browser.storage.local.set({
-                    token: ""
-                }).then(() => needsAuth());
+                return clearToken();
             }
-        }).catch((e) => console.error(e));
+        }, clearToken).catch((e) => console.error(e));
     }
 });
