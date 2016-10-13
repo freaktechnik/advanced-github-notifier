@@ -8,7 +8,7 @@ let lastUpdate;
 //TODO check scopes after every request?
 
 const startAuthListener = () => {
-    authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
     browser.tabs.create({
         url: `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=notifications&state=${authState}&redirect_uri=${redirectUri.toString()}`
     });
