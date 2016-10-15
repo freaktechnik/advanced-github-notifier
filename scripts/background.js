@@ -12,7 +12,7 @@ const startAuthListener = () => {
 };
 
 const getNotificationDetails = (notification) => {
-    const apiEndpoint = notification.subject.latest_comment_url || notification.subject.url;
+    const apiEndpoint = notification.subject.url;
     return fetch(apiEndpoint, {
         headers
     }).then((response) => {
@@ -164,13 +164,13 @@ browser.runtime.onMessage.addListener((message) => {
     }
     else if(message.topic === "mark-all-read") {
         if(lastUpdate) {
-            const body = new FormData();
-            body.append("last_read_at", lastUpdate);
+            const body = JSON.stringify({"last_read_at": lastUpdate});
             fetch("https://api.github.com/notifications", {
                 headers,
                 method: "PUT",
                 body
             }).catch((e) => console.error(e));
+            //TODO mark all as read on the client side on success.
         }
     }
     else if(message.topic === "mark-notification-read") {
