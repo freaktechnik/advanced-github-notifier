@@ -11,19 +11,13 @@ const clickListener = (id) => {
     window.close();
 };
 
-const icon = (notification) => {
-    const img = new Image(16, 16);
-
-    return img;
-};
-
 const createNotification = (notification) => {
     const root = document.createElement("li");
     root.id = idPrefix + notification.id;
     root.classList.add("panel-list-item");
 
     const image = new Image(16, 16);
-    image.src = notification.icon;
+    image.src = notification.icon + "svg";
     image.classList.add("icon");
 
     const title = document.createElement("span");

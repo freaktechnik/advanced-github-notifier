@@ -27,19 +27,19 @@ const getNotificationDetails = (notification) => {
 
 const getNotificationIcon = (notification) => {
     if(notification.subject.type == "Issue") {
-        return `images/issue-${notification.subjectDetails.state}.svg`;
+        return `images/issue-${notification.subjectDetails.state}.`;
     }
     else if(notification.subject.type == "PullRequest") {
         if(notification.subjectDetails.merged) {
-            return "images/pull-merged.svg";
+            return "images/pull-merged.";
         }
         else {
-            return `images/pull-${notification.subjectDetails.state}.svg`;
+            return `images/pull-${notification.subjectDetails.state}.`;
         }
     }
     // It's a commit
     else {
-        return "images/comment.svg";
+        return "images/comment.";
     }
 };
 
@@ -78,7 +78,7 @@ const processNewNotifications = (json) => {
                         title: notification.subject.title,
                         message: notification.repository.full_name,
                         eventTime: Date.parse(notification.updated_at),
-                        iconUrl: notification.icon
+                        iconUrl: notification.icon + "png"
                     });
                     browser.runtime.sendMessage({
                         topic: "new-notification",
