@@ -6,7 +6,7 @@
     },
     "manifest_version": 2,
     "background": {
-        "scripts": [ "scripts/background.js" ]
+        "scripts": [ "scripts/config.js", "scripts/background.js" ]
     },
     "browser_action": {
         "browser_style": true,

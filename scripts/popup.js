@@ -11,10 +11,20 @@ const clickListener = (id) => {
     window.close();
 };
 
+const icon = (notification) => {
+    const img = new Image(16, 16);
+
+    return img;
+};
+
 const createNotification = (notification) => {
     const root = document.createElement("li");
     root.id = idPrefix + notification.id;
     root.classList.add("panel-list-item");
+
+    const image = new Image(16, 16);
+    image.src = notification.icon;
+    image.classList.add("icon");
 
     const title = document.createElement("span");
     title.classList.add("text");
@@ -24,7 +34,7 @@ const createNotification = (notification) => {
     repo.classList.add("text-shortcut");
     repo.textContent = notification.repository.full_name;
 
-    root.append(title, repo);
+    root.append(image, title, repo);
     root.addEventListener("click", clickListener.bind(null, notification.id));
     const parent = document.getElementById("notifications");
     parent.append(root);

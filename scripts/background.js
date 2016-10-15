@@ -1,6 +1,3 @@
-const clientId = "",
-    clientSecret = "",
-    redirectUri = new URL("");
 let authState;
 let lastUpdate;
 
@@ -14,41 +11,96 @@ const startAuthListener = () => {
     });
 };
 
+const getNotificationDetails = (notification) => {
+    const apiEndpoint = notification.subject.latest_comment_url || notification.subject.url;
+    return fetch(apiEndpoint, {
+        headers
+    }).then((response) => {
+        if(response.ok) {
+            return response.json();
+        }
+        else {
+            throw response.status;
+        }
+    });
+};
+
+//TODO color code these icons
+const getNotificationIcon = (notification) => {
+    if(notification.subject.type == "Issue") {
+        return `images/issue-${notification.subjectDetails.state}.svg`;
+    }
+    else if(notification.subject.type == "PullRequest") {
+        if(notification.subjectDetails.merged) {
+            return "images/pull-merged.svg";
+        }
+        else {
+            return `images/pull-${notification.subjectDetails.state}.svg`;
+        }
+    }
+    // It's a commit
+    else {
+        return "images/comment.svg";
+    }
+};
+
 const processNewNotifications = (json) => {
-    console.log(json);
     return browser.storage.local.get("notifications").then(({ notifications = [] }) => {
         let stillNotificationIds = [];
-        for(let notification of json) {
-            if(notification.unread) {
-                stillNotificationIds.push(notification.id);
-                if(!notifications.find((n) => n.id == notification.id)) {
+        return Promise.all(json.filter((n) => n.unread).map((notification) => {
+            stillNotificationIds.push(notification.id);
+            let fetchDetails = false;
+            const existingNotif = notifications.find((n) => n.id == notification.id);
+            if(!existingNotif) {
+                notification.new = true;
+                fetchDetails = true;
+            }
+            else if(existingNotif.updated_at != notification.updated_at) {
+                fetchDetails = true;
+            }
+            else {
+                notification.subjectDetails = existingNotif.subjectDetails;
+                notification.icon = existingNotif.icon;
+            }
+
+            if(fetchDetails) {
+                return getNotificationDetails(notification).then((details) => {
+                    notification.subjectDetails = details;
+                    notification.icon = getNotificationIcon(notification);
+                    return notification;
+                });
+            }
+            return Promise.resolve(notification);
+        })).then((notifs) => {
+            notifs.forEach((notification) => {
+                if(notification.new) {
                     browser.notifications.create(notification.id, {
                         type: "basic",
                         title: notification.subject.title,
                         message: notification.repository.full_name,
                         eventTime: Date.parse(notification.updated_at),
-                        iconUrl: browser.extension.getURL("images/github.svg")
+                        iconUrl: notification.icon
                     });
                     browser.runtime.sendMessage({
                         topic: "new-notification",
                         notification
                     });
                 }
-            }
-        }
-
-        notifications.filter((n) => !stillNotificationIds.includes(n.id)).forEach((notification) => {
-            browser.runtime.sendMessage({
-                topic: "notification-read",
-                notificationId: notification.id
             });
-        });
 
-        browser.browserAction.setBadgeText({
-            text: stillNotificationIds.length > 0 ? stillNotificationIds.length.toString() : ""
-        });
-        return browser.storage.local.set({
-            notifications: json
+            notifications.filter((n) => !stillNotificationIds.includes(n.id)).forEach((notification) => {
+                browser.runtime.sendMessage({
+                    topic: "notification-read",
+                    notificationId: notification.id
+                });
+            });
+
+            browser.browserAction.setBadgeText({
+                text: stillNotificationIds.length > 0 ? stillNotificationIds.length.toString() : ""
+            });
+            return browser.storage.local.set({
+                notifications: notifs
+            });
         });
     });
 };
@@ -58,9 +110,10 @@ let headers = {
 },
 pollInterval = 60;
 const getNotifications = () => {
-    fetch("https://api.github.com/notifications", {
+    //TODO only use reload when there are unread notifications, since that's when the Etag bugs out
+    fetch("https://api.github.com/notifications?t="+Date.now(), {
         headers,
-        cache: "no-cache"
+        cache: "reload"
     }).then((response) => {
         let p = Promise.resolve();
         if(response.ok) {
@@ -94,19 +147,7 @@ const openNotification = (id) => {
     browser.storage.local.get("notifications").then(({ notifications }) => {
         const notification = notifications.find((n) => n.id == id);
         if(notification) {
-            const apiEndpoint = notification.subject.latest_comment_url || notification.subject.url;
-            return fetch(apiEndpoint, {
-                headers
-            }).then((response) => {
-                if(response.ok) {
-                    return response.json();
-                }
-                else {
-                    throw response.status;
-                }
-            }).then((json) => {
-                return browser.tabs.create({ url: json.html_url });
-            });
+            return browser.tabs.create({ url: notification.subjectDetails.html_url });
         }
     });
 };
