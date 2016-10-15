@@ -25,7 +25,6 @@ const getNotificationDetails = (notification) => {
     });
 };
 
-//TODO color code these icons
 const getNotificationIcon = (notification) => {
     if(notification.subject.type == "Issue") {
         return `images/issue-${notification.subjectDetails.state}.svg`;
@@ -106,16 +105,16 @@ const processNewNotifications = (json) => {
 };
 
 let headers = {
-    Accept: "application/vnd.github.v3+json"
-},
-pollInterval = 60;
+        Accept: "application/vnd.github.v3+json"
+    },
+    pollInterval = 60,
+    forceRefresh = false;
 const getNotifications = () => {
-    //TODO only use reload when there are unread notifications, since that's when the Etag bugs out
-    fetch("https://api.github.com/notifications?t="+Date.now(), {
+    fetch("https://api.github.com/notifications", {
         headers,
-        cache: "reload"
+        cache: forceRefresh ? "reload" : "no-cache"
     }).then((response) => {
-        let p = Promise.resolve();
+        let p = Promise.resolve(false);
         if(response.ok) {
             pollInterval = Math.max(response.headers.get("X-Poll-Interval"), Math.ceil((response.headers.get("X-RateLimit-Reset") - Math.floor(Date.now() / 1000)) / response.headers.get("X-RateLimit-Remaining")));
 
@@ -123,7 +122,10 @@ const getNotifications = () => {
             lastUpdate = now.toISOString();
 
             if(response.status === 200) {
-                p = response.json().then(processNewNotifications);
+                p = response.json().then((json) => {
+                    forceRefresh = json.length > 0;
+                    return processNewNotifications(json);
+                });
             }
         }
         else {
