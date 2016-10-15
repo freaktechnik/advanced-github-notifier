@@ -45,7 +45,7 @@ const getNotificationIcon = (notification) => {
 
 const processNewNotifications = (json) => {
     return browser.storage.local.get("notifications").then(({ notifications = [] }) => {
-        let stillNotificationIds = [];
+        const stillNotificationIds = [];
         return Promise.all(json.filter((n) => n.unread).map((notification) => {
             stillNotificationIds.push(notification.id);
             let fetchDetails = false;
