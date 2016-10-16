@@ -112,6 +112,8 @@ let headers = {
 const getNotifications = () => {
     fetch("https://api.github.com/notifications", {
         headers,
+        // Have to bypass cache when there are notifications, as the Etag doesn't
+        // change when notifications are read.
         cache: forceRefresh ? "reload" : "no-cache"
     }).then((response) => {
         let p = Promise.resolve(false);

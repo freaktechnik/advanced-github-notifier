@@ -1,5 +1,7 @@
 # ![](images/icon-48.png) Advanced GitHub Notifier
-A Firefox extension, that not only shows a count of notifications, but also shows notification popups and has a popup that gives direct access to the notifications.
+A Firefox extension, that not only shows a count of notifications, but also
+shows notification popups and has a popup that gives direct access to the
+notifications.
 
 ## Installation
 This extension is currently unreleased and thus only installable using either
@@ -10,8 +12,8 @@ included in this repo.
 The strings for this extension can be translated on [Transifex](https://www.transifex.com/freaktechnik/advanced-github-notifier/).
 
 ## License
-This extension is licensed under the [MPL-2.0](LICENSE), the octocat and bell
-are licensed under the MIT license according to their source.
+This extension is licensed under the [MPL-2.0](LICENSE), the octocat and octicons
+are licensed under the [MIT license](images/LICENSE) according to their source.
 
 This product is not developed or run by GitHub. It is a hobbyist project that
 uses the official GitHub API to display information about the notifications
