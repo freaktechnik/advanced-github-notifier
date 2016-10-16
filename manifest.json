@@ -14,7 +14,7 @@
         "default_title": "__MSG_actionTitle__",
         "default_popup": "popup.html"
     },
-    "content_security_policy": "connect-src https://api.github.com https://github.com; object-src 'none'; script-src 'self'; style-src 'self'",
+    "content_security_policy": "default-src 'self'; connect-src https://api.github.com https://github.com; object-src 'none'",
     "default_locale": "en",
     "description": "__MSG_description__",
     "name": "__MSG_name__",
