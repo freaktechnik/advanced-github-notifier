@@ -6,6 +6,9 @@ This extension is currently unreleased and thus only installable using either
 about:debugging or the `web-ext` tool. Further the API credentials are not
 included in this repo.
 
+## Translation
+The strings for this extension can be translated on [Transifex](https://www.transifex.com/freaktechnik/advanced-github-notifier/).
+
 ## License
 This extension is licensed under the [MPL-2.0](LICENSE), the octocat and bell
 are licensed under the MIT license according to their source.
