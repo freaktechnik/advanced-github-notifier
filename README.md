@@ -4,7 +4,10 @@ shows notification popups and has a popup that gives direct access to the
 notifications.
 
 ## Installation
-This extension is currently unreleased and thus only installable using either
+A stable release version is availabe here:
+[![addons.mozilla.org/](https://addons.cdn.mozilla.net/static/img/addons-buttons/AMO-button_2.png)](https://addons.mozilla.org/en-US/firefox/addon/advanced-github-notifier/)
+
+To run the in-development version from this repository, you either need to use
 about:debugging or the `web-ext` tool. Further the API credentials are not
 included in this repo.
 
