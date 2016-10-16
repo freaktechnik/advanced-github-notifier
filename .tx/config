@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[advanced-github-notifier.messagesjson]
+source_file = _locales/en/messages.json
+source_lang = en
+file_filter = _locales/<lang>/messages.json
+type = CHROME
