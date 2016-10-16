@@ -37,3 +37,4 @@ jspm_packages
 .node_repl_history
 
 scripts/config.js
+web-ext-artifacts
