@@ -1,7 +1,3 @@
-body {
-    overflow-x: hidden;
-}
-
 ul {
     margin: 0;
     padding: 0;
@@ -13,4 +9,10 @@ ul {
 
 .icon {
     margin-right: 4px;
+}
+
+button.panel-section-footer-button {
+    padding: 12px;
+    border: none;
+    margin: 0;
 }
