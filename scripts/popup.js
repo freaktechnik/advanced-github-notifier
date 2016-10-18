@@ -71,7 +71,7 @@ loaded.then(() => {
     document.getElementById("empty-text").textContent = browser.i18n.getMessage("noNotifications");
 
     const markRead = document.getElementById("mark-read");
-    markRead.textContent = browser.i18n.getMessage("markAllRead");
+    document.getElementById("mark-read-text").textContent = browser.i18n.getMessage("markAllRead");
     markRead.addEventListener("click", () => {
         if(!markRead.classList.contains("disabled")) {
             browser.runtime.sendMessage({ topic: "mark-all-read" });
