@@ -252,7 +252,8 @@ const needsAuth = () => {
 
 const clearToken = () => {
     browser.storage.local.set({
-        token: ""
+        token: "",
+        notifications: []
     }).then(() => needsAuth());
 };
 
