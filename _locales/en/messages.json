@@ -22,5 +22,9 @@
     "markAllRead": {
         "message": "Mark all as read",
         "description": "Button to mark all panel items as read"
+    },
+    "logout": {
+        "message": "Log out",
+        "description": "Label of button to log out from the extension"
     }
 }

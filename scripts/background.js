@@ -157,37 +157,6 @@ const openNotification = (id) => {
 };
 
 browser.notifications.onClicked.addListener(openNotification);
-browser.runtime.onMessage.addListener((message) => {
-    if(message.topic === "open-notification") {
-        openNotification(message.notificationId).catch((e) => console.error(e));
-    }
-    else if(message.topic === "open-notifications") {
-        browser.tabs.create({ url: "https://github.com/notifications" });
-    }
-    else if(message.topic === "mark-all-read") {
-        if(lastUpdate) {
-            const body = JSON.stringify({"last_read_at": lastUpdate});
-            fetch("https://api.github.com/notifications", {
-                headers,
-                method: "PUT",
-                body
-            }).catch((e) => console.error(e));
-            //TODO mark all as read on the client side on success.
-        }
-    }
-    else if(message.topic === "mark-notification-read") {
-        fetch(`https://api.github.com/notifications/threads/${message.notificationId}`, {
-            method: "PATCH"
-        }).then((response) => {
-            if(response.ok) {
-                browser.runtime.sendMessage({
-                    target: "notification-read",
-                    notificationId: message.notificationId
-                });
-            }
-        }).catch((e) => console.error(e));
-    }
-});
 
 const needsAuth = () => {
     browser.browserAction.setPopup({ popup: "" });
@@ -236,6 +205,7 @@ const needsAuth = () => {
                 }
             }).then(() => {
                 browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
+                browser.runtime.sendMessage({ topic: "login" });
             }).catch((e) => console.error(e));
         }
         else {
@@ -257,17 +227,62 @@ const clearToken = () => {
     }).then(() => needsAuth());
 };
 
+const authorizationReq = (token, method = "GET") => {
+    return fetch(`https://api.github.com/applications/${clientId}/tokens/${token}`, {
+        method,
+        headers: {
+            Authorization: `Basic ${window.btoa(clientId+":"+clientSecret)}`
+        }
+    });
+};
+
+browser.runtime.onMessage.addListener((message) => {
+    if(message.topic === "open-notification") {
+        openNotification(message.notificationId).catch((e) => console.error(e));
+    }
+    else if(message.topic === "open-notifications") {
+        browser.tabs.create({ url: "https://github.com/notifications" });
+    }
+    else if(message.topic === "mark-all-read") {
+        if(lastUpdate) {
+            const body = JSON.stringify({"last_read_at": lastUpdate});
+            fetch("https://api.github.com/notifications", {
+                headers,
+                method: "PUT",
+                body
+            }).catch((e) => console.error(e));
+            //TODO mark all as read on the client side on success.
+        }
+    }
+    else if(message.topic === "mark-notification-read") {
+        fetch(`https://api.github.com/notifications/threads/${message.notificationId}`, {
+            method: "PATCH"
+        }).then((response) => {
+            if(response.ok) {
+                browser.runtime.sendMessage({
+                    target: "notification-read",
+                    notificationId: message.notificationId
+                });
+            }
+        }).catch((e) => console.error(e));
+    }
+    else if(message.topic == "logout") {
+        browser.storage.local.get("token").then(({ token }) => {
+            return authorizationReq(token, "DELETE");
+        }).then((response) => {
+            return clearToken();
+        }).catch((e) => console.error(e));
+    }
+});
+
 browser.storage.local.get("token").then((result) => {
     if(!result.token) {
         needsAuth();
     }
     else {
-        return fetch(`https://api.github.com/applications/${clientId}/tokens/${result.token}`, {
-            headers: {
-                Authorization: `Basic ${window.btoa(clientId+":"+clientSecret)}`
-            }
-        }).then((response) => {
+        authorizationReq(result.token).then((response) => {
             if(response.status === 200) {
+                //TODO check "notifications" is still in the scopes.
                 setupNotificationWorker(result.token);
             }
             else {

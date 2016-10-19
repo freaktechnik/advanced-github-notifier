@@ -30,5 +30,9 @@
         "48": "images/icon-48.png",
         "64": "images/icon-64.png",
         "96": "images/icon-96.png"
+    },
+    "options_ui": {
+        "page": "options.html",
+        "browser_style": true
     }
 }
