@@ -268,9 +268,7 @@ const authorizationReq = (token, method = "GET") => {
 
 browser.runtime.onMessage.addListener((message) => {
     if(message.topic === "open-notification") {
-        openNotification(message.notificationId)
-            .then(() => markNotificationAsRead(message.notificationId))
-            .catch((e) => console.error(e));
+        openNotification(message.notificationId).catch((e) => console.error(e));
     }
     else if(message.topic === "open-notifications") {
         browser.tabs.create({ url: "https://github.com/notifications" });
