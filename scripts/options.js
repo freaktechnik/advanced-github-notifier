@@ -1,3 +1,8 @@
+const PASSIVE_EVENT = {
+    capturing: false,
+    passive: true
+};
+
 window.addEventListener("DOMContentLoaded", () => {
     const button = document.getElementById("logout");
     const notifications = document.getElementById("notifications");
@@ -9,18 +14,12 @@ window.addEventListener("DOMContentLoaded", () => {
             topic: "logout"
         });
         button.disabled = true;
-    }, {
-        capturing: false,
-        passive: true
-    });
+    }, PASSIVE_EVENT);
 
     notifications.addEventListener("change", () => {
         console.log("Checkbox changed");
         browser.storage.local.set({ hide: !notifications.checked });
-    }, {
-        capturing: false,
-        passive: true
-    });
+    }, PASSIVE_EVENT);
 
     browser.storage.local.get([ "token", "hide" ]).then((result) => {
         if(result.token) {
@@ -36,4 +35,4 @@ window.addEventListener("DOMContentLoaded", () => {
             button.disabled = false;
         }
     });
-});
+}, PASSIVE_EVENT);
