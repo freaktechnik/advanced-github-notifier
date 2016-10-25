@@ -1,8 +1,10 @@
 let authState;
 let lastUpdate;
+let updating = false;
 
 //TODO pagination
 //TODO check scopes after every request?
+//TODO open latest comment?
 
 const startAuthListener = () => {
     authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
@@ -101,6 +103,7 @@ const processNewNotifications = (json) => {
             browser.browserAction.setBadgeText({
                 text: stillNotificationIds.length > 0 ? stillNotificationIds.length.toString() : ""
             });
+            updating = false
             return browser.storage.local.set({
                 notifications: notifs
             });
@@ -108,11 +111,25 @@ const processNewNotifications = (json) => {
     });
 };
 
+const markNotificationAsRead = (notificationId) => {
+    if(!updating) {
+        return browser.storage.local.get("notifications").then(({ notifications = [] }) => {
+            notifications = notifications.filter((notification) => notification.id != notificationId);
+            browser.browserAction.setBadgeText({
+                text: notifications.length.toString()
+            });
+            return browser.storage.local.set({ notifications });
+        });
+    }
+    return Promise.resolve();
+};
+
 let headers = {
         Accept: "application/vnd.github.v3+json"
     },
     pollInterval = 60,
     forceRefresh = false;
+
 const getNotifications = () => {
     fetch("https://api.github.com/notifications", {
         headers,
@@ -122,6 +139,7 @@ const getNotifications = () => {
     }).then((response) => {
         let p = Promise.resolve(false);
         if(response.ok) {
+            updating = true;
             pollInterval = Math.max(response.headers.get("X-Poll-Interval"), Math.ceil((response.headers.get("X-RateLimit-Reset") - Math.floor(Date.now() / 1000)) / response.headers.get("X-RateLimit-Remaining")));
 
             const now = new Date();
@@ -133,6 +151,7 @@ const getNotifications = () => {
                     return processNewNotifications(json);
                 });
             }
+            p.then(() => updating = false);
         }
         else {
             p = Promise.reject(`${response.status} ${response.statusText}`)
@@ -242,8 +261,9 @@ const authorizationReq = (token, method = "GET") => {
 
 browser.runtime.onMessage.addListener((message) => {
     if(message.topic === "open-notification") {
-        //TODO mark this notification as read locally
-        openNotification(message.notificationId).catch((e) => console.error(e));
+        openNotification(message.notificationId)
+            .then(() => markNotificationAsRead(message.notificationId))
+            .catch((e) => console.error(e));
     }
     else if(message.topic === "open-notifications") {
         browser.tabs.create({ url: "https://github.com/notifications" });
@@ -255,8 +275,15 @@ browser.runtime.onMessage.addListener((message) => {
                 headers,
                 method: "PUT",
                 body
+            }).then((response) => {
+                if(response.status == 205) {
+                    browser.runtime.sendMessage({
+                        target: "all-notifications-read"
+                    });
+                    browser.browserAction.setBadgeText({ text: "" });
+                    return browser.storage.local.set({ notifications: [] });
+                }
             }).catch((e) => console.error(e));
-            //TODO mark all as read on the client side on success.
         }
     }
     else if(message.topic === "mark-notification-read") {
@@ -268,6 +295,7 @@ browser.runtime.onMessage.addListener((message) => {
                     target: "notification-read",
                     notificationId: message.notificationId
                 });
+                return markNotificationAsRead(message.notificationId);
             }
         }).catch((e) => console.error(e));
     }

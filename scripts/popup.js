@@ -56,8 +56,14 @@ browser.runtime.onMessage.addListener((mesage) => {
     if(message.topic === "new-notification") {
         createNotification(message.notification);
     }
-    else if(message.topic == "notification-read") {
+    else if(message.topic === "notification-read") {
         deleteNotification(message.notificationId);
+    }
+    else if(message.topic === "all-notifications-read") {
+        const container = document.getElementById("notifications");
+        while(container.hasChildNodes()) {
+            container.firstChild.remove();
+        }
     }
 });
 
