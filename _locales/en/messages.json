@@ -26,5 +26,9 @@
     "logout": {
         "message": "Log out",
         "description": "Label of button to log out from the extension"
+    },
+    "showNotifications": {
+        "message": "Show notifications",
+        "description": "Label for the settings checkbox to control if the extension shows notifications"
     }
 }

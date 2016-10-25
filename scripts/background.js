@@ -73,12 +73,16 @@ const processNewNotifications = (json) => {
         })).then((notifs) => {
             notifs.forEach((notification) => {
                 if(notification.new) {
-                    browser.notifications.create(notification.id, {
-                        type: "basic",
-                        title: notification.subject.title,
-                        message: notification.repository.full_name,
-                        eventTime: Date.parse(notification.updated_at),
-                        iconUrl: notification.icon + "png"
+                    browser.storage.local.get("hide").then((result) => {
+                        if(!result.hide) {
+                            return browser.notifications.create(notification.id, {
+                                type: "basic",
+                                title: notification.subject.title,
+                                message: notification.repository.full_name,
+                                eventTime: Date.parse(notification.updated_at),
+                                iconUrl: notification.icon + "png"
+                            });
+                        }
                     });
                     browser.runtime.sendMessage({
                         topic: "new-notification",
@@ -238,6 +242,7 @@ const authorizationReq = (token, method = "GET") => {
 
 browser.runtime.onMessage.addListener((message) => {
     if(message.topic === "open-notification") {
+        //TODO mark this notification as read locally
         openNotification(message.notificationId).catch((e) => console.error(e));
     }
     else if(message.topic === "open-notifications") {

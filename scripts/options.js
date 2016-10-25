@@ -1,6 +1,8 @@
 window.addEventListener("DOMContentLoaded", () => {
     const button = document.getElementById("logout");
+    const notifications = document.getElementById("notifications");
     button.textContent = browser.i18n.getMessage("logout");
+    document.querySelector('label[for="notifications"]').textContent = browser.i18n.getMessage("showNotifications");
 
     button.addEventListener("click", () => {
         browser.runtime.sendMessage({
@@ -12,9 +14,20 @@ window.addEventListener("DOMContentLoaded", () => {
         passive: true
     });
 
-    browser.storage.local.get("token").then((result) => {
+    notifications.addEventListener("change", () => {
+        console.log("Checkbox changed");
+        browser.storage.local.set({ hide: !notifications.checked });
+    }, {
+        capturing: false,
+        passive: true
+    });
+
+    browser.storage.local.get([ "token", "hide" ]).then((result) => {
         if(result.token) {
             button.disabled = false;
+        }
+        if(result.hide) {
+            notifications.checked = false;
         }
     });
 
