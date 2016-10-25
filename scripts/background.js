@@ -2,6 +2,8 @@ let authState;
 let lastUpdate;
 let updating = false;
 
+const scope = "notifications";
+
 //TODO pagination
 //TODO check scopes after every request?
 //TODO open latest comment?
@@ -9,7 +11,7 @@ let updating = false;
 const startAuthListener = () => {
     authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
     browser.tabs.create({
-        url: `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=notifications&state=${authState}&redirect_uri=${redirectUri.toString()}`
+        url: `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=${scope}&state=${authState}&redirect_uri=${redirectUri.toString()}`
     });
 };
 
@@ -217,7 +219,7 @@ const needsAuth = () => {
                     throw response;
                 }
             }).then((json) => {
-                if(json.scope.includes("notifications")) {
+                if(json.scope.includes(scope)) {
                     browser.browserAction.onClicked.removeListener(startAuthListener);
                     setupNotificationWorker(json.access_token);
                     return Promise.all([
@@ -228,6 +230,7 @@ const needsAuth = () => {
                     ]);
                 }
                 else {
+                    browser.tabs.remove(details.tabId);
                     throw "Was not granted required permissions";
                 }
             }).then(() => {
@@ -248,7 +251,7 @@ const needsAuth = () => {
 };
 
 const clearToken = () => {
-    browser.storage.local.set({
+    return browser.storage.local.set({
         token: "",
         notifications: []
     }).then(() => needsAuth());
@@ -317,14 +320,21 @@ browser.storage.local.get("token").then((result) => {
         needsAuth();
     }
     else {
-        authorizationReq(result.token).then((response) => {
+        return authorizationReq(result.token).then((response) => {
             if(response.status === 200) {
-                //TODO check "notifications" is still in the scopes.
+                return response.json();
+            }
+            else {
+                throw "Token invalid";
+            }
+        }).then((json) => {
+            if(json.scopes.includes(scope)) {
                 setupNotificationWorker(result.token);
             }
             else {
-                return clearToken();
+                return authorizationReq(result.token, "DELETE")
+                    .then(() => { throw "Scopes removed"; });
             }
-        }, clearToken);
+        }).catch(clearToken);
     }
 }).catch((e) => console.error(e));
