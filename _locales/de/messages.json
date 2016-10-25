@@ -1,4 +1,28 @@
 {
+    "logout": {
+        "message": "Abmelden",
+        "description": "Label of button to log out from the extension"
+    },
+    "markAllRead": {
+        "message": "Alle als gelesen markieren",
+        "description": "Button to mark all panel items as read"
+    },
+    "noNotifications": {
+        "message": "Keine Benachrichtigungen",
+        "description": "Empty list text in popup"
+    },
+    "showNotifications": {
+        "message": "Benachrichtigungen anzeigen",
+        "description": "Label for the settings checkbox to control if the extension shows notifications"
+    },
+    "footerAction": {
+        "message": "Öffne Benachrichtigungsseite",
+        "description": "Button label to open the GitHub notifications page"
+    },
+    "actionTitle": {
+        "message": "GitHub Benachrichtigungen",
+        "description": "Button tooltip"
+    },
     "name": {
         "message": "Erweiterte GitHub Benachrichtigungen",
         "description": "Name of the extension"
@@ -6,21 +30,5 @@
     "description": {
         "message": "Benachrichtigt über neue GitHub Benachritigungen und erlaubt schnellen Zugriff auf einzelne Benachrichtigungen in einem Popup",
         "description": "Description of the extension"
-    },
-    "actionTitle": {
-        "message": "GitHub Benachrichtigungen",
-        "description": "Button tooltip"
-    },
-    "footerAction": {
-        "message": "Öffne Benachrichtigungsseite",
-        "description": "Button label to open the GitHub notifications page"
-    },
-    "noNotifications": {
-        "message": "Keine Benachrichtigungen",
-        "description": "Empty list text in popup"
-    },
-    "markAllRead": {
-        "message": "Alle als gelesen markieren",
-        "description": "Button to mark all panel items as read"
     }
 }

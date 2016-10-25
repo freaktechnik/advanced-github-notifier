@@ -180,7 +180,7 @@ const openNotification = (id) => {
                 url: notification.subjectDetails.html_url
             }).then((tab) => browser.windows.update(tab.windowId, {
                 focused: true
-            }));
+            })).then(() => markNotificationAsRead(id));
         }
     });
 };
