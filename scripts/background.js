@@ -174,7 +174,11 @@ const openNotification = (id) => {
     browser.storage.local.get("notifications").then(({ notifications }) => {
         const notification = notifications.find((n) => n.id == id);
         if(notification) {
-            return browser.tabs.create({ url: notification.subjectDetails.html_url });
+            return browser.tabs.create({
+                url: notification.subjectDetails.html_url
+            }).then((tab) => browser.windows.update(tab.windowId, {
+                focused: true
+            }));
         }
     });
 };
