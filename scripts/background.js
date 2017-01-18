@@ -71,12 +71,14 @@ const processNewNotifications = (json) => {
                     notification.subjectDetails = details;
                     notification.icon = getNotificationIcon(notification);
                     return notification;
-                });
+                }, () => null);
             }
             return Promise.resolve(notification);
         })).then((notifs) => {
+            return notifs.filter((n) => n !== null);
+        }).then((notifs) => {
             notifs.forEach((notification) => {
-                if(notification.new) {
+                if(notification !== null && notification.new) {
                     browser.storage.local.get("hide").then((result) => {
                         if(!result.hide) {
                             return browser.notifications.create(notification.id, {
