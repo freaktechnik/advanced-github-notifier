@@ -17,7 +17,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }, PASSIVE_EVENT);
 
     notifications.addEventListener("change", () => {
-        console.log("Checkbox changed");
         browser.storage.local.set({ hide: !notifications.checked });
     }, PASSIVE_EVENT);
 

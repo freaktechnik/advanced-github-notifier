@@ -36,7 +36,7 @@ const createNotification = (notification) => {
 
     document.getElementById("empty").hidden = true;
     document.getElementById("mark-read").classList.remove("disabled");
-}
+};
 
 const deleteNotification = (notificationId) => {
     const root = document.getElementById(idPrefix + notificationId);
@@ -52,7 +52,7 @@ const deleteNotification = (notificationId) => {
     }
 };
 
-browser.runtime.onMessage.addListener((mesage) => {
+browser.runtime.onMessage.addListener((message) => {
     if(message.topic === "new-notification") {
         createNotification(message.notification);
     }
@@ -88,7 +88,7 @@ loaded.then(() => {
 Promise.all([
     browser.storage.local.get("notifications"),
     loaded
-]).then(([result, l]) => {
+]).then(([ result, l ]) => {
     const notifications = result.notifications || [];
     for(let notification of notifications) {
         createNotification(notification);
