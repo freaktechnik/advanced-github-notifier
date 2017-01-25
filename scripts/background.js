@@ -199,7 +199,7 @@ browser.runtime.onMessage.addListener((message) => {
         openNotification(message.notificationId).catch((e) => console.error(e));
     }
     else if(message.topic === "open-notifications") {
-        browser.tabs.create({ url: "https://github.com/notifications" });
+        browser.tabs.create({ url: GitHub.ALL_NOTIFS_URL });
     }
     else if(message.topic === "mark-all-read") {
         github.markNotificationsRead().then((result) => {

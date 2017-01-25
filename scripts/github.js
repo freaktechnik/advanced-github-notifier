@@ -12,6 +12,10 @@ class GitHub {
         return "repo";
     }
 
+    static get ALL_NOTIFS_URL() {
+        return "https://github.com/notifications?all=1";
+    }
+
     constructor(clientID, clientSecret) {
         this.clientID = clientID;
         this.clientSecret = clientSecret;
