@@ -2,7 +2,7 @@ let authState;
 let lastUpdate;
 let updating = false;
 
-const scope = "notifications";
+const scope = "repo";
 
 //TODO pagination
 //TODO check scopes after every request?
