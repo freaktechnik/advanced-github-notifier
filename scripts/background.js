@@ -13,7 +13,7 @@ const startAuthListener = () => {
     return [
         () => {
             browser.tabs.create({
-                url: github.authURL(authState);
+                url: github.authURL(authState)
             });
         },
         authState
