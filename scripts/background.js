@@ -13,7 +13,7 @@ const startAuthListener = () => {
     return [
         () => {
             browser.tabs.create({
-                url: `https://github.com/login/oauth/authorize?client_id=${github.clientID}&scope=${GitHub.SCOPE}&state=${authState}&redirect_uri=${GitHub.REDIRECT_URI.toString()}`
+                url: github.authURL(authState);
             });
         },
         authState

@@ -27,6 +27,10 @@ class GitHub {
         return "Authorization" in this.headers;
     }
 
+    authURL(authState) {
+        return `https://github.com/login/oauth/authorize?client_id=${this.clientID}&scope=${GitHub.SCOPE}&state=${authState}&redirect_uri=${GitHub.REDIRECT_URI.toString()}`;
+    }
+
     setToken(token) {
         this.headers.Authorization = `token ${token}`;
     }
