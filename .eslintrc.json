@@ -1,0 +1,17 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 2017
+    },
+    "env": {
+        "webextensions": true,
+        "browser": true
+    },
+    "rules": {
+        "no-unused-vars": 0,
+        "one-var": 0,
+        "camelcase": 1,
+        "no-undef": 2,
+        "no-extra-semi": 2,
+        "strict": 0
+    }
+}

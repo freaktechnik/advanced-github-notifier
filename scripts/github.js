@@ -1,10 +1,15 @@
+/* global redirectUri */
 class GitHub {
     static get BASE_URI() {
         return 'https://api.github.com/';
     }
 
     static get REDIRECT_URI() {
-        return '';
+        return new URL(redirectUri);
+    }
+
+    static get SCOPE() {
+        return "repo";
     }
 
     constructor(clientID, clientSecret) {
@@ -13,7 +18,7 @@ class GitHub {
         this.lastUpdate = null;
         this.forceRefresh = false;
         this.pollInterval = 60;
-        this.headers =  {
+        this.headers = {
             Accept: "application/vnd.github.v3+json"
         };
     }
@@ -22,12 +27,16 @@ class GitHub {
         return "Authorization" in this.headers;
     }
 
+    setToken(token) {
+        this.headers.Authorization = `token ${token}`;
+    }
+
     async getToken(code, authState) {
         const params = new URLSearchParams();
         params.append("client_id", this.clientID);
         params.append("client_secret", this.clientSecret);
         params.append("code", code);
-        params.append("redirect_uri", GitHub.REDIRECT_URI);
+        params.append("redirect_uri", GitHub.REDIRECT_URI.toString());
         params.append("state", authState);
 
         const response = await fetch("https://github.com/login/oauth/access_token", {
@@ -38,9 +47,14 @@ class GitHub {
             }
         });
         if(response.ok) {
-            const { access_token: accessToken } = await response.json();
-            this.headers.Authorization = `token ${accessToken}`;
-            return accessToken;
+            const { access_token: accessToken, scope } = await response.json();
+            if(!scope.includes(GitHub.SCOPE)) {
+                throw "Was not granted required permissions";
+            }
+            else {
+                this.setToken(accessToken);
+                return accessToken;
+            }
         }
         else {
             throw response;
@@ -48,20 +62,28 @@ class GitHub {
     }
 
     async authorize(token, method = "GET") {
-        const response = await fetch(`${GitHub.BASE_URI}applications/${clientId}/tokens/${token}`, {
+        const response = await fetch(`${GitHub.BASE_URI}applications/${this.clientID}/tokens/${token}`, {
             method,
             headers: {
-                Authorization: `Basic ${window.btoa(this.clientID+":"+this.clientSecret)}`
+                Authorization: `Basic ${window.btoa(this.clientID + ":" + this.clientSecret)}`
             }
         });
         if(method == "GET") {
             if(response.status === 200) {
-                return response.json();
+                const json = await response.json();
+                if(json.scopes.includes(GitHub.SCOPE)) {
+                    this.setToken(token);
+                    return true;
+                }
+                else {
+                    throw "Not all required scopes given";
+                }
             }
             else {
                 throw "Token invalid";
             }
         }
+        return "Token updated";
     }
 
     deauthorize(token) {
@@ -80,23 +102,27 @@ class GitHub {
                 browser.runtime.sendMessage({
                     target: "all-notifications-read"
                 });
-            } else {
+                return true;
+            }
+            else {
                 throw `Marking all notifications read returned a ${response.status} error`;
             }
         }
+        return false;
     }
 
     async markNotificationRead(notificationID) {
-        const response = await fetch(`${GitHub.BASE_URI}notifications/threads/${message.notificationId}`, {
+        const response = await fetch(`${GitHub.BASE_URI}notifications/threads/${notificationID}`, {
             method: "PATCH",
             headers: this.headers
         });
         if(response.ok) {
             browser.runtime.sendMessage({
                 target: "notification-read",
-                notificationId: message.notificationId
+                notificationId: notificationID
             });
-        } else {
+        }
+        else {
             throw response.status;
         }
     }
@@ -141,5 +167,5 @@ class GitHub {
         else {
             throw `Could not load details for ${notification.subject.title}: Error ${response.status}`;
         }
-    };
+    }
 }
