@@ -1,6 +1,17 @@
 /* global redirectUri */
-//TODO pagination
 //TODO make the URIs overridable for Enterprise
+
+const parseLinks = (links) => {
+    const linkInfo = links.split(",");
+    const linkObj = {};
+    linkInfo.forEach((link) => {
+        const matches = link.match(/<([^>]+)>;\s+rel="([^"]+)"/);
+        if(matches && matches.length >= 3) {
+            linkObj[matches[2]] = matches[1];
+        }
+    });
+    return linkObj;
+};
 
 class GitHub {
     static get BASE_URI() {
@@ -146,8 +157,8 @@ class GitHub {
         }
     }
 
-    async getNotifications() {
-        const response = await fetch(`${GitHub.BASE_URI}notifications`, {
+    async getNotifications(url = `${GitHub.BASE_URI}notifications`) {
+        const response = await fetch(url, {
             headers: this.headers,
             // Have to bypass cache when there are notifications, as the Etag doesn't
             // change when notifications are read.
@@ -165,6 +176,17 @@ class GitHub {
 
             if(response.status === 200) {
                 const json = await response.json();
+
+                // There is some pagination here.
+                if(response.headers.has('Link')) {
+                    const links = parseLinks(response.headers.get('Link'));
+                    if("next" in links) {
+                        // get next page
+                        const nextPage = await this.getNotifications(links.next);
+                        this.forceRefresh = json.length > 0;
+                        return json.concat(nextPage);
+                    }
+                }
                 this.forceRefresh = json.length > 0;
                 return json;
             }
