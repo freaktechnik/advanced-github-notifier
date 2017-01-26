@@ -1,7 +1,14 @@
 /* global redirectUri */
+//TODO pagination
+//TODO make the URIs overridable for Enterprise
+
 class GitHub {
     static get BASE_URI() {
         return 'https://api.github.com/';
+    }
+
+    static get SITE_URI() {
+        return 'https://github.com/';
     }
 
     static get REDIRECT_URI() {
@@ -13,7 +20,7 @@ class GitHub {
     }
 
     static get ALL_NOTIFS_URL() {
-        return "https://github.com/notifications?all=1";
+        return `${GitHub.SITE_URI}notifications?all=1`;
     }
 
     constructor(clientID, clientSecret) {
@@ -31,8 +38,12 @@ class GitHub {
         return "Authorization" in this.headers;
     }
 
+    get infoURL() {
+        return `${GitHub.SITE_URI}settings/connections/applications/${this.clientID}`;
+    }
+
     authURL(authState) {
-        return `https://github.com/login/oauth/authorize?client_id=${this.clientID}&scope=${GitHub.SCOPE}&state=${authState}&redirect_uri=${GitHub.REDIRECT_URI.toString()}`;
+        return `${GitHub.SITE_URI}login/oauth/authorize?client_id=${this.clientID}&scope=${GitHub.SCOPE}&state=${authState}&redirect_uri=${GitHub.REDIRECT_URI.toString()}`;
     }
 
     setToken(token) {
@@ -47,7 +58,7 @@ class GitHub {
         params.append("redirect_uri", GitHub.REDIRECT_URI.toString());
         params.append("state", authState);
 
-        const response = await fetch("https://github.com/login/oauth/access_token", {
+        const response = await fetch(`${GitHub.SITE_URI}login/oauth/access_token`, {
             method: "POST",
             body: params,
             headers: {
@@ -100,7 +111,7 @@ class GitHub {
 
     async markNotificationsRead() {
         if(this.lastUpdate !== null && this.authorized) {
-            const body = JSON.stringify({ last_read_at: this.lastUpdate });
+            const body = JSON.stringify({ "last_read_at": this.lastUpdate });
             const response = await fetch(`${GitHub.BASE_URI}notifications`, {
                 headers: this.headers,
                 method: "PUT",

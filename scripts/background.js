@@ -4,7 +4,6 @@ let updating = false;
 
 const github = new GitHub(clientId, clientSecret);
 
-//TODO pagination
 //TODO check scopes after every request?
 //TODO open latest comment?
 
@@ -39,6 +38,7 @@ const getNotificationIcon = (notification) => {
 };
 
 const processNewNotifications = async (json) => {
+    updating = true;
     const { notifications = [] } = await browser.storage.local.get("notifications");
     const stillNotificationIds = [];
     let notifs = await Promise.all(json.filter((n) => n.unread).map((notification) => {
@@ -115,12 +115,10 @@ const markNotificationAsRead = async (notificationId) => {
 };
 
 const getNotifications = async () => {
-    updating = true;
     const result = await github.getNotifications();
     if(result) {
         await processNewNotifications(result);
     }
-    updating = false;
 
     browser.alarms.create({
         when: Date.now() + (github.pollInterval * 1000)
@@ -174,7 +172,7 @@ const needsAuth = () => {
             }).catch((e) => console.error(e));
         }
         else {
-            console.error("An error occurred during authorization");
+            console.error(`An error occurred during authorization: ${url.searchParams.get("error_description")}. See ${url.searchParams.get("error_uri")}`);
         }
     }, {
         url: [
