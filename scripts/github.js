@@ -1,5 +1,6 @@
 /* global redirectUri */
 //TODO make the URIs overridable for Enterprise
+//TODO replace redirectUri with identity API (blocked by 53 being stable)
 
 const parseLinks = (links) => {
     const linkInfo = links.split(",");
@@ -76,6 +77,7 @@ class GitHub {
                 Accept: "application/json"
             }
         });
+        //TODO handle network errors differently
         if(response.ok) {
             const { access_token: accessToken, scope } = await response.json();
             if(!scope.includes(GitHub.SCOPE)) {

@@ -4,7 +4,6 @@ let updating = false;
 
 const github = new GitHub(clientId, clientSecret);
 
-//TODO check scopes after every request?
 //TODO open latest comment?
 
 const startAuthListener = () => {
@@ -115,14 +114,23 @@ const markNotificationAsRead = async (notificationId) => {
 };
 
 const getNotifications = async () => {
-    const result = await github.getNotifications();
-    if(result) {
-        await processNewNotifications(result);
-    }
+    if(window.onLine) {
+        const result = await github.getNotifications();
+        if(result) {
+            await processNewNotifications(result);
+        }
 
-    browser.alarms.create({
-        when: Date.now() + (github.pollInterval * 1000)
-    });
+        browser.alarms.create({
+            when: Date.now() + (github.pollInterval * 1000)
+        });
+    }
+    else {
+        window.addEventListener('online', getNotifications, {
+            once: true,
+            capturing: false,
+            passive: true
+        });
+    }
 };
 
 const setupNotificationWorker = () => {
@@ -238,7 +246,21 @@ const init = async () => {
     }
 };
 
-init().catch((e) => {
-    clearToken();
-    console.error(e);
-});
+if(window.onLine) {
+    init().catch((e) => {
+        clearToken();
+        console.error(e);
+    });
+}
+else {
+    window.addEventListener("online", () => {
+        init().catch((e) => {
+            clearToken();
+            console.error(e);
+        });
+    }, {
+        passive: true,
+        capturing: false,
+        once: true
+    });
+}
