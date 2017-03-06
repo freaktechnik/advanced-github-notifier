@@ -164,7 +164,10 @@ const needsAuth = () => {
             browser.browserAction.onClicked.removeListener(authListener);
             setupNotificationWorker();
             return browser.storage.local.set({ token });
-        }, () => {
+        }, (e) => {
+            if(typeof e == "string" && e.startsWith("An error occurred during auth")) {
+                throw e;
+            }
             throw "Was not granted required permissions";
         }).then(() => {
             browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
@@ -226,7 +229,7 @@ const init = async () => {
     }
 };
 
-if(window.onLine) {
+if(navigator.onLine) {
     init().catch((e) => {
         clearToken();
         console.error(e);
