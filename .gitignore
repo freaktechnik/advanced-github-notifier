@@ -38,3 +38,6 @@ jspm_packages
 
 scripts/config.js
 web-ext-artifacts
+
+_locales
+!_locales/en/messages.json

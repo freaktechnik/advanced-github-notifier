@@ -77,7 +77,7 @@ class GitHub {
                 Accept: "application/json"
             }
         });
-        //TODO handle network errors differently
+        //TODO requeue on network errors
         if(response.ok) {
             const { access_token: accessToken, scope } = await response.json();
             if(!scope.includes(GitHub.SCOPE)) {
