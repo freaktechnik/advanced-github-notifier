@@ -6,18 +6,6 @@ const github = new GitHub(clientId, clientSecret);
 
 //TODO open latest comment?
 
-const startAuthListener = () => {
-    const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
-    return [
-        () => {
-            browser.tabs.create({
-                url: github.authURL(authState)
-            });
-        },
-        authState
-    ];
-};
-
 const getNotificationIcon = (notification) => {
     if(notification.subject.type == "Issue") {
         return `images/issue-${notification.subjectDetails.state}.`;
@@ -109,7 +97,7 @@ const markNotificationAsRead = async (notificationId) => {
         browser.browserAction.setBadgeText({
             text: notifs.length.toString()
         });
-        return browser.storage.local.set({ notifs });
+        await browser.storage.local.set({ notifs });
     }
 };
 
@@ -148,7 +136,7 @@ const openNotification = async (id) => {
         await browser.windows.update(tab.windowId, {
             focused: true
         });
-        return markNotificationAsRead(id);
+        await markNotificationAsRead(id);
     }
 };
 browser.notifications.onClicked.addListener(openNotification);
@@ -158,38 +146,30 @@ const needsAuth = () => {
     browser.browserAction.setBadgeText({
         text: "?"
     });
-    const [ authListener, authState ] = startAuthListener();
-    browser.browserAction.onClicked.addListener(authListener);
-    browser.webNavigation.onCommitted.addListener((details) => {
-        const url = new URL(details.url);
-        if(!url.searchParams.has("error") && url.searchParams.has("code") &&
-            url.searchParams.get("state") == authState) {
-            github.getToken(url.searchParams.get('code'), authState).then((token) => {
-                browser.browserAction.onClicked.removeListener(authListener);
-                setupNotificationWorker();
-                return Promise.all([
-                    browser.storage.local.set({ token }),
-                    browser.tabs.remove(details.tabId)
-                ]);
-            }, () => {
-                browser.tabs.remove(details.tabId);
-                throw "Was not granted required permissions";
-            }).then(() => {
-                browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
-                browser.runtime.sendMessage({ topic: "login" });
-            }).catch((e) => console.error(e));
-        }
-        else {
-            console.error(`An error occurred during authorization: ${url.searchParams.get("error_description")}. See ${url.searchParams.get("error_uri")}`);
-        }
-    }, {
-        url: [
-            {
-                hostEquals: GitHub.REDIRECT_URI.hostname,
-                pathEquals: GitHub.REDIRECT_URI.pathname,
-                schemes: [ GitHub.REDIRECT_URI.protocol.substr(0, GitHub.REDIRECT_URI.protocol.length - 1) ]
+    const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
+    browser.browserAction.onClicked.addListener(function authListener() {
+        browser.identity.launchWebAuthFlow({
+            url: github.authURL(authState),
+            interactive: true
+        }).then((rawURL) => {
+            const url = new URL(rawURL);
+            if(!url.searchParams.has("error") && url.searchParams.has("code") &&
+                url.searchParams.get("state") == authState) {
+                return github.getToken(url.searchParams.get('code'), authState);
             }
-        ]
+            else {
+                throw `An error occurred during authorization: ${url.searchParams.get("error_description")}. See ${url.searchParams.get("error_uri")}`;
+            }
+        }).then((token) => {
+            browser.browserAction.onClicked.removeListener(authListener);
+            setupNotificationWorker();
+            return browser.storage.local.set({ token });
+        }, () => {
+            throw "Was not granted required permissions";
+        }).then(() => {
+            browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
+            browser.runtime.sendMessage({ topic: "login" });
+        }).catch(console.error);
     });
 };
 
@@ -237,7 +217,7 @@ const init = async () => {
     else {
         try {
             await github.authorize(token);
-            return setupNotificationWorker();
+            await setupNotificationWorker();
         }
         catch(e) {
             await github.authorize(token, "DELETE");
