@@ -24,11 +24,25 @@ const getNotificationIcon = (notification) => {
     }
 };
 
+const updateBadge = (notifArray) => {
+    let text = "?";
+    if(Array.isArray(notifArray)) {
+        text = notifArray.length > 0 ? notifArray.length.toString() : "";
+    }
+
+    browser.browserAction.setBadgeText({
+        text
+    });
+};
+
 const processNewNotifications = async (json) => {
     updating = true;
-    const { notifications = [] } = await browser.storage.local.get("notifications");
+    const { notifications = [], hide } = await browser.storage.local.get([
+        "notifications",
+        "hide"
+    ]);
     const stillNotificationIds = [];
-    let notifs = await Promise.all(json.filter((n) => n.unread).map((notification) => {
+    let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
         stillNotificationIds.push(notification.id);
         let fetchDetails = false;
         const existingNotif = notifications.find((n) => n.id == notification.id);
@@ -45,34 +59,33 @@ const processNewNotifications = async (json) => {
         }
 
         if(fetchDetails) {
-            return github.getNotificationDetails(notification).then((details) => {
+            try {
+                const details = await github.getNotificationDetails(notification);
                 notification.subjectDetails = details;
                 notification.icon = getNotificationIcon(notification);
-                return notification;
-            }, () => null);
+            }
+            catch(e) {
+                return null;
+            }
         }
-        return Promise.resolve(notification);
-    }));
-    notifs = notifs.filter((n) => n !== null);
-    notifs.forEach((notification) => {
         if(notification.new) {
-            browser.storage.local.get("hide").then((result) => {
-                if(!result.hide) {
-                    return browser.notifications.create(notification.id, {
-                        type: "basic",
-                        title: notification.subject.title,
-                        message: notification.repository.full_name,
-                        eventTime: Date.parse(notification.updated_at),
-                        iconUrl: notification.icon + "png"
-                    });
-                }
-            });
+            if(!hide) {
+                await browser.notifications.create(notification.id, {
+                    type: "basic",
+                    title: notification.subject.title,
+                    message: notification.repository.full_name,
+                    eventTime: Date.parse(notification.updated_at),
+                    iconUrl: notification.icon + "png"
+                });
+            }
             browser.runtime.sendMessage({
                 topic: "new-notification",
                 notification
             });
         }
-    });
+        return notification;
+    }));
+    notifs = notifs.filter((n) => n !== null);
 
     notifications.filter((n) => !stillNotificationIds.includes(n.id)).forEach((notification) => {
         browser.runtime.sendMessage({
@@ -81,9 +94,7 @@ const processNewNotifications = async (json) => {
         });
     });
 
-    browser.browserAction.setBadgeText({
-        text: stillNotificationIds.length > 0 ? stillNotificationIds.length.toString() : ""
-    });
+    updateBadge(notifs);
     updating = false;
     return browser.storage.local.set({
         notifications: notifs
@@ -94,15 +105,13 @@ const markNotificationAsRead = async (notificationId) => {
     if(!updating) {
         const { notifications = [] } = await browser.storage.local.get("notifications");
         const notifs = notifications.filter((notification) => notification.id != notificationId);
-        browser.browserAction.setBadgeText({
-            text: notifs.length.toString()
-        });
+        updateBadge(notifs);
         await browser.storage.local.set({ notifs });
     }
 };
 
 const getNotifications = async () => {
-    if(window.onLine) {
+    if(navigator.onLine) {
         const result = await github.getNotifications();
         if(result) {
             await processNewNotifications(result);
@@ -123,7 +132,7 @@ const getNotifications = async () => {
 
 const setupNotificationWorker = () => {
     browser.alarms.onAlarm.addListener(getNotifications);
-    return github.getNotifications();
+    return getNotifications();
 };
 
 const openNotification = async (id) => {
@@ -143,9 +152,7 @@ browser.notifications.onClicked.addListener(openNotification);
 
 const needsAuth = () => {
     browser.browserAction.setPopup({ popup: "" });
-    browser.browserAction.setBadgeText({
-        text: "?"
-    });
+    updateBadge();
     const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
     browser.browserAction.onClicked.addListener(function authListener() {
         browser.identity.launchWebAuthFlow({
@@ -162,7 +169,6 @@ const needsAuth = () => {
             }
         }).then((token) => {
             browser.browserAction.onClicked.removeListener(authListener);
-            setupNotificationWorker();
             return browser.storage.local.set({ token });
         }, (e) => {
             if(typeof e == "string" && e.startsWith("An error occurred during auth")) {
@@ -172,6 +178,7 @@ const needsAuth = () => {
         }).then(() => {
             browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
             browser.runtime.sendMessage({ topic: "login" });
+            return setupNotificationWorker();
         }).catch(console.error);
     });
 };
@@ -193,7 +200,7 @@ browser.runtime.onMessage.addListener((message) => {
     else if(message.topic === "mark-all-read") {
         github.markNotificationsRead().then((result) => {
             if(result) {
-                browser.browserAction.setBadgeText({ text: "" });
+                updateBadge([]);
                 return browser.storage.local.set({ notifications: [] });
             }
         }).catch((e) => console.error(e));
