@@ -1,3 +1,9 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 /* global redirectUri */
 //TODO make the URIs overridable for Enterprise
 //TODO replace redirectUri with identity API (blocked by 53 being stable)
