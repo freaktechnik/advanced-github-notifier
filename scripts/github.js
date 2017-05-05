@@ -68,6 +68,10 @@ class GitHub {
         this.headers.Authorization = `token ${token}`;
     }
 
+    unsetToken() {
+        delete this.headers.Authorization;
+    }
+
     async getToken(code, authState) {
         const params = new URLSearchParams();
         params.append("client_id", this.clientID);
@@ -120,6 +124,9 @@ class GitHub {
             else {
                 throw "Token invalid";
             }
+        }
+        else if(method == "DELETE") {
+            this.unsetToken();
         }
         return "Token updated";
     }
