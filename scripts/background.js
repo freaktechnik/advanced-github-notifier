@@ -201,7 +201,16 @@ browser.runtime.onMessage.addListener((message) => {
         openNotification(message.notificationId).catch((e) => console.error(e));
     }
     else if(message.topic === "open-notifications") {
-        browser.tabs.create({ url: GitHub.ALL_NOTIFS_URL });
+        browser.storage.local.get({
+            "footer": "all"
+        }).then(({ footer }) => {
+            if(footer == "options") {
+                browser.runtime.openOptionsPage();
+            }
+            else if(footer in GitHub.FOOTER_URLS) {
+                browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
+            }
+        });
     }
     else if(message.topic === "mark-all-read") {
         github.markNotificationsRead().then((result) => {

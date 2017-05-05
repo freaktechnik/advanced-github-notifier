@@ -37,8 +37,14 @@ class GitHub {
         return "repo";
     }
 
-    static get ALL_NOTIFS_URL() {
-        return `${GitHub.SITE_URI}notifications?all=1`;
+    static get FOOTER_URLS() {
+        return {
+            "index": GitHub.SITE_URI,
+            "unread": `${GitHub.SITE_URI}notifications`,
+            "all": `${GitHub.SITE_URI}notifications?all=1`,
+            "participating": `${GitHub.SITE_URI}notifications/participating`,
+            "watched": `${GitHub.SITE_URI}watched`
+        };
     }
 
     constructor(clientID, clientSecret) {

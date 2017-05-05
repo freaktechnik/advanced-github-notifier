@@ -75,11 +75,23 @@ browser.runtime.onMessage.addListener((message) => {
 
 loaded.then(() => {
     const open = document.getElementById("open");
-    open.addEventListener("click", () => {
-        browser.runtime.sendMessage({ topic: "open-notifications" });
-        window.close();
+    browser.storage.local.get({
+        "footer": "all"
+    }).then(({ footer }) => {
+        if(footer == "hidden") {
+            open.parentNode.hidden = true;
+        }
+        else {
+            open.addEventListener("click", () => {
+                browser.runtime.sendMessage({ topic: "open-notifications" });
+                window.close();
+            }, {
+                capture: false,
+                passive: true
+            });
+            open.textContent = browser.i18n.getMessage(`footer_${footer}`);
+        }
     });
-    open.textContent = browser.i18n.getMessage("footerAction");
     document.getElementById("empty-text").textContent = browser.i18n.getMessage("noNotifications");
 
     const markRead = document.getElementById("mark-read");
@@ -88,6 +100,9 @@ loaded.then(() => {
         if(!markRead.classList.contains("disabled")) {
             browser.runtime.sendMessage({ topic: "mark-all-read" });
         }
+    }, {
+        capture: false,
+        passive: true
     });
 });
 

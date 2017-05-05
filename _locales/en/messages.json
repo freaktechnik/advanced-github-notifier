@@ -11,9 +11,29 @@
         "message": "GitHub Notifications",
         "description": "Button tooltip"
     },
-    "footerAction": {
-        "message": "Open Notifications Page",
+    "footer_all": {
+        "message": "Show All Notifications",
         "description": "Button label to open the GitHub notifications page"
+    },
+    "footer_unread": {
+        "message": "Show Unread Notifications",
+        "description": "Button label to open the GitHub unread notifications page"
+    },
+    "footer_watched": {
+        "message": "Show Watched Repositories",
+        "description": "Button label to open the GitHub watched repositories manager"
+    },
+    "footer_index": {
+        "message": "Show GitHub",
+        "description": "Button label to open the GitHub frontpage"
+    },
+    "footer_options": {
+        "message": "Show Add-on Options",
+        "description": "Button label to open the add-on options"
+    },
+    "footer_participating": {
+        "message": "Show Participating Notifications",
+        "description": "Button label to open the GitHub participating notifications page"
     },
     "noNotifications": {
         "message": "No notifications",
@@ -30,5 +50,45 @@
     "showNotifications": {
         "message": "Show notifications",
         "description": "Label for the settings checkbox to control if the extension shows notifications"
+    },
+    "footerLabel": {
+        "message": "Footer links to",
+        "description": "Label for the footer function select in the options"
+    },
+    "footerGithub.label": {
+        "message": "GitHub",
+        "description": "Label of the GitHub options group in the footer function select in the options"
+    },
+    "footerLocal.label": {
+        "message": "Local",
+        "description": "Label of the Local options group in the footer function select in the options"
+    },
+    "footerSelectAll": {
+        "message": "All notifications",
+        "description": "Label for the all notifications option in the footer function select in the options"
+    },
+    "footerSelectUnread": {
+        "message": "Unread notifications",
+        "description": "Label for the unread notifications option in the footer function select in the options"
+    },
+    "footerSelectParticipating": {
+        "message": "Participating notifications",
+        "description": "Label for the participating notifications option in the footer function select in the options"
+    },
+    "footerSelectWatched": {
+        "message": "Watched repositories",
+        "description": "Label for the watched repositories option in the footer function select in the options"
+    },
+    "footerSelectIndex": {
+        "message": "GitHub frontpage",
+        "description": "Label for the GitHub frontpage option in the footer function select in the options"
+    },
+    "footerSelectOptions": {
+        "message": "Add-on Options",
+        "description": "Label for the add-on options option in the footer function select in the options"
+    },
+    "footerSelectHidden": {
+        "message": "Hide footer button",
+        "description": "Label for the hidden button option in the footer function select in the options"
     }
 }
