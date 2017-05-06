@@ -221,7 +221,7 @@ browser.runtime.onMessage.addListener((message) => {
         }).catch((e) => console.error(e));
     }
     else if(message.topic === "mark-notification-read") {
-        github.makrNotificationRead(message.notificationId).then(() => {
+        github.markNotificationRead(message.notificationId).then(() => {
             return markNotificationAsRead(message.notificationId);
         }).catch((e) => console.error(e));
     }

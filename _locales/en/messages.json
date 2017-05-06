@@ -90,5 +90,21 @@
     "footerSelectHidden": {
         "message": "Hide footer button",
         "description": "Label for the hidden button option in the footer function select in the options"
+    },
+    "markAsRead": {
+        "message": "Mark as read",
+        "description": "Mark as read context menu item on individual notifications"
+    },
+    "markAsRead.accesskey": {
+        "message": "M A R",
+        "description": "Access key attribute for the mark as read context menu item on individual notifications"
+    },
+    "unwatch": {
+        "message": "Unwatch",
+        "description": "Context menu item to unwatch an issue etc."
+    },
+    "unwatch.accesskey": {
+        "message": "U W",
+        "description": "Access key attribute for the unwatch context menu item"
     }
 }

@@ -4,7 +4,8 @@
     },
     "env": {
         "webextensions": true,
-        "browser": true
+        "browser": true,
+        "es6": true
     },
     "rules": {
         "no-unused-vars": 0,
@@ -12,6 +13,17 @@
         "camelcase": 1,
         "no-undef": 2,
         "no-extra-semi": 2,
-        "strict": 0
-    }
+        "strict": 0,
+        "no-console": [
+            "error",
+            {
+                "allow": [
+                    "warn",
+                    "error"
+                ]
+            }
+        ],
+        "prefer-promise-reject-errors": 1
+    },
+    "extends": "eslint:recommended"
 }

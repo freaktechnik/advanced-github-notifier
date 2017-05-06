@@ -2,26 +2,31 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <script src="scripts/l10n.js"></script>
         <script src="scripts/popup.js"></script>
         <link rel="stylesheet" href="styles/popup.css">
     </head>
     <body>
+        <menu type="context" id="maincontext">
+            <menuitem id="markAsRead" accesskey="M A R" data-l10n-id="markAsRead">Mark as read</menuitem>
+            <menuitem accesskey="U W" data-l10n-id="unwatch" disabled>Unwatch</menuitem>
+        </menu>
         <main class="panel">
             <div class="panel-section panel-section-list">
                 <div id="empty">
                     <div class="panel-list-item disabled">
                         <div class="icon"></div>
-                        <span class="text" id="empty-text">No notifications</span>
+                        <span class="text" id="empty-text" data-l10n-id="noNotifications">No notifications</span>
                     </div>
                     <div class="panel-section-separator"></div>
                 </div>
 
-                <ul id="notifications" hidden>
+                <ul id="notifications" hidden contextmenu="maincontext">
                     <!-- <li class="panel-list-item"><span class="text">Notification Title</span><span class="text-shortcut">some/repo</span></li> -->
                 </ul>
                 <div class="panel-list-item disabled" id="mark-read">
                     <div class="icon"></div>
-                    <span class="text" id="mark-read-text">Mark all as read</span>
+                    <span class="text" id="mark-read-text" data-l10n-id="markAllRead">Mark all as read</span>
                 </div>
             </div>
         </main>

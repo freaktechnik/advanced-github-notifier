@@ -5,7 +5,11 @@
  */
 
 const loaded = new Promise((resolve) => {
-    window.addEventListener("DOMContentLoaded", resolve);
+    window.addEventListener("DOMContentLoaded", resolve, {
+        capture: true,
+        passive: true,
+        once: true
+    });
 });
 const idPrefix = "ghnotif";
 
@@ -15,6 +19,25 @@ const clickListener = (id) => {
         notificationId: id
     });
     window.close();
+};
+
+const contextMenu = {
+    target: null,
+    init() {
+        document.getElementById("markAsRead").addEventListener("click", () => this.markAsRead(), {
+            capture: false,
+            passive: true
+        });
+    },
+    openFor(notificationId) {
+        this.target = notificationId;
+    },
+    markAsRead() {
+        browser.runtime.sendMessage({
+            topic: "mark-notification-read",
+            notificationId: this.target
+        });
+    }
 };
 
 const createNotification = (notification) => {
@@ -36,6 +59,7 @@ const createNotification = (notification) => {
 
     root.append(image, title, repo);
     root.addEventListener("click", clickListener.bind(null, notification.id));
+    root.addEventListener("contextmenu", () => contextMenu.openFor(notification.id));
     const parent = document.getElementById("notifications");
     parent.append(root);
     parent.hidden = false;
@@ -92,10 +116,8 @@ loaded.then(() => {
             open.textContent = browser.i18n.getMessage(`footer_${footer}`);
         }
     });
-    document.getElementById("empty-text").textContent = browser.i18n.getMessage("noNotifications");
 
     const markRead = document.getElementById("mark-read");
-    document.getElementById("mark-read-text").textContent = browser.i18n.getMessage("markAllRead");
     markRead.addEventListener("click", () => {
         if(!markRead.classList.contains("disabled")) {
             browser.runtime.sendMessage({ topic: "mark-all-read" });
@@ -104,6 +126,8 @@ loaded.then(() => {
         capture: false,
         passive: true
     });
+
+    contextMenu.init();
 });
 
 Promise.all([
