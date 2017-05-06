@@ -24,7 +24,12 @@ const clickListener = (id) => {
 const contextMenu = {
     target: null,
     init() {
-        document.getElementById("markAsRead").addEventListener("click", () => this.markAsRead(), {
+        this.addListener("markAsRead", "markAsRead");
+        this.addListener("unsubscribe", "unsubscribe");
+        this.addListener("ignore", "ignore");
+    },
+    addListener(id, listenerName) {
+        document.getElementById(id).addEventListener("click", () => this[listenerName](), {
             capture: false,
             passive: true
         });
@@ -35,6 +40,18 @@ const contextMenu = {
     markAsRead() {
         browser.runtime.sendMessage({
             topic: "mark-notification-read",
+            notificationId: this.target
+        });
+    },
+    unsubscribe() {
+        browser.runtime.sendMessage({
+            topic: "unsubscribe-notification",
+            notificationId: this.target
+        });
+    },
+    ignore() {
+        browser.runtime.sendMessagE({
+            topic: "ignore-notification",
             notificationId: this.target
         });
     }
@@ -78,7 +95,7 @@ const deleteNotification = (notificationId) => {
     if(parent.childElementCount == 0) {
         document.getElementById("empty").hidden = false;
         parent.hidden = true;
-        document.getElementById("mark-read").classList.remove("disabled");
+        document.getElementById("mark-read").classList.add("disabled");
     }
 };
 

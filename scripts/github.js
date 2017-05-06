@@ -178,6 +178,30 @@ class GitHub {
         }
     }
 
+    async unsubscribeNotification(notificationId) {
+        const response = await fetch(`${GitHub.BASE_URI}notifications/threads/${notificationId}/subscription`, {
+            method: "PUT",
+            headers: this.headers,
+            body: `{"subscribed":false}`
+        });
+
+        if(!response.ok) {
+            throw new Error(response.status);
+        }
+    }
+
+    async ignoreNotification(notificationId) {
+        const response = await fetch(`${GitHub.BASE_URI}notifications/threads/${notificationId}/subscription`, {
+            method: "PUT",
+            headers: this.headers,
+            body: `{"subscribed":false,"ignored":true}`
+        });
+
+        if(!response.ok) {
+            throw new Error(response.status);
+        }
+    }
+
     async getNotifications(url = `${GitHub.BASE_URI}notifications`) {
         const response = await fetch(url, {
             headers: this.headers,

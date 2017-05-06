@@ -100,11 +100,19 @@
         "description": "Access key attribute for the mark as read context menu item on individual notifications"
     },
     "unwatch": {
-        "message": "Unwatch",
-        "description": "Context menu item to unwatch an issue etc."
+        "message": "Unsubscribe",
+        "description": "Context menu item to unwatch a thread (issue etc.)"
     },
     "unwatch.accesskey": {
         "message": "U W",
         "description": "Access key attribute for the unwatch context menu item"
+    },
+    "ignore": {
+        "message": "Ignore",
+        "description": "Context menu item to ignore a thread (don't resubscribe)"
+    },
+    "ignore.accesskey": {
+        "message": "I G",
+        "description": "Access key attribute for the ignore context menu item"
     }
 }
