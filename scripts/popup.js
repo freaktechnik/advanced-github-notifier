@@ -50,7 +50,7 @@ const contextMenu = {
         });
     },
     ignore() {
-        browser.runtime.sendMessagE({
+        browser.runtime.sendMessage({
             topic: "ignore-notification",
             notificationId: this.target
         });
