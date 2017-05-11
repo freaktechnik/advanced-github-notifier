@@ -8,7 +8,7 @@
         "description": "Description of the extension"
     },
     "actionTitle": {
-        "message": "GitHub Notifications",
+        "message": "GitHub Notifications (Alt+G)",
         "description": "Button tooltip"
     },
     "footer_all": {
