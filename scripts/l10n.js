@@ -20,7 +20,7 @@ function translateElementAttributes(element) {
     const presentAttributes = element.dataset.l10nAttrs.split(",");
 
     // Translate allowed attributes.
-    for(let attribute of presentAttributes) {
+    for(const attribute of presentAttributes) {
         let data;
         if(attrList.includes(attribute)) {
             data = browser.i18n.getMessage(element.dataset.l10nId + attrSeparator + attribute);
@@ -40,7 +40,7 @@ function translateElement(element = document) {
     //TODO follow the tranlsate attribute's instructions (yes/no/inherit)
     // Get all children that are marked as being translateable.
     const children = element.querySelectorAll('*[data-l10n-id]');
-    for(let child of children) {
+    for(const child of children) {
         if(!child.dataset.l10nNocontent) {
             const data = browser.i18n.getMessage(child.dataset.l10nId);
             if(data && data != "??") {

@@ -20,6 +20,7 @@ const parseLinks = (links) => {
     return linkObj;
 };
 
+// eslint-disable-next-line no-unused-vars
 class GitHub {
     static get BASE_URI() {
         return 'https://api.github.com/';

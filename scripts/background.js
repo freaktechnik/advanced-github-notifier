@@ -198,48 +198,48 @@ const clearToken = () => {
 
 browser.runtime.onMessage.addListener((message) => {
     switch(message.topic) {
-        case "open-notification":
-            openNotification(message.notificationId).catch((e) => console.error(e));
-            break;
-        case "open-notifications":
-            browser.storage.local.get({
-                "footer": "all"
-            }).then(({ footer }) => {
-                if(footer == "options") {
-                    browser.runtime.openOptionsPage();
-                }
-                else if(footer in GitHub.FOOTER_URLS) {
-                    browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
-                }
-            });
-            break;
-        case "mark-all-read":
-            github.markNotificationsRead().then((result) => {
-                if(result) {
-                    updateBadge([]);
-                    return browser.storage.local.set({ notifications: [] });
-                }
-            }).catch((e) => console.error(e));
-            break;
-        case "mark-notification-read":
-            github.markNotificationRead(message.notificationId).then(() => {
-                return markNotificationAsRead(message.notificationId);
-            }).catch((e) => console.error(e));
-            break;
-        case "unsubscribe-notification":
-            github.unsubscribeNotification(message.notificationId).catch(console.error);
-            break;
-        case "ignore-notification":
-            github.ignoreNotification(message.notificationId).catch(console.error);
-            break;
-        case "logout":
-            browser.storage.local.get("token").then(({ token }) => {
-                return github.authorize(token, "DELETE");
-            }).then((response) => {
-                return clearToken();
-            }).catch((e) => console.error(e));
-            break;
-        default:
+    case "open-notification":
+        openNotification(message.notificationId).catch((e) => console.error(e));
+        break;
+    case "open-notifications":
+        browser.storage.local.get({
+            "footer": "all"
+        }).then(({ footer }) => {
+            if(footer == "options") {
+                browser.runtime.openOptionsPage();
+            }
+            else if(footer in GitHub.FOOTER_URLS) {
+                browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
+            }
+        });
+        break;
+    case "mark-all-read":
+        github.markNotificationsRead().then((result) => {
+            if(result) {
+                updateBadge([]);
+                return browser.storage.local.set({ notifications: [] });
+            }
+        }).catch((e) => console.error(e));
+        break;
+    case "mark-notification-read":
+        github.markNotificationRead(message.notificationId).then(() => {
+            return markNotificationAsRead(message.notificationId);
+        }).catch((e) => console.error(e));
+        break;
+    case "unsubscribe-notification":
+        github.unsubscribeNotification(message.notificationId).catch(console.error);
+        break;
+    case "ignore-notification":
+        github.ignoreNotification(message.notificationId).catch(console.error);
+        break;
+    case "logout":
+        browser.storage.local.get("token").then(({ token }) => {
+            return github.authorize(token, "DELETE");
+        }).then(() => {
+            return clearToken();
+        }).catch((e) => console.error(e));
+        break;
+    default:
     }
 });
 

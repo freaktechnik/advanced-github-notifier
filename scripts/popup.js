@@ -165,9 +165,9 @@ loaded.then(() => {
 Promise.all([
     browser.storage.local.get("notifications"),
     loaded
-]).then(([ result, l ]) => {
+]).then(([ result ]) => {
     const notifications = result.notifications || [];
-    for(let notification of notifications) {
+    for(const notification of notifications) {
         createNotification(notification);
     }
 });

@@ -1,0 +1,35 @@
+{
+  "name": "advanced-github-notifier",
+  "version": "1.2.0",
+  "description": "A Firefox extension, that not only shows a count of notifications, but also shows notification popups and has a popup that gives direct access to the notifications.",
+  "main": "manifest.json",
+  "scripts": {
+    "test": "eslint scripts/ && stylelint \"styles/*.css\" && web-ext lint",
+    "start": "web-ext run",
+    "build": "web-ext build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freaktechnik/advanced-github-notifier.git"
+  },
+  "author": "Martin Giger",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/freaktechnik/advanced-github-notifier/issues"
+  },
+  "homepage": "https://github.com/freaktechnik/advanced-github-notifier#readme",
+  "devDependencies": {
+    "eslint": "^4.3.0",
+    "eslint-plugin-freaktechnik": "^2.5.0",
+    "stylelint": "^8.0.0",
+    "stylelint-config-standard": "^17.0.0",
+    "web-ext": "^2.0.0"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "indentation": 4,
+      "color-named": "always-where-possible"
+    }
+  }
+}
