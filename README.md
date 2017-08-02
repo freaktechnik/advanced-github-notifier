@@ -1,4 +1,6 @@
 # ![](images/icon-48.png) Advanced GitHub Notifier
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/freaktechnik/advanced-github-notifier.svg)](https://greenkeeper.io/)
 A Firefox extension, that not only shows a count of notifications, but also
 shows notification popups and has a popup that gives direct access to the
 notifications.
