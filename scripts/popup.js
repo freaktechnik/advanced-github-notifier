@@ -61,6 +61,21 @@ const createNotification = (notification) => {
     const root = document.createElement("li");
     root.id = idPrefix + notification.id;
     root.classList.add("panel-list-item");
+    const date = new Date(notification.updated_at);
+    const formatter = new Intl.DateTimeFormat(browser.i18n.getUILanguage().replace("_", "-"), {
+        weekday: "short",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+    root.title = formatter.format(date);
+
+    if(notification.subject.type == "Issue" || notification.subject.type == "PullRequest") {
+        root.title = `#${notification.subjectDetails.number} (${root.title})`;
+    }
 
     const image = new Image(16, 16);
     image.src = notification.icon + "svg";
