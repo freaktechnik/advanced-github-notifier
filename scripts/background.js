@@ -76,6 +76,7 @@ const processNewNotifications = async (json) => {
         }
         if(notification.new) {
             if(!hide) {
+                browser.runtime.sendMessage("@notification-sound", "new-notification");
                 await browser.notifications.create(notification.id, {
                     type: "basic",
                     title: notification.subject.title,
