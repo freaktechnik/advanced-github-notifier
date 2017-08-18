@@ -10,9 +10,15 @@
     },
     "browser_action": {
         "browser_style": true,
-        "default_icon": "images/github.svg",
         "default_title": "__MSG_actionTitle__",
-        "default_popup": "popup.html"
+        "default_popup": "popup.html",
+        "theme_icons": [
+            {
+                "dark": "images/github.svg",
+                "light": "images/github-light.svg",
+                "size": 16
+            }
+        ]
     },
     "content_security_policy": "default-src 'self'; connect-src https://api.github.com https://github.com; object-src 'none'",
     "default_locale": "en",
