@@ -18,6 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
             topic: "logout"
         });
         button.disabled = true;
+        button.classList.add("disabled");
     }, PASSIVE_EVENT);
 
     notifications.addEventListener("change", () => {
@@ -31,6 +32,7 @@ window.addEventListener("DOMContentLoaded", () => {
     browser.storage.local.get([ "token", "hide", "footer" ]).then((result) => {
         if(result.token) {
             button.disabled = false;
+            button.classList.remove("disabled");
         }
         if(result.hide) {
             notifications.checked = false;
@@ -43,6 +45,7 @@ window.addEventListener("DOMContentLoaded", () => {
     browser.runtime.onMessage.addListener(({ topic }) => {
         if(topic == "login") {
             button.disabled = false;
+            button.classList.remove("disabled");
         }
     });
 }, PASSIVE_EVENT);
