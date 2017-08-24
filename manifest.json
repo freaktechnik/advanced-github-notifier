@@ -1,7 +1,7 @@
 {
     "applications": {
         "gecko": {
-            "strict_min_version": "53.0"
+            "strict_min_version": "56.0"
         }
     },
     "manifest_version": 2,
@@ -20,7 +20,7 @@
             }
         ]
     },
-    "content_security_policy": "default-src 'self'; connect-src https://api.github.com https://github.com; object-src 'none'",
+    "content_security_policy": "default-src 'self'; connect-src https://api.github.com https://github.com; object-src 'none'; img-src: 'self' data:",
     "default_locale": "en",
     "description": "__MSG_description__",
     "name": "__MSG_name__",
