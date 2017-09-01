@@ -4,36 +4,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global GitHub, clientId, clientSecret */
+/* global GitHub, clientId, clientSecret, ClientHandler, ClientManager */
+const github = new GitHub(clientId, clientSecret),
+    handler = new ClientHandler(github),
+    manager = new ClientManager();
 
-let updating = false;
-
-const github = new GitHub(clientId, clientSecret);
+manager.addClient(handler);
 
 //TODO open latest comment?
 
-const getNotificationIcon = (notification) => {
-    if(notification.subject.type == "Issue") {
-        return `images/issue-${notification.subjectDetails.state}.`;
-    }
-    else if(notification.subject.type == "PullRequest") {
-        if(notification.subjectDetails.merged) {
-            return "images/pull-merged.";
-        }
-        else {
-            return `images/pull-${notification.subjectDetails.state}.`;
-        }
-    }
-    // It's a commit
-    else {
-        return "images/comment.";
-    }
-};
-
-const updateBadge = (notifArray) => {
+const updateBadge = (count) => {
     let text = "?";
-    if(Array.isArray(notifArray)) {
-        text = notifArray.length > 0 ? notifArray.length.toString() : "";
+    if(count !== undefined) {
+        text = count > 0 ? count.toString(10) : "";
     }
 
     browser.browserAction.setBadgeText({
@@ -41,97 +24,20 @@ const updateBadge = (notifArray) => {
     });
 };
 
-const processNewNotifications = async (json) => {
-    updating = true;
-    const { notifications = [], hide } = await browser.storage.local.get([
-        "notifications",
-        "hide"
-    ]);
-    const stillNotificationIds = [];
-    let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
-        stillNotificationIds.push(notification.id);
-        let fetchDetails = false;
-        const existingNotif = notifications.find((n) => n.id == notification.id);
-        if(!existingNotif) {
-            notification.new = true;
-            fetchDetails = true;
-        }
-        else if(existingNotif.updated_at != notification.updated_at) {
-            fetchDetails = true;
-        }
-        else {
-            notification.subjectDetails = existingNotif.subjectDetails;
-            notification.icon = existingNotif.icon;
-        }
-
-        if(fetchDetails) {
-            try {
-                const details = await github.getNotificationDetails(notification);
-                notification.subjectDetails = details;
-                notification.icon = getNotificationIcon(notification);
-            }
-            catch(e) {
-                return null;
-            }
-        }
-        if(notification.new) {
-            if(!hide) {
-                browser.runtime.sendMessage("@notification-sound", "new-notification");
-                await browser.notifications.create(notification.id, {
-                    type: "basic",
-                    title: notification.subject.title,
-                    message: notification.repository.full_name,
-                    eventTime: Date.parse(notification.updated_at),
-                    iconUrl: notification.icon + "png"
-                });
-            }
-            browser.runtime.sendMessage({
-                topic: "new-notification",
-                notification
-            });
-        }
-        return notification;
-    }));
-    notifs = notifs.filter((n) => n !== null);
-
-    notifications.filter((n) => !stillNotificationIds.includes(n.id)).forEach((notification) => {
-        browser.runtime.sendMessage({
-            topic: "notification-read",
-            notificationId: notification.id
-        });
-    });
-
-    updateBadge(notifs);
-    updating = false;
-    return browser.storage.local.set({
-        notifications: notifs
-    });
-};
-
-const markNotificationAsRead = async (notificationId) => {
-    if(!updating) {
-        const { notifications = [] } = await browser.storage.local.get("notifications");
-        const notifs = notifications.filter((notification) => notification.id != notificationId);
-        updateBadge(notifs);
-        await browser.storage.local.set({ notifs });
-    }
-};
-
 const getNotifications = async () => {
     if(navigator.onLine) {
-        const result = await github.getNotifications();
-        if(result) {
-            await processNewNotifications(result);
+        const update = await handler.check();
+        if(update) {
+            updateBadge(await manager.getCount());
         }
-
         browser.alarms.create({
-            when: Date.now() + (github.pollInterval * 1000)
+            when: handler.getNextCheckTime()
         });
     }
     else {
         window.addEventListener('online', getNotifications, {
             once: true,
-            capturing: false,
+            capture: false,
             passive: true
         });
     }
@@ -143,16 +49,15 @@ const setupNotificationWorker = () => {
 };
 
 const openNotification = async (id) => {
-    const { notifications } = await browser.storage.local.get("notifications");
-    const notification = notifications.find((n) => n.id == id);
-    if(notification) {
+    const url = await handler.getNotificationURL(id);
+    if(url) {
         const tab = await browser.tabs.create({
-            url: notification.subjectDetails.html_url
+            url
         });
         await browser.windows.update(tab.windowId, {
             focused: true
         });
-        await markNotificationAsRead(id);
+        await handler.markAsRead(id, false);
     }
 };
 browser.notifications.onClicked.addListener(openNotification);
@@ -160,29 +65,8 @@ browser.notifications.onClicked.addListener(openNotification);
 const needsAuth = () => {
     browser.browserAction.setPopup({ popup: "" });
     updateBadge();
-    const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
-    browser.browserAction.onClicked.addListener(function authListener() {
-        browser.identity.launchWebAuthFlow({
-            url: github.authURL(authState),
-            interactive: true
-        }).then((rawURL) => {
-            const url = new URL(rawURL);
-            if(!url.searchParams.has("error") && url.searchParams.has("code") &&
-                url.searchParams.get("state") == authState) {
-                return github.getToken(url.searchParams.get('code'), authState);
-            }
-            else {
-                throw `An error occurred during authorization: ${url.searchParams.get("error_description")}. See ${url.searchParams.get("error_uri")}`;
-            }
-        }).then((token) => {
-            browser.browserAction.onClicked.removeListener(authListener);
-            return browser.storage.local.set({ token });
-        }, (e) => {
-            if(typeof e == "string" && e.startsWith("An error occurred during auth")) {
-                throw e;
-            }
-            throw "Was not granted required permissions";
-        }).then(() => {
+    browser.browserAction.onClicked.addListener(() => {
+        handler.login().then(() => {
             browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
             browser.runtime.sendMessage({ topic: "login" });
             return setupNotificationWorker();
@@ -191,10 +75,7 @@ const needsAuth = () => {
 };
 
 const clearToken = () => {
-    return browser.storage.local.set({
-        token: "",
-        notifications: []
-    }).then(() => needsAuth());
+    return handler.logout().then(() => needsAuth());
 };
 
 browser.runtime.onMessage.addListener((message) => {
@@ -215,49 +96,37 @@ browser.runtime.onMessage.addListener((message) => {
         });
         break;
     case "mark-all-read":
-        github.markNotificationsRead().then((result) => {
-            if(result) {
-                updateBadge([]);
-                return browser.storage.local.set({ notifications: [] });
-            }
+        handler.markAsRead().then(() => {
+            updateBadge([]);
         }).catch((e) => console.error(e));
         break;
     case "mark-notification-read":
-        github.markNotificationRead(message.notificationId).then(() => {
-            return markNotificationAsRead(message.notificationId);
+        handler.markAsRead(message.notificationId).then(() => {
+            return manager.getCount();
+        }).then((count) => {
+            updateBadge(count);
         }).catch((e) => console.error(e));
         break;
     case "unsubscribe-notification":
-        github.unsubscribeNotification(message.notificationId).catch(console.error);
+        handler.unsubscribeNotification(message.notificationId).catch(console.error);
         break;
     case "ignore-notification":
-        github.ignoreNotification(message.notificationId).catch(console.error);
+        handler.ignoreNotification(message.notificationId).catch(console.error);
         break;
     case "logout":
-        browser.storage.local.get("token").then(({ token }) => {
-            return github.authorize(token, "DELETE");
-        }).then(() => {
-            return clearToken();
-        }).catch((e) => console.error(e));
+        clearToken().catch(console.error);
         break;
     default:
     }
 });
 
 const init = async () => {
-    const { token } = await browser.storage.local.get("token");
+    const token = await handler.checkAuth();
     if(!token) {
         needsAuth();
     }
     else {
-        try {
-            await github.authorize(token);
-            await setupNotificationWorker();
-        }
-        catch(e) {
-            await github.authorize(token, "DELETE");
-            throw "Scopes removed";
-        }
+        await setupNotificationWorker();
     }
 };
 
@@ -275,7 +144,7 @@ else {
         });
     }, {
         passive: true,
-        capturing: false,
+        capture: false,
         once: true
     });
 }

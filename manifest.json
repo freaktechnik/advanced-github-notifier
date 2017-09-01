@@ -6,12 +6,19 @@
     },
     "manifest_version": 2,
     "background": {
-        "scripts": [ "scripts/config.js", "scripts/github.js", "scripts/background.js" ]
+        "scripts": [
+            "scripts/config.js",
+            "scripts/github.js",
+            "scripts/handler.js",
+            "scripts/client-manager.js",
+            "scripts/background.js"
+        ]
     },
     "browser_action": {
         "browser_style": true,
         "default_title": "__MSG_actionTitle__",
         "default_popup": "popup.html",
+        "default_icons": "images/github.svg",
         "theme_icons": [
             {
                 "dark": "images/github.svg",
