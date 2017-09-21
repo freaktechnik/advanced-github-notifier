@@ -1,0 +1,6 @@
+{
+    "rules": {
+        "node/no-unpublished-require": 0
+    },
+    "extends": "plugin:freaktechnik/test"
+}

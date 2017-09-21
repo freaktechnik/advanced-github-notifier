@@ -5,7 +5,6 @@
  */
 /* global ClientHandler */
 
-// eslint-disable-next-line no-unused-vars
 class ClientManager {
     constructor() {
         this.clients = new Set();
@@ -16,7 +15,7 @@ class ClientManager {
             this.clients.add(client);
             return this.saveNotificationFields();
         }
-        return Promise.resolve();
+        return Promise.reject(new TypeError('Client is not a ClientHandler'));
     }
 
     removeClient(client) {
@@ -39,3 +38,4 @@ class ClientManager {
         return clientCounts.reduce((p, c) => p + c, 0);
     }
 }
+window.ClientManager = ClientManager;

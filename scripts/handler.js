@@ -7,7 +7,6 @@
 //TODO handler-specific notification IDs
 //TODO fix panel
 
-// eslint-disable-next-line no-unused-vars
 class ClientHandler {
     static getNotificationIcon(notification) {
         if(notification.reason === "invitation") {
@@ -231,3 +230,4 @@ class ClientHandler {
         return this.client.unsubscribeNotification(id);
     }
 }
+window.ClientHandler = ClientHandler;

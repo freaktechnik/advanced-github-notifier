@@ -4,9 +4,10 @@
   "description": "A Firefox extension, that not only shows a count of notifications, but also shows notification popups and has a popup that gives direct access to the notifications.",
   "main": "manifest.json",
   "scripts": {
-    "test": "eslint scripts/ && stylelint \"styles/*.css\" && web-ext lint",
-    "start": "web-ext run",
-    "build": "web-ext build"
+    "lint": "eslint scripts/ test/ && stylelint \"styles/*.css\" && web-ext lint -i test/*",
+    "test": "npm run lint && nyc ava",
+    "start": "web-ext run -i test/*",
+    "build": "web-ext build -i test/*"
   },
   "repository": {
     "type": "git",
@@ -19,8 +20,13 @@
   },
   "homepage": "https://github.com/freaktechnik/advanced-github-notifier#readme",
   "devDependencies": {
+    "ava": "^0.22.0",
     "eslint": "^4.3.0",
     "eslint-plugin-freaktechnik": "^2.5.0",
+    "jsdom": "^11.2.0",
+    "node-fetch": "^1.7.3",
+    "nyc": "^11.2.1",
+    "sinon-chrome": "^2.2.1",
     "stylelint": "^8.0.0",
     "stylelint-config-standard": "^17.0.0",
     "web-ext": "^2.0.0"
