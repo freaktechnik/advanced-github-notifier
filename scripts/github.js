@@ -98,7 +98,7 @@ class GitHub {
         if(response.ok) {
             const { access_token: accessToken, scope } = await response.json();
             if(!scope.includes(GitHub.SCOPE)) {
-                throw "Was not granted required permissions";
+                throw new Error("Was not granted required permissions");
             }
             else {
                 this.setToken(accessToken);
@@ -125,11 +125,11 @@ class GitHub {
                     return true;
                 }
                 else {
-                    throw "Not all required scopes given";
+                    throw new Error("Not all required scopes given");
                 }
             }
             else {
-                throw "Token invalid";
+                throw new Error("Token invalid");
             }
         }
         else if(method == "DELETE") {
@@ -157,7 +157,7 @@ class GitHub {
                 return true;
             }
             else {
-                throw `Marking all notifications read returned a ${response.status} error`;
+                throw new Error(`Marking all notifications read returned a ${response.status} error`);
             }
         }
         return false;
@@ -239,7 +239,7 @@ class GitHub {
             return false;
         }
         else {
-            throw `${response.status} ${response.statusText}`;
+            throw new Error(`${response.status} ${response.statusText}`);
         }
     }
 
@@ -252,7 +252,7 @@ class GitHub {
             return response.json();
         }
         else {
-            throw `Could not load details for ${notification.subject.title}: Error ${response.status}`;
+            throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
         }
     }
 }

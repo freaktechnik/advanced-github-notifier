@@ -215,6 +215,7 @@ class ClientHandler {
         if(notification) {
             return notification.subjectDetails.html_url;
         }
+        return "";
     }
 
     async getCount() {

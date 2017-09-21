@@ -16,6 +16,7 @@ class ClientManager {
             this.clients.add(client);
             return this.saveNotificationFields();
         }
+        return Promise.resolve();
     }
 
     removeClient(client) {
