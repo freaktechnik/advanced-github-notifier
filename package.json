@@ -7,7 +7,8 @@
     "lint": "eslint scripts/ test/ && stylelint \"styles/*.css\" && web-ext lint -i test/* coverage/*",
     "test": "npm run lint && nyc ava",
     "start": "web-ext run -i test/* coverage/*",
-    "build": "web-ext build -i test/* coverage/*"
+    "build": "web-ext build -i test/* coverage/*",
+    "coverage": "nyc report && codecov"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   "homepage": "https://github.com/freaktechnik/advanced-github-notifier#readme",
   "devDependencies": {
     "ava": "^0.22.0",
+    "codecov": "^2.3.0",
     "eslint": "^4.3.0",
     "eslint-plugin-freaktechnik": "^2.5.0",
     "jsdom": "^11.2.0",
