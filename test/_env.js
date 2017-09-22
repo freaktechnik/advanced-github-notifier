@@ -21,17 +21,21 @@ virtualConsole.on("jsdomError", (error) => {
 const wf = util.promisify(fs.writeFile);
 const mk = util.promisify(mkdirp);
 
+const instrumentCache = new Map();
 // the nyc integration here is hacky as hell, but it works, so who am I to judge.
 const instrument = (sourcePath) => {
-    const instrumented = spawnSync(process.execPath, [
-        './node_modules/.bin/nyc',
-        'instrument',
-        sourcePath
-    ], {
-        cwd: process.cwd(),
-        env: process.env
-    });
-    return instrumented.stdout.toString('utf-8');
+    if(!instrumentCache.has(sourcePath)) {
+        const instrumented = spawnSync(process.execPath, [
+            './node_modules/.bin/nyc',
+            'instrument',
+            sourcePath
+        ], {
+            cwd: process.cwd(),
+            env: process.env
+        });
+        instrumentCache.set(sourcePath, instrumented.stdout.toString('utf-8'));
+    }
+    return instrumentCache.get(sourcePath);
 };
 
 export const getEnv = async (files, html = aboutBlank) => {
