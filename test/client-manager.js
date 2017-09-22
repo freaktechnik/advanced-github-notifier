@@ -1,5 +1,5 @@
 import test from 'ava';
-import getEnv from './_env';
+import { getEnv, cleanUp } from './_env';
 import { FakeClient } from './_mocks';
 
 test.beforeEach(async (t) => {
@@ -11,7 +11,7 @@ test.beforeEach(async (t) => {
 });
 
 test.afterEach.always((t) => {
-    t.context.window.close();
+    return cleanUp(t.context.window);
 });
 
 test('constructor', (t) => {
@@ -53,4 +53,19 @@ test('getCount', async (t) => {
 
     const count = await manager.getCount();
     t.is(count, 0);
+});
+
+test('removeClient', async (t) => {
+    const handler = new t.context.window.ClientHandler(new FakeClient());
+    const manager = new t.context.window.ClientManager();
+
+    await manager.addClient(handler);
+    t.is(manager.clients.size, 1);
+
+    await manager.removeClient(handler);
+    t.is(manager.clients.size, 0);
+    t.true(t.context.window.browser.storage.local.set.calledTwice);
+    t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
+        notifications: []
+    });
 });

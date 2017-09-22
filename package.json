@@ -4,10 +4,10 @@
   "description": "A Firefox extension, that not only shows a count of notifications, but also shows notification popups and has a popup that gives direct access to the notifications.",
   "main": "manifest.json",
   "scripts": {
-    "lint": "eslint scripts/ test/ && stylelint \"styles/*.css\" && web-ext lint -i test/*",
+    "lint": "eslint scripts/ test/ && stylelint \"styles/*.css\" && web-ext lint -i test/* coverage/*",
     "test": "npm run lint && nyc ava",
-    "start": "web-ext run -i test/*",
-    "build": "web-ext build -i test/*"
+    "start": "web-ext run -i test/* coverage/*",
+    "build": "web-ext build -i test/* coverage/*"
   },
   "repository": {
     "type": "git",
@@ -18,12 +18,20 @@
   "bugs": {
     "url": "https://github.com/freaktechnik/advanced-github-notifier/issues"
   },
+  "files": [
+    "scripts/*",
+    "styles/*",
+    "images/*",
+    "manifest.json",
+    "*.html"
+  ],
   "homepage": "https://github.com/freaktechnik/advanced-github-notifier#readme",
   "devDependencies": {
     "ava": "^0.22.0",
     "eslint": "^4.3.0",
     "eslint-plugin-freaktechnik": "^2.5.0",
     "jsdom": "^11.2.0",
+    "mkdirp": "^0.5.1",
     "node-fetch": "^1.7.3",
     "nyc": "^11.2.1",
     "sinon-chrome": "^2.2.1",
@@ -37,5 +45,11 @@
       "indentation": 4,
       "color-named": "always-where-possible"
     }
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   }
 }

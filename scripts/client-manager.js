@@ -19,7 +19,7 @@ class ClientManager {
     }
 
     removeClient(client) {
-        this.clients.remove(client);
+        this.clients.delete(client);
         return this.saveNotificationFields();
     }
 
