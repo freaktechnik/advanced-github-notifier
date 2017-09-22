@@ -23,6 +23,7 @@ const mk = util.promisify(mkdirp);
 
 const instrumentCache = new Map();
 // the nyc integration here is hacky as hell, but it works, so who am I to judge.
+// inspired by https://github.com/lukasoppermann/html5sortable/pull/269
 const instrument = (sourcePath) => {
     if(!instrumentCache.has(sourcePath)) {
         const instrumented = spawnSync(process.execPath, [
