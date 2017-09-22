@@ -1,7 +1,7 @@
 import { JSDOM, VirtualConsole } from 'jsdom';
 import fetch from 'node-fetch';
 import path from 'path';
-import { spawnSync } from 'child_process';
+import { execFile } from 'child_process';
 import mkdirp from 'mkdirp';
 import fs from 'fs';
 import util from 'util';
@@ -20,13 +20,14 @@ virtualConsole.on("jsdomError", (error) => {
 });
 const wf = util.promisify(fs.writeFile);
 const mk = util.promisify(mkdirp);
+const ef = util.promisify(execFile);
 
 const instrumentCache = new Map();
 // the nyc integration here is hacky as hell, but it works, so who am I to judge.
 // inspired by https://github.com/lukasoppermann/html5sortable/pull/269
-const instrument = (sourcePath) => {
+const instrument = async (sourcePath) => {
     if(!instrumentCache.has(sourcePath)) {
-        const instrumented = spawnSync(process.execPath, [
+        const instrumented = await ef(process.execPath, [
             './node_modules/.bin/nyc',
             'instrument',
             sourcePath
@@ -50,7 +51,7 @@ export const getEnv = async (files, html = aboutBlank) => {
     delete require.cache[path.join(__dirname, '../node_modules/sinon-chrome/webextensions/index.js')];
     for(const file of files) {
         //TODO instrumenting
-        dom.window.eval(instrument(path.join(__dirname, file), 'utf-8'));
+        dom.window.eval(await instrument(path.join(__dirname, file), 'utf-8'));
     }
     return dom;
 };
