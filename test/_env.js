@@ -58,7 +58,8 @@ export const getEnv = async (files, html = aboutBlank) => {
 
 let id = 0;
 export const cleanUp = async (window) => {
-    await mk('./.nyc_output');
-    await wf(`./.nyc_output/${Date.now()}_${process.pid}_${++id}.json`, JSON.stringify(window.__coverage__), 'utf-8');
+    const nycConfig = JSON.parse(process.env.NYC_CONFIG);
+    await mk(nycConfig.tempDirectory);
+    await wf(path.join(nycConfig.tempDirectory, `${Date.now()}_${process.pid}_${++id}.json`), JSON.stringify(window.__coverage__), 'utf-8');
     window.close();
 };
