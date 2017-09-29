@@ -29,18 +29,24 @@ window.addEventListener("DOMContentLoaded", () => {
         browser.storage.local.set({ footer: footer.value });
     }, PASSIVE_EVENT);
 
-    browser.storage.local.get([ "token", "hide", "footer" ]).then((result) => {
-        if(result.token) {
-            button.disabled = false;
-            button.classList.remove("disabled");
-        }
-        if(result.hide) {
-            notifications.checked = false;
-        }
-        if(result.footer) {
-            footer.value = result.footer;
-        }
-    });
+    browser.storage.local.get([
+        "token",
+        "hide",
+        "footer"
+    ])
+        .then((result) => {
+            if(result.token) {
+                button.disabled = false;
+                button.classList.remove("disabled");
+            }
+            if(result.hide) {
+                notifications.checked = false;
+            }
+            if(result.footer) {
+                footer.value = result.footer;
+            }
+        })
+        .catch(console.error);
 
     browser.runtime.onMessage.addListener(({ topic }) => {
         if(topic == "login") {

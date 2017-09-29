@@ -57,6 +57,7 @@ const contextMenu = {
     }
 };
 
+const IMAGE_SIZE = 16;
 const createNotification = (notification) => {
     const root = document.createElement("li");
     root.id = idPrefix + notification.id;
@@ -77,8 +78,8 @@ const createNotification = (notification) => {
         root.title = `#${notification.subjectDetails.number} (${root.title})`;
     }
 
-    const image = new Image(16, 16);
-    image.src = notification.icon + "svg";
+    const image = new Image(IMAGE_SIZE, IMAGE_SIZE);
+    image.src = `${notification.icon}svg`;
     image.classList.add("icon");
 
     const title = document.createElement("span");
@@ -107,7 +108,7 @@ const deleteNotification = (notificationId) => {
     }
 
     const parent = document.getElementById("notifications");
-    if(parent.childElementCount == 0) {
+    if(!parent.childElementCount) {
         document.getElementById("empty").hidden = false;
         parent.hidden = true;
         document.getElementById("mark-read").classList.add("disabled");
@@ -129,11 +130,25 @@ browser.runtime.onMessage.addListener((message) => {
     }
 });
 
-loaded.then(() => {
-    const open = document.getElementById("open");
-    browser.storage.local.get({
-        "footer": "all"
-    }).then(({ footer }) => {
+loaded
+    .then(() => {
+        const markRead = document.getElementById("mark-read");
+        markRead.addEventListener("click", () => {
+            if(!markRead.classList.contains("disabled")) {
+                browser.runtime.sendMessage({ topic: "mark-all-read" });
+            }
+        }, {
+            capture: false,
+            passive: true
+        });
+
+        contextMenu.init();
+        return browser.storage.local.get({
+            "footer": "all"
+        });
+    })
+    .then(({ footer }) => {
+        const open = document.getElementById("open");
         if(footer == "hidden") {
             open.parentNode.hidden = true;
         }
@@ -147,32 +162,19 @@ loaded.then(() => {
             });
             open.textContent = browser.i18n.getMessage(`footer_${footer}`);
         }
-    });
-
-    const markRead = document.getElementById("mark-read");
-    markRead.addEventListener("click", () => {
-        if(!markRead.classList.contains("disabled")) {
-            browser.runtime.sendMessage({ topic: "mark-all-read" });
-        }
-    }, {
-        capture: false,
-        passive: true
-    });
-
-    contextMenu.init();
-});
+    }).catch(console.error);
 
 Promise.all([
     browser.storage.local.get("notifications"),
     loaded
-]).then(([ { notifications } ]) => {
-    return browser.storage.local.get(notifications);
-}).then((result) => {
-    let notifications = [];
-    for(const r in result) {
-        notifications = notifications.concat(result[r]);
-    }
-    for(const notification of notifications) {
-        createNotification(notification);
-    }
-});
+])
+    .then(([ { notifications } ]) => browser.storage.local.get(notifications)).then((result) => {
+        let notifications = [];
+        for(const r in result) {
+            notifications = notifications.concat(result[r]);
+        }
+        for(const notification of notifications) {
+            createNotification(notification);
+        }
+    })
+    .catch(console.error);

@@ -18,7 +18,7 @@ virtualConsole.sendTo(console);
 virtualConsole.on("jsdomError", (error) => {
     console.error(error.stack, error.detail);
 });
-const wf = util.promisify(fs.writeFile);
+const wf = util.promisify(fs.writeFile); // eslint-disable-line security/detect-non-literal-fs-filename
 const mk = util.promisify(mkdirp);
 const ef = util.promisify(execFile);
 

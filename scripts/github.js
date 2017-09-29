@@ -8,13 +8,21 @@
 //TODO make the URIs overridable for Enterprise
 //TODO replace redirectUri with identity API (blocked by 53 being stable)
 
+const STATUS_OK = 200;
+const STATUS_RESET = 205;
+const MS_TO_S = 1000;
+
 const parseLinks = (links) => {
     const linkInfo = links.split(",");
     const linkObj = {};
     linkInfo.forEach((link) => {
-        const matches = link.match(/<([^>]+)>;\s+rel="([^"]+)"/);
-        if(matches && matches.length >= 3) {
-            linkObj[matches[2]] = matches[1];
+        const [
+            match,
+            url,
+            rel
+        ] = link.match(/<([^>]+)>;\s+rel="([^"]+)"/) || [];
+        if(match && url && rel) {
+            linkObj[rel] = url;
         }
     });
     return linkObj;
@@ -96,7 +104,9 @@ class GitHub {
         });
         //TODO requeue on network errors
         if(response.ok) {
-            const { access_token: accessToken, scope } = await response.json();
+            const {
+                access_token: accessToken, scope
+            } = await response.json();
             if(!scope.includes(GitHub.SCOPE)) {
                 throw new Error("Was not granted required permissions");
             }
@@ -114,19 +124,18 @@ class GitHub {
         const response = await fetch(`${GitHub.BASE_URI}applications/${this.clientID}/tokens/${token}`, {
             method,
             headers: {
-                Authorization: `Basic ${window.btoa(this.clientID + ":" + this.clientSecret)}`
+                Authorization: `Basic ${window.btoa(`${this.clientID}:${this.clientSecret}`)}`
             }
         });
         if(method == "GET") {
-            if(response.status === 200) {
+            if(response.ok && response.status === STATUS_OK) {
                 const json = await response.json();
                 if(json.scopes.includes(GitHub.SCOPE)) {
                     this.setToken(token);
                     return true;
                 }
-                else {
-                    throw new Error("Not all required scopes given");
-                }
+
+                throw new Error("Not all required scopes given");
             }
             else {
                 throw new Error("Token invalid");
@@ -150,15 +159,14 @@ class GitHub {
                 method: "PUT",
                 body
             });
-            if(response.status == 205) {
+            if(response.ok && response.status == STATUS_RESET) {
                 browser.runtime.sendMessage({
                     target: "all-notifications-read"
                 });
                 return true;
             }
-            else {
-                throw new Error(`Marking all notifications read returned a ${response.status} error`);
-            }
+
+            throw new Error(`Marking all notifications read returned a ${response.status} error`);
         }
         return false;
     }
@@ -214,13 +222,13 @@ class GitHub {
         if(response.ok) {
             this.pollInterval = Math.max(
                 response.headers.get("X-Poll-Interval"),
-                Math.ceil((response.headers.get("X-RateLimit-Reset") - Math.floor(Date.now() / 1000)) / response.headers.get("X-RateLimit-Remaining"))
+                Math.ceil((response.headers.get("X-RateLimit-Reset") - Math.floor(Date.now() / MS_TO_S)) / response.headers.get("X-RateLimit-Remaining"))
             );
 
             const now = new Date();
             this.lastUpdate = now.toISOString();
 
-            if(response.status === 200) {
+            if(response.status === STATUS_OK) {
                 const json = await response.json();
 
                 // There is some pagination here.
@@ -229,18 +237,17 @@ class GitHub {
                     if("next" in links) {
                         // get next page
                         const nextPage = await this.getNotifications(links.next);
-                        this.forceRefresh = json.length > 0;
+                        this.forceRefresh = !!json.length;
                         return json.concat(nextPage);
                     }
                 }
-                this.forceRefresh = json.length > 0;
+                this.forceRefresh = !!json.length;
                 return json;
             }
             return false;
         }
-        else {
-            throw new Error(`${response.status} ${response.statusText}`);
-        }
+
+        throw new Error(`${response.status} ${response.statusText}`);
     }
 
     async getNotificationDetails(notification) {
@@ -251,8 +258,7 @@ class GitHub {
         if(response.ok) {
             return response.json();
         }
-        else {
-            throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
-        }
+
+        throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
     }
 }

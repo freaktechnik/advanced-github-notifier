@@ -1,10 +1,10 @@
 {
-    "env": {
-        "webextensions": true
-    },
+    "plugins": [
+        "compat"
+    ],
     "rules": {
         "one-var": 0,
-        "strict": 0
+        "compat/compat": 2
     },
-    "extends": "plugin:freaktechnik/browser"
+    "extends": "plugin:freaktechnik/extension"
 }

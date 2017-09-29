@@ -7,6 +7,9 @@
 //TODO handler-specific notification IDs
 //TODO fix panel
 
+const S_TO_MS = 1000;
+const HEX = 16;
+
 class ClientHandler {
     static getNotificationIcon(notification) {
         if(notification.reason === "invitation") {
@@ -19,17 +22,15 @@ class ClientHandler {
             if(notification.subjectDetails.merged) {
                 return "images/pull-merged.";
             }
-            else {
-                return `images/pull-${notification.subjectDetails.state}.`;
-            }
+
+            return `images/pull-${notification.subjectDetails.state}.`;
         }
         else if(notification.subject.type == "Tag" || notification.subject.type == "Release") {
             return "images/tag.";
         }
         // It's a commit
-        else {
-            return "images/comment.";
-        }
+
+        return "images/comment.";
     }
 
     constructor(client) {
@@ -57,7 +58,9 @@ class ClientHandler {
     }
 
     async _processNewNotifications(json) {
-        const { [this.NOTIFICATIONS_NAME]: notifications = [], hide } = await browser.storage.local.get([
+        const {
+            [this.NOTIFICATIONS_NAME]: notifications = [], hide
+        } = await browser.storage.local.get([
             this.NOTIFICATIONS_NAME,
             "hide"
         ]);
@@ -97,7 +100,7 @@ class ClientHandler {
                         title: notification.subject.title,
                         message: notification.repository.full_name,
                         eventTime: Date.parse(notification.updated_at),
-                        iconUrl: notification.icon + "png"
+                        iconUrl: `${notification.icon}png`
                     });
                 }
                 browser.runtime.sendMessage({
@@ -136,11 +139,11 @@ class ClientHandler {
     }
 
     getNextCheckTime() {
-        return Date.now() + (this.client.pollInterval * 1000);
+        return Date.now() + (this.client.pollInterval * S_TO_MS);
     }
 
     async login() {
-        const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
+        const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(HEX);
         const rawURL = await browser.identity.launchWebAuthFlow({
             url: this.client.authURL(authState),
             interactive: true

@@ -7,7 +7,8 @@
 /* global GitHub, clientId, clientSecret, ClientHandler, ClientManager */
 const github = new GitHub(clientId, clientSecret),
     handler = new ClientHandler(github),
-    manager = new ClientManager();
+    manager = new ClientManager(),
+    BASE = 10;
 
 manager.addClient(handler);
 
@@ -16,7 +17,7 @@ manager.addClient(handler);
 const updateBadge = (count) => {
     let text = "?";
     if(count !== undefined) {
-        text = count > 0 ? count.toString(10) : "";
+        text = count ? count.toString(BASE) : "";
     }
 
     browser.browserAction.setBadgeText({
@@ -66,17 +67,17 @@ const needsAuth = () => {
     browser.browserAction.setPopup({ popup: "" });
     updateBadge();
     browser.browserAction.onClicked.addListener(() => {
-        handler.login().then(() => {
-            browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
-            browser.runtime.sendMessage({ topic: "login" });
-            return setupNotificationWorker();
-        }).catch(console.error);
+        handler.login()
+            .then(() => {
+                browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
+                browser.runtime.sendMessage({ topic: "login" });
+                return setupNotificationWorker();
+            })
+            .catch(console.error);
     });
 };
 
-const clearToken = () => {
-    return handler.logout().then(() => needsAuth());
-};
+const clearToken = () => handler.logout().then(() => needsAuth());
 
 browser.runtime.onMessage.addListener((message) => {
     switch(message.topic) {
@@ -86,26 +87,31 @@ browser.runtime.onMessage.addListener((message) => {
     case "open-notifications":
         browser.storage.local.get({
             "footer": "all"
-        }).then(({ footer }) => {
-            if(footer == "options") {
-                browser.runtime.openOptionsPage();
-            }
-            else if(footer in GitHub.FOOTER_URLS) {
-                browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
-            }
-        });
+        })
+            .then(({ footer }) => {
+                if(footer == "options") {
+                    return browser.runtime.openOptionsPage();
+                }
+                else if(footer in GitHub.FOOTER_URLS) {
+                    return browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
+                }
+            })
+            .catch(console.error);
         break;
     case "mark-all-read":
-        handler.markAsRead().then(() => {
-            updateBadge([]);
-        }).catch((e) => console.error(e));
+        handler.markAsRead()
+            .then(() => {
+                updateBadge([]);
+            })
+            .catch((e) => console.error(e));
         break;
     case "mark-notification-read":
-        handler.markAsRead(message.notificationId).then(() => {
-            return manager.getCount();
-        }).then((count) => {
-            updateBadge(count);
-        }).catch((e) => console.error(e));
+        handler.markAsRead(message.notificationId)
+            .then(() => manager.getCount())
+            .then((count) => {
+                updateBadge(count);
+            })
+            .catch((e) => console.error(e));
         break;
     case "unsubscribe-notification":
         handler.unsubscribeNotification(message.notificationId).catch(console.error);
