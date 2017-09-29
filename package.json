@@ -31,7 +31,7 @@
     "ava": "^0.22.0",
     "codecov": "^2.3.0",
     "eslint": "^4.3.0",
-    "eslint-plugin-freaktechnik": "^2.5.0",
+    "eslint-plugin-freaktechnik": "^3.0.0",
     "jsdom": "^11.2.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^1.7.3",
