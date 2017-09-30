@@ -11,6 +11,9 @@ const github = new GitHub(clientId, clientSecret),
     BASE = 10;
 
 manager.addClient(handler);
+browser.notifications.onShown.addListener(() => {
+    browser.runtime.sendMessage("@notification-sound", "new-notification");
+});
 
 //TODO open latest comment?
 

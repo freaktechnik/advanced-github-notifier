@@ -94,7 +94,6 @@ class ClientHandler {
             if(notification.new) {
                 //TODO shouldn't be here
                 if(!hide) {
-                    browser.runtime.sendMessage("@notification-sound", "new-notification");
                     await browser.notifications.create(notification.id, {
                         type: "basic",
                         title: notification.subject.title,
