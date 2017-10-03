@@ -19,7 +19,14 @@
         "browser_style": true,
         "default_title": "__MSG_actionTitle__",
         "default_popup": "popup.html",
-        "default_icon": "images/github.svg"
+        "default_icon": "images/github.svg",
+        "theme_icons": [
+            {
+                "dark": "images/github.svg",
+                "light": "images/github-light.svg",
+                "size": 19
+            }
+        ]
     },
     "content_security_policy": "default-src 'self'; connect-src https://api.github.com https://github.com; object-src 'none'; img-src 'self' data:",
     "default_locale": "en",
