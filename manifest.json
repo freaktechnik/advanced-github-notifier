@@ -32,7 +32,7 @@
         "storage",
         "https://github.com/login/oauth/access_token"
     ],
-    "version": "1.2.1",
+    "version": "1.3.0",
     "icons": {
         "48": "images/icon-48.png",
         "64": "images/icon-64.png",

@@ -6,11 +6,11 @@
   "scripts": {
     "lint:js": "eslint scripts/ test/ manifest.json --ext js,json",
     "lint:css": "stylelint \"styles/*.css\"",
-    "lint:webext": "web-ext lint -i test/* coverage/*",
+    "lint:webext": "web-ext lint -i test coverage package*.json",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:webext",
     "test": "npm run lint && nyc ava",
-    "start": "web-ext run -i test/* coverage/*",
-    "build": "web-ext build -i test/* coverage/*",
+    "start": "web-ext run -i test coverage package*.json",
+    "build": "web-ext build -i test coverage package*.json",
     "coverage": "nyc report && codecov"
   },
   "repository": {
