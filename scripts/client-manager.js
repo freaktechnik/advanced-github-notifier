@@ -19,16 +19,19 @@ class ClientManager {
         this.clients = new Set();
     }
 
+    getClients() {
+        return this.clients.values();
+    }
+
     async loadClients() {
         const { handlers } = await browser.storage.local.get("handlers");
-        let successful = 0;
         for(const handler of handlers) {
             if(handler.type === ClientManager.GITHUB) {
                 const client = new GitHub(clientId, clientSecret);
                 client.id = handler.id;
                 const wrapper = new ClientHandler(client);
-                const token = await wrapper.checkAuth();
-                if(token) {
+                const authValid = await wrapper.checkAuth();
+                if(authValid) {
                     this.addClient(wrapper);
                 }
             }
@@ -52,7 +55,7 @@ class ClientManager {
 
     saveFields() {
         const handlers = [];
-        for(const client of this.clients.values()) {
+        for(const client of this.getClients()) {
             handlers.push({
                 type: ClientManager.GITHUB,
                 token: client.TOKEN_NAME,
@@ -66,14 +69,18 @@ class ClientManager {
     }
 
     async getCount() {
-        const clientCounts = await Promise.all(Array.from(this.clients.values()).map((c) => c.getCount()));
+        const clientCounts = await Promise.all(Array.from(this.getClients()).map((c) => c.getCount()));
         const START_COUNT = 0;
         return clientCounts.reduce((p, c) => p + c, START_COUNT);
     }
 
     getClientForNotificationID(id) {
-        //TODO
-        return id;
+        for(const client of this.getClients()) {
+            if(client.ownsNotification(id)) {
+                return client;
+            }
+        }
+        throw new Error(`No client has a notification with the id ${id}`);
     }
 }
 window.ClientManager = ClientManager;

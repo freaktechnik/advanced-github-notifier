@@ -56,6 +56,22 @@ class ClientHandler {
         return notifications;
     }
 
+    get NOTIFICATION_PREFIX() {
+        return `${this.STORE_PREFIX}|`;
+    }
+
+    _getNotificationID(githubID) {
+        return this.NOTIFICATION_PREFIX + githubID;
+    }
+
+    _getOriginalID(id) {
+        return id.substr(this.NOTIFICATION_PREFIX.length);
+    }
+
+    ownsNotification(id) {
+        return id.startsWith(this.NOTIFICATION_PREFIX);
+    }
+
     async _processNewNotifications(json) {
         const {
             [this.NOTIFICATIONS_NAME]: notifications = [], hide
@@ -65,6 +81,7 @@ class ClientHandler {
         ]);
         const stillNotificationIds = [];
         let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
+            notification.id = this._getNotificationID(notification.id);
             stillNotificationIds.push(notification.id);
             let fetchDetails = false;
             const existingNotif = notifications.find((n) => n.id == notification.id);
@@ -199,7 +216,8 @@ class ClientHandler {
         }
         else {
             if(remote) {
-                await this.client.markNotificationRead(id);
+                const githubID = this._getOriginalID(id);
+                await this.client.markNotificationRead(githubID);
             }
             const notifications = await this._getNotifications();
             const notifs = notifications.filter((notification) => notification.id != id);
@@ -224,11 +242,11 @@ class ClientHandler {
     }
 
     ignoreNotification(id) {
-        return this.client.ignoreNotification(id);
+        return this.client.ignoreNotification(this._getOriginalID(id));
     }
 
     unsubscribeNotification(id) {
-        return this.client.unsubscribeNotification(id);
+        return this.client.unsubscribeNotification(this._getOriginalID(id));
     }
 }
 window.ClientHandler = ClientHandler;

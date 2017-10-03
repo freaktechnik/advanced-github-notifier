@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global ClientManager */
+/* global GitHub, ClientManager */
 const manager = new ClientManager(),
     BASE = 10;
 
@@ -29,7 +29,7 @@ const updateBadge = (count) => {
 
 const getNotifications = async () => {
     if(navigator.onLine) {
-        for(const handler of manager.clients.values()) {
+        for(const handler of manager.getClients()) {
             const update = await handler.check();
             if(update) {
                 updateBadge(await manager.getCount());
@@ -83,6 +83,7 @@ const needsAuth = () => {
     });
 };
 
+//TODO logout is not such a simple operation anymore with multiple accounts.
 const clearToken = () => handler.logout().then(() => needsAuth());
 
 browser.runtime.onMessage.addListener((message) => {
@@ -101,28 +102,33 @@ browser.runtime.onMessage.addListener((message) => {
                 else if(footer in GitHub.FOOTER_URLS) {
                     return browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
                 }
+                throw new Error(`No matching footer action implemented for '${footer}'`);
             })
             .catch(console.error);
         break;
     case "mark-all-read":
-        handler.markAsRead()
-            .then(() => {
-                updateBadge([]);
-            })
+        Promise.all(Array.from(manager.getClients()).map((handler) => handler.markAsRead()))
+            .then(() => updateBadge([]))
             .catch((e) => console.error(e));
         break;
-    case "mark-notification-read":
+    case "mark-notification-read": {
+        const handler = manager.getClientForNotificationID(message.notificationId);
         handler.markAsRead(message.notificationId)
             .then(() => manager.getCount())
-            .then(updateBadge(count))
+            .then(updateBadge)
             .catch((e) => console.error(e));
         break;
-    case "unsubscribe-notification":
+    }
+    case "unsubscribe-notification": {
+        const handler = manager.getClientForNotificationID(message.notificationId);
         handler.unsubscribeNotification(message.notificationId).catch(console.error);
         break;
-    case "ignore-notification":
+    }
+    case "ignore-notification": {
+        const handler = manager.getClientForNotificationID(message.notificationId);
         handler.ignoreNotification(message.notificationId).catch(console.error);
         break;
+    }
     case "logout":
         clearToken().catch(console.error);
         break;
