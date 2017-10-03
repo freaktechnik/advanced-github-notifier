@@ -162,13 +162,15 @@ loaded
             });
             open.textContent = browser.i18n.getMessage(`footer_${footer}`);
         }
-    }).catch(console.error);
+    })
+    .catch(console.error);
 
 Promise.all([
     browser.storage.local.get("notifications"),
     loaded
 ])
-    .then(([ { notifications } ]) => browser.storage.local.get(notifications)).then((result) => {
+    .then(([ { notifications } ]) => browser.storage.local.get(notifications))
+    .then((result) => {
         let notifications = [];
         for(const r in result) {
             notifications = notifications.concat(result[r]);
