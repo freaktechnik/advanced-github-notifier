@@ -166,10 +166,10 @@ loaded
     .catch(console.error);
 
 Promise.all([
-    browser.storage.local.get("notifications"),
+    browser.storage.local.get("handlers"),
     loaded
 ])
-    .then(([ { notifications } ]) => browser.storage.local.get(notifications))
+    .then(([ { handlers } ]) => browser.storage.local.get(handlers.map((h) => h.notifications)))
     .then((result) => {
         let notifications = [];
         for(const r in result) {

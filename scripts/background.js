@@ -4,13 +4,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global GitHub, clientId, clientSecret, ClientHandler, ClientManager */
-const github = new GitHub(clientId, clientSecret),
-    handler = new ClientHandler(github),
-    manager = new ClientManager(),
+/* global ClientManager */
+const manager = new ClientManager(),
     BASE = 10;
 
-manager.addClient(handler);
+//TODO migrate existing crap.
+
 browser.notifications.onShown.addListener(() => {
     browser.runtime.sendMessage("@notification-sound", "new-notification");
 });
@@ -30,13 +29,15 @@ const updateBadge = (count) => {
 
 const getNotifications = async () => {
     if(navigator.onLine) {
-        const update = await handler.check();
-        if(update) {
-            updateBadge(await manager.getCount());
+        for(const handler of manager.clients.values()) {
+            const update = await handler.check();
+            if(update) {
+                updateBadge(await manager.getCount());
+            }
+            browser.alarms.create({
+                when: handler.getNextCheckTime()
+            });
         }
-        browser.alarms.create({
-            when: handler.getNextCheckTime()
-        });
     }
     else {
         window.addEventListener('online', getNotifications, {
@@ -53,6 +54,7 @@ const setupNotificationWorker = () => {
 };
 
 const openNotification = async (id) => {
+    const handler = manager.getClientForNotificationID(id);
     const url = await handler.getNotificationURL(id);
     if(url) {
         const tab = await browser.tabs.create({
@@ -70,7 +72,8 @@ const needsAuth = () => {
     browser.browserAction.setPopup({ popup: "" });
     updateBadge();
     browser.browserAction.onClicked.addListener(() => {
-        handler.login()
+        //TODO
+        manager.login()
             .then(() => {
                 browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
                 browser.runtime.sendMessage({ topic: "login" });
@@ -111,9 +114,7 @@ browser.runtime.onMessage.addListener((message) => {
     case "mark-notification-read":
         handler.markAsRead(message.notificationId)
             .then(() => manager.getCount())
-            .then((count) => {
-                updateBadge(count);
-            })
+            .then(updateBadge(count))
             .catch((e) => console.error(e));
         break;
     case "unsubscribe-notification":
@@ -130,8 +131,8 @@ browser.runtime.onMessage.addListener((message) => {
 });
 
 const init = async () => {
-    const token = await handler.checkAuth();
-    if(!token) {
+    const count = await manager.loadClients();
+    if(!count) {
         needsAuth();
     }
     else {

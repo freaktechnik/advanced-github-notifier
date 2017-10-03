@@ -62,6 +62,7 @@ class GitHub {
         this.lastUpdate = null;
         this.forceRefresh = false;
         this.pollInterval = 60;
+        this._username = "";
         this.headers = {
             Accept: "application/vnd.github.v3+json"
         };
@@ -73,6 +74,10 @@ class GitHub {
 
     get infoURL() {
         return `${GitHub.SITE_URI}settings/connections/applications/${this.clientID}`;
+    }
+
+    get username() {
+        return this._username;
     }
 
     authURL(authState) {
@@ -112,11 +117,23 @@ class GitHub {
             }
             else {
                 this.setToken(accessToken);
+                await this.getUsername();
                 return accessToken;
             }
         }
         else {
             throw response;
+        }
+    }
+
+    async getUsername() {
+        const response = await fetch(`${GitHub.BASE_URI}user`, {
+            headers: this.headers
+        });
+        if(response.ok && response.status === STATUS_OK) {
+            const json = await response.json();
+            this._username = json.login;
+            this.id = json.id;
         }
     }
 
@@ -130,6 +147,8 @@ class GitHub {
         if(method == "GET") {
             if(response.ok && response.status === STATUS_OK) {
                 const json = await response.json();
+                this._username = json.user.login;
+                this.id = json.user.id;
                 if(json.scopes.includes(GitHub.SCOPE)) {
                     this.setToken(token);
                     return true;

@@ -40,8 +40,7 @@ class ClientHandler {
     }
 
     get STORE_PREFIX() {
-        //TODO should also include user so this can be multi-user
-        return this._prefix;
+        return this._prefix + this.client.id;
     }
 
     get TOKEN_NAME() {
