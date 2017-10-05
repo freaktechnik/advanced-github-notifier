@@ -107,7 +107,7 @@ browser.runtime.onMessage.addListener((message) => {
             .catch(console.error);
         break;
     case "mark-all-read":
-        Promise.all(Array.from(manager.getClients()).map((handler) => handler.markAsRead()))
+        Promise.all(Array.from(manager.getClients(), (handler) => handler.markAsRead()))
             .then(() => updateBadge([]))
             .catch((e) => console.error(e));
         break;

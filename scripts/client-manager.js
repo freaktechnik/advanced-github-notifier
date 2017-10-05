@@ -69,7 +69,7 @@ class ClientManager {
     }
 
     async getCount() {
-        const clientCounts = await Promise.all(Array.from(this.getClients()).map((c) => c.getCount()));
+        const clientCounts = await Promise.all(Array.from(this.getClients(), (c) => c.getCount()));
         const START_COUNT = 0;
         return clientCounts.reduce((p, c) => p + c, START_COUNT);
     }
