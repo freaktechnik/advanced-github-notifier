@@ -27,20 +27,19 @@ const updateBadge = (count) => {
     });
 };
 
-const getNotifications = async () => {
+const getNotifications = async (alarm) => {
     if(navigator.onLine) {
-        for(const handler of manager.getClients()) {
-            const update = await handler.check();
-            if(update) {
-                updateBadge(await manager.getCount());
-            }
-            browser.alarms.create({
-                when: handler.getNextCheckTime()
-            });
+        const handler = manager.getClientForNotificationID(alarm.name),
+            update = await handler.check();
+        if(update) {
+            updateBadge(await manager.getCount());
         }
+        browser.alarms.create(handler.NOTIFICATIONS_NAME, {
+            when: handler.getNextCheckTime()
+        });
     }
     else {
-        window.addEventListener('online', getNotifications, {
+        window.addEventListener('online', () => getNotifications(alarm), {
             once: true,
             capture: false,
             passive: true
@@ -48,10 +47,14 @@ const getNotifications = async () => {
     }
 };
 
-const setupNotificationWorker = () => {
+const setupNotificationWorker = (handler) => {
     browser.alarms.onAlarm.addListener(getNotifications);
-    return getNotifications();
+    return getNotifications({
+        name: handler.NOTIFICATION_PREFIX
+    });
 };
+
+const setupNotificationWorkers = () => Promise.all(manager.getClients().map(setupNotificationWorker));
 
 const openNotification = async (id) => {
     const handler = manager.getClientForNotificationID(id);
@@ -77,7 +80,7 @@ const needsAuth = () => {
             .then(() => {
                 browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
                 browser.runtime.sendMessage({ topic: "login" });
-                return setupNotificationWorker();
+                return setupNotificationWorkers();
             })
             .catch(console.error);
     });
@@ -142,7 +145,7 @@ const init = async () => {
         needsAuth();
     }
     else {
-        await setupNotificationWorker();
+        await setupNotificationWorkers();
     }
 };
 
