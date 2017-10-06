@@ -84,7 +84,7 @@ const needsAuth = () => {
 };
 
 //TODO logout is not such a simple operation anymore with multiple accounts.
-const clearToken = () => handler.logout().then(() => needsAuth());
+const clearToken = () => manager.getClients().forEach((handler) => handler.logout().then(() => needsAuth()));
 
 browser.runtime.onMessage.addListener((message) => {
     switch(message.topic) {

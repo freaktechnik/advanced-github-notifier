@@ -30,17 +30,22 @@ test('add handler client', async (t) => {
     t.is(manager.clients.size, 1);
     t.true(t.context.window.browser.storage.local.set.calledOnce);
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
-        notifications: [ handler.NOTIFICATIONS_NAME ]
+        handlers: [ {
+            type: t.context.window.ClientManager.GITHUB,
+            token: handler.TOKEN_NAME,
+            notifications: handler.NOTIFICATIONS_NAME,
+            id: handler.id
+        } ]
     });
 });
 
 test('saveNotificationFields', async (t) => {
     const manager = new t.context.window.ClientManager();
 
-    await manager.saveNotificationFields();
+    await manager.saveFields();
     t.true(t.context.window.browser.storage.local.set.calledOnce);
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
-        notifications: []
+        handlers: []
     });
 });
 
@@ -62,6 +67,6 @@ test('removeClient', async (t) => {
     t.is(manager.clients.size, 0);
     t.true(t.context.window.browser.storage.local.set.calledTwice);
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
-        notifications: []
+        handlers: []
     });
 });
