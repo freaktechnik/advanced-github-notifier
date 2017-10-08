@@ -50,6 +50,10 @@ class ClientHandler {
         return `${this.STORE_PREFIX}_notifications`;
     }
 
+    get USERNAME_NAME() {
+        return `${this.STORE_PREFIX}_username`;
+    }
+
     get NOTIFICATION_PREFIX() {
         return `${this.STORE_PREFIX}|`;
     }
@@ -177,7 +181,8 @@ class ClientHandler {
             try {
                 const token = await this.client.getToken(url.searchParams.get('code'), authState);
                 await browser.storage.local.set({
-                    [this.TOKEN_NAME]: token
+                    [this.TOKEN_NAME]: token,
+                    [this.USERNAME_NAME]: this.client._username
                 });
             }
             catch(e) {
@@ -205,6 +210,9 @@ class ClientHandler {
         }
         try {
             await this.client.authorize(token);
+            await browser.storage.local.set({
+                [this.USERNAME_NAME]: this.client._username
+            });
         }
         catch(e) {
             await this.logout();

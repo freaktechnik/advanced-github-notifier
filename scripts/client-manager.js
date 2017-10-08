@@ -50,6 +50,7 @@ class ClientManager {
     }
 
     addClient(client) {
+        //TODO ensure no duplicates of accounts are added.
         if(client instanceof ClientHandler) {
             this.clients.add(client);
             return this.saveFields();

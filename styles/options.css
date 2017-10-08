@@ -1,0 +1,26 @@
+#active {
+    padding: 0;
+    margin: 0;
+}
+
+#active li {
+    padding: 0.5em 0;
+    margin: 0;
+    clear: both;
+}
+
+#active li small {
+    margin-left: 0.5em;
+}
+
+#active li button {
+    float: right;
+}
+
+section {
+    padding: 1em 0;
+}
+
+section + section {
+    border-top: 1px solid #d7d7db;
+}

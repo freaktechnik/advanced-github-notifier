@@ -25,13 +25,19 @@ class Account {
         this.buildAccount();
     }
 
-    buildAccount() {
+    async buildAccount() {
         const typeNode = document.createElement("small");
         typeNode.textContent = browser.i18n.getMessage(`account_${this.type}`);
 
-        const usernameNode = document.createTextNode(this.id);
+        const usernameProperty = `${this.id}_username`;
+
+        const { [usernameProperty]: username } = await browser.storage.local.get({
+            [usernameProperty]: ""
+        });
+        const usernameNode = document.createTextNode(username);
 
         const logout = document.createElement("button");
+        logout.classList.add('browser-style');
         logout.textContent = browser.i18n.getMessage("logout");
         logout.addEventListener("click", () => this.logout(), PASSIVE_EVENT);
 
@@ -69,9 +75,11 @@ class AccountManager {
                 if("oldValue" in changes.handlers) {
                     for(const oldHandler of changes.handlers.oldValue) {
                         if(!handlerIds.has(oldHandler.storeId)) {
-                            this.getAccountRoot(oldHandler.storeId)
-                                .querySelector("button")
-                                .click();
+                            const node = this.getAccountRoot(oldHandler.storeId);
+                            if(node) {
+                                node.querySelector("button")
+                                    .click();
+                            }
                         }
                     }
                 }

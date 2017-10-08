@@ -87,7 +87,7 @@ const createHandler = async (type) => {
     manager.addClient(handler);
     setupNotificationWorker(handler);
 
-    const popupURL = await browser.browserAction.getPopup();
+    const popupURL = await browser.browserAction.getPopup({});
     if(popupURL === "") {
         browser.browserAction.setPopup({
             popup: browser.extension.getURL('popup.html')
@@ -143,6 +143,11 @@ browser.runtime.onMessage.addListener((message) => {
         const handler = manager.getClientById(message.handlerId);
         handler.logout().catch(console.error);
         manager.removeClient(handler);
+        manager.loadClients().then((count) => {
+            if(!count) {
+                needsAuth();
+            }
+        }).catch(console.error);
         break;
     }
     case "login":
