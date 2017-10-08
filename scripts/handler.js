@@ -4,8 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-//TODO handler-specific notification IDs
-//TODO fix panel
+//TODO store handler username in storage.
 
 const S_TO_MS = 1000;
 const HEX = 16;
@@ -51,13 +50,21 @@ class ClientHandler {
         return `${this.STORE_PREFIX}_notifications`;
     }
 
+    get NOTIFICATION_PREFIX() {
+        return `${this.STORE_PREFIX}|`;
+    }
+
+    get id() {
+        return this.client.id;
+    }
+
+    set id(id) {
+        this.client.id = id;
+    }
+
     async _getNotifications() {
         const { [this.NOTIFICATIONS_NAME]: notifications = [] } = await browser.storage.local.get(this.NOTIFICATIONS_NAME);
         return notifications;
-    }
-
-    get NOTIFICATION_PREFIX() {
-        return `${this.STORE_PREFIX}|`;
     }
 
     _getNotificationID(githubID) {
@@ -74,11 +81,12 @@ class ClientHandler {
 
     async _processNewNotifications(json) {
         const {
-            [this.NOTIFICATIONS_NAME]: notifications = [], hide
-        } = await browser.storage.local.get([
-            this.NOTIFICATIONS_NAME,
-            "hide"
-        ]);
+            [this.NOTIFICATIONS_NAME]: notifications,
+            hide
+        } = await browser.storage.local.get({
+            [this.NOTIFICATIONS_NAME]: [],
+            hide: false
+        });
         const stillNotificationIds = [];
         let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
             notification.id = this._getNotificationID(notification.id);

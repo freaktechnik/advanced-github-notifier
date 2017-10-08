@@ -114,5 +114,14 @@
     "ignore.accesskey": {
         "message": "I G",
         "description": "Access key attribute for the ignore context menu item"
+    },
+    "account_github": {
+        "message": "GitHub"
+    },
+    "account_enterprise": {
+        "message": "GitHub Enterprise"
+    },
+    "addAccount": {
+        "message": "Add account"
     }
 }

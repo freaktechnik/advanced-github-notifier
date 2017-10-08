@@ -3,6 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+//TODO add account selector.
 
 const loaded = new Promise((resolve) => {
     window.addEventListener("DOMContentLoaded", resolve, {
@@ -166,7 +167,9 @@ loaded
     .catch(console.error);
 
 Promise.all([
-    browser.storage.local.get("handlers"),
+    browser.storage.local.get({
+        handlers: []
+    }),
     loaded
 ])
     .then(([ { handlers } ]) => browser.storage.local.get(handlers.map((h) => h.notifications)))

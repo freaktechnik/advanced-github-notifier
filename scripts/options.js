@@ -9,17 +9,108 @@ const PASSIVE_EVENT = {
     passive: true
 };
 
+class Account {
+    static get TYPES() {
+        return Object.freeze({
+            GITHUB: "github",
+            ENTERPRISE: "enterprise"
+        });
+    }
+
+    constructor(type, id) {
+        this.id = id;
+        this.type = type;
+        this.root = document.createElement("li");
+        this.root.dataset.id = this.id;
+        this.buildAccount();
+    }
+
+    buildAccount() {
+        const typeNode = document.createElement("small");
+        typeNode.textContent = browser.i18n.getMessage(`account_${this.type}`);
+
+        const usernameNode = document.createTextNode(this.id);
+
+        const logout = document.createElement("button");
+        logout.textContent = browser.i18n.getMessage("logout");
+        logout.addEventListener("click", () => this.logout(), PASSIVE_EVENT);
+
+        this.root.append(usernameNode);
+        this.root.append(typeNode);
+        this.root.append(logout);
+    }
+
+    logout() {
+        browser.runtime.sendMessage({
+            topic: "logout",
+            handlerId: this.id
+        });
+        this.root.remove();
+    }
+}
+
+class AccountManager {
+    constructor(root) {
+        this.root = root;
+        this.form = root.querySelector("#login");
+        this.list = root.querySelector("#active");
+
+        const typeForm = this.form.querySelector("select");
+
+        browser.storage.onChanged.addListener((changes, areaName) => {
+            if(areaName === "local" && "handlers" in changes) {
+                const handlerIds = new Set();
+                for(const handler of changes.handlers.newValue) {
+                    handlerIds.add(handler.storeId);
+                    if(!this.getAccountRoot(handler.storeId)) {
+                        this.addAccount(handler.type, handler.storeId);
+                    }
+                }
+                if("oldValue" in changes.handlers) {
+                    for(const oldHandler of changes.handlers.oldValue) {
+                        if(!handlerIds.has(oldHandler.storeId)) {
+                            this.getAccountRoot(oldHandler.storeId)
+                                .querySelector("button")
+                                .click();
+                        }
+                    }
+                }
+            }
+        });
+
+        this.form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            browser.runtime.sendMessage({
+                topic: "login",
+                type: typeForm.value
+            });
+        });
+
+        browser.storage.local.get({
+            handlers: []
+        })
+            .then(({ handlers }) => {
+                for(const handler of handlers) {
+                    this.addAccount(handler.type, handler.storeId);
+                }
+            })
+            .catch(console.error);
+    }
+
+    addAccount(type, id) {
+        const account = new Account(type, id);
+        this.list.append(account.root);
+    }
+
+    getAccountRoot(id) {
+        return this.list.querySelector(`[data-id="${id}"]`);
+    }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-    const button = document.getElementById("logout");
     const notifications = document.getElementById("notifications");
     const footer = document.getElementById("footer");
-    button.addEventListener("click", () => {
-        browser.runtime.sendMessage({
-            topic: "logout"
-        });
-        button.disabled = true;
-        button.classList.add("disabled");
-    }, PASSIVE_EVENT);
+    new AccountManager(document.getElementById("accounts"));
 
     notifications.addEventListener("change", () => {
         browser.storage.local.set({ hide: !notifications.checked });
@@ -30,15 +121,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }, PASSIVE_EVENT);
 
     browser.storage.local.get([
-        "token",
         "hide",
         "footer"
     ])
         .then((result) => {
-            if(result.token) {
-                button.disabled = false;
-                button.classList.remove("disabled");
-            }
             if(result.hide) {
                 notifications.checked = false;
             }
@@ -47,11 +133,4 @@ window.addEventListener("DOMContentLoaded", () => {
             }
         })
         .catch(console.error);
-
-    browser.runtime.onMessage.addListener(({ topic }) => {
-        if(topic == "login") {
-            button.disabled = false;
-            button.classList.remove("disabled");
-        }
-    });
 }, PASSIVE_EVENT);

@@ -54,7 +54,7 @@ const setupNotificationWorker = (handler) => {
     });
 };
 
-const setupNotificationWorkers = () => Promise.all(manager.getClients().map(setupNotificationWorker));
+const setupNotificationWorkers = () => Promise.all(Array.from(manager.getClients(), setupNotificationWorker));
 
 const openNotification = async (id) => {
     const handler = manager.getClientForNotificationID(id);
@@ -72,22 +72,29 @@ const openNotification = async (id) => {
 browser.notifications.onClicked.addListener(openNotification);
 
 const needsAuth = () => {
-    browser.browserAction.setPopup({ popup: "" });
+    browser.browserAction.setPopup({
+        popup: ""
+    });
     updateBadge();
     browser.browserAction.onClicked.addListener(() => {
-        //TODO
-        manager.login()
-            .then(() => {
-                browser.browserAction.setPopup({ popup: browser.extension.getURL("popup.html") });
-                browser.runtime.sendMessage({ topic: "login" });
-                return setupNotificationWorkers();
-            })
-            .catch(console.error);
+        browser.runtime.openOptionsPage();
     });
 };
 
-//TODO logout is not such a simple operation anymore with multiple accounts.
-const clearToken = () => manager.getClients().forEach((handler) => handler.logout().then(() => needsAuth()));
+const createHandler = async (type) => {
+    const handler = await ClientManager.createClient(type);
+    await handler.login();
+    manager.addClient(handler);
+    setupNotificationWorker(handler);
+
+    const popupURL = await browser.browserAction.getPopup();
+    if(popupURL === "") {
+        browser.browserAction.setPopup({
+            popup: browser.extension.getURL('popup.html')
+        });
+        updateBadge();
+    }
+};
 
 browser.runtime.onMessage.addListener((message) => {
     switch(message.topic) {
@@ -132,8 +139,14 @@ browser.runtime.onMessage.addListener((message) => {
         handler.ignoreNotification(message.notificationId).catch(console.error);
         break;
     }
-    case "logout":
-        clearToken().catch(console.error);
+    case "logout": {
+        const handler = manager.getClientById(message.handlerId);
+        handler.logout().catch(console.error);
+        manager.removeClient(handler);
+        break;
+    }
+    case "login":
+        createHandler(message.type);
         break;
     default:
     }
@@ -150,17 +163,11 @@ const init = async () => {
 };
 
 if(navigator.onLine) {
-    init().catch((e) => {
-        clearToken();
-        console.error(e);
-    });
+    init().catch(console.error);
 }
 else {
     window.addEventListener("online", () => {
-        init().catch((e) => {
-            clearToken();
-            console.error(e);
-        });
+        init().catch(console.error);
     }, {
         passive: true,
         capture: false,

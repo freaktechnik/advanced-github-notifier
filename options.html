@@ -5,31 +5,40 @@
         <script src="scripts/l10n.js"></script>
         <script src="scripts/options.js"></script>
     </head>
-    <body class="panel">
-        <div class="panel-section panel-section-formElements">
-            <div class="panel-formElements-item">
-                <button class="browser-style disabled" id="logout" disabled data-l10n-id="logout">Log out</button>
-            </div>
-            <div class="panel-formElements-item">
-                <label for="notifications" class="browser-style-label" data-l10n-id="showNotifications">Show notifications</label>
-                <div class="switch browser-style"><input type="checkbox" checked id="notifications" class="visually-hidden"><label for="notifications"></label></div>
-            </div>
-            <div class="panel-formElements-item">
-                <label for="footer" class="browser-style-label" data-l10n-id="footerLabel">Footer links to</label>
-                <select id="footer" class="browser-style">
-                    <optgroup label="GitHub" data-l10n-id="footerGithub" data-l10n-attrs="label" data-l10n-nocontent="yes">
-                        <option selected value="all" data-l10n-id="footerSelectAll">All notifications</option>
-                        <option value="unread" data-l10n-id="footerSelectUnread">Unread notifications</option>
-                        <option value="participating" data-l10n-id="footerSelectParticipating">Participating notifications</option>
-                        <option value="watched" data-l10n-id="footerSelectWatched">Watched repositories</option>
-                        <option value="index" data-l10n-id="footerSelectIndex">GitHub frontpage</option>
-                    </optgroup>
-                    <optgroup label="Local" data-l10n-id="footerLocal" data-l10n-attrs="label" data-l10n-nocontent="yes">
-                        <option value="options" data-l10n-id="footerSelectOptions">Add-on options</option>
-                        <option value="hidden" data-l10n-id="footerSelectHidden">Hide footer button</option>
-                    </optgroup>
+    <body>
+        <section id="accounts">
+            <form id="login">
+                <select class="browser-style">
+                    <option value="github" data-l10n-id="account_github">GitHub</option>
+                    <option value="enterprise" data-l10n-id="account_enterprise" disabled>GitHub Enterprise</option>
                 </select>
+                <button class="browser-style" type="submit" data-l10n-id="addAccount">Add account</button>
+            </form>
+            <ul id="active">
+            </ul>
+        </section>
+        <section>
+            <label for="notifications" class="browser-style-label" data-l10n-id="showNotifications">Show notifications</label>
+            <div class="browser-style">
+                <input type="checkbox" checked id="notifications" class="visually-hidden">
+                <label for="notifications"></label>
             </div>
-        </div>
+        </section>
+        <section>
+            <label for="footer" class="browser-style-label" data-l10n-id="footerLabel">Footer links to</label>
+            <select id="footer" class="browser-style">
+                <optgroup label="GitHub" data-l10n-id="footerGithub" data-l10n-attrs="label" data-l10n-nocontent="yes">
+                    <option selected value="all" data-l10n-id="footerSelectAll">All notifications</option>
+                    <option value="unread" data-l10n-id="footerSelectUnread">Unread notifications</option>
+                    <option value="participating" data-l10n-id="footerSelectParticipating">Participating notifications</option>
+                    <option value="watched" data-l10n-id="footerSelectWatched">Watched repositories</option>
+                    <option value="index" data-l10n-id="footerSelectIndex">GitHub frontpage</option>
+                </optgroup>
+                <optgroup label="Local" data-l10n-id="footerLocal" data-l10n-attrs="label" data-l10n-nocontent="yes">
+                    <option value="options" data-l10n-id="footerSelectOptions">Add-on options</option>
+                    <option value="hidden" data-l10n-id="footerSelectHidden">Hide footer button</option>
+                </optgroup>
+            </select>
+        </section>
     </body>
 </html>

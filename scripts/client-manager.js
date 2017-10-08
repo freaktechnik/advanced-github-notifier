@@ -23,17 +23,26 @@ class ClientManager {
         return this.clients.values();
     }
 
+    static async createClient(type) {
+        let ClientFactory;
+        if(type === ClientManager.GITHUB) {
+            ClientFactory = GitHub;
+        }
+        const client = new ClientFactory(clientId, clientSecret);
+        const wrapper = new ClientHandler(client);
+        return wrapper;
+    }
+
     async loadClients() {
-        const { handlers } = await browser.storage.local.get("handlers");
+        const { handlers } = await browser.storage.local.get({
+            handlers: []
+        });
         for(const handler of handlers) {
-            if(handler.type === ClientManager.GITHUB) {
-                const client = new GitHub(clientId, clientSecret);
-                client.id = handler.id;
-                const wrapper = new ClientHandler(client);
-                const authValid = await wrapper.checkAuth();
-                if(authValid) {
-                    this.addClient(wrapper);
-                }
+            const wrapper = await ClientManager.createClient(handler.type);
+            wrapper.id = handler.id;
+            const authValid = await wrapper.checkAuth();
+            if(authValid) {
+                this.addClient(wrapper);
             }
         }
 
@@ -60,6 +69,7 @@ class ClientManager {
                 type: ClientManager.GITHUB,
                 token: client.TOKEN_NAME,
                 notifications: client.NOTIFICATIONS_NAME,
+                storeId: client.STORE_PREFIX,
                 id: client.id
             });
         }
@@ -81,6 +91,15 @@ class ClientManager {
             }
         }
         throw new Error(`No client has a notification with the id ${id}`);
+    }
+
+    getClientById(id) {
+        for(const client of this.getClients()) {
+            if(client.STORE_PREFIX === id) {
+                return client;
+            }
+        }
+        throw new Error(`No client with the id ${id} is registered.`);
     }
 }
 window.ClientManager = ClientManager;
