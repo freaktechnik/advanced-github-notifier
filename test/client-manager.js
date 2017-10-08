@@ -34,7 +34,8 @@ test('add handler client', async (t) => {
             type: t.context.window.ClientManager.GITHUB,
             token: handler.TOKEN_NAME,
             notifications: handler.NOTIFICATIONS_NAME,
-            id: handler.id
+            id: handler.id,
+            storeId: handler.STORE_PREFIX
         } ]
     });
 });
