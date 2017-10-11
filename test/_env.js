@@ -21,7 +21,7 @@ virtualConsole.on("jsdomError", (error) => {
 const wf = util.promisify(fs.writeFile); // eslint-disable-line security/detect-non-literal-fs-filename
 const mk = util.promisify(mkdirp);
 const ef = util.promisify(execFile);
-const rf = util.promisify(fs.readFile);
+const rf = util.promisify(fs.readFile); // eslint-disable-line security/detect-non-literal-fs-filename
 
 const instrumentCache = new Map();
 // the nyc integration here is hacky as hell, but it works, so who am I to judge.
