@@ -123,5 +123,8 @@
     },
     "addAccount": {
         "message": "Add account"
+    },
+    "allAccounts": {
+        "message": "All accounts"
     }
 }

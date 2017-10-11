@@ -29,12 +29,12 @@ const updateBadge = (count) => {
 
 const getNotifications = async (alarm) => {
     if(navigator.onLine) {
-        const handler = manager.getClientForNotificationID(alarm.name),
+        const handler = manager.getClientById(alarm.name),
             update = await handler.check();
         if(update) {
             updateBadge(await manager.getCount());
         }
-        browser.alarms.create(handler.NOTIFICATIONS_NAME, {
+        browser.alarms.create(handler.STORE_PREFIX, {
             when: handler.getNextCheckTime()
         });
     }
@@ -50,7 +50,7 @@ const getNotifications = async (alarm) => {
 const setupNotificationWorker = (handler) => {
     browser.alarms.onAlarm.addListener(getNotifications);
     return getNotifications({
-        name: handler.NOTIFICATION_PREFIX
+        name: handler.STORE_PREFIX
     });
 };
 
@@ -143,11 +143,9 @@ browser.runtime.onMessage.addListener((message) => {
         const handler = manager.getClientById(message.handlerId);
         handler.logout().catch(console.error);
         manager.removeClient(handler);
-        manager.loadClients().then((count) => {
-            if(!count) {
-                needsAuth();
-            }
-        }).catch(console.error);
+        if(!manager.clients.size) {
+            needsAuth();
+        }
         break;
     }
     case "login":
@@ -158,7 +156,7 @@ browser.runtime.onMessage.addListener((message) => {
 });
 
 const init = async () => {
-    const count = await manager.loadClients();
+    const count = await manager.getInstances();
     if(!count) {
         needsAuth();
     }

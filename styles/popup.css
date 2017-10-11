@@ -9,6 +9,10 @@ ul {
     padding: 0;
 }
 
+select {
+    width: 100%;
+}
+
 .text-shortcut {
     margin-left: 4px;
 }

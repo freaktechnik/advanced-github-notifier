@@ -58,6 +58,34 @@ const contextMenu = {
     }
 };
 
+const accountSelector = {
+    SINGLE_ACCOUNT: 1,
+    root: null,
+    init() {
+        this.root = document.getElementById("accounts");
+        this.root.addEventListener("input", () => {
+            this.selectAccount();
+        }, {
+            passive: true,
+            capture: false
+        });
+    },
+    async addAccount(account) {
+        //TODO get username
+        const option = new Option(account.notificationId, username);
+        this.root.append(option);
+    },
+    setAccounts(accounts) {
+        if(accounts.length === this.SINGLE_ACCOUNT) {
+            this.root.hidden = true;
+            return;
+        }
+        for(const account of accounts) {
+            this.addAccount(account);
+        }
+    }
+};
+
 const IMAGE_SIZE = 16;
 const createNotification = (notification) => {
     const root = document.createElement("li");
@@ -144,6 +172,7 @@ loaded
         });
 
         contextMenu.init();
+        accountSelector.init();
         return browser.storage.local.get({
             "footer": "all"
         });
@@ -172,7 +201,10 @@ Promise.all([
     }),
     loaded
 ])
-    .then(([ { handlers } ]) => browser.storage.local.get(handlers.map((h) => h.notifications)))
+    .then(([ { handlers } ]) => {
+        accountSelector.setAccounts(handlers);
+        return browser.storage.local.get(handlers.map((h) => h.notifications));
+    })
     .then((result) => {
         let notifications = [];
         for(const r in result) {

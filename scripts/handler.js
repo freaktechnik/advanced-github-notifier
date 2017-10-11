@@ -4,12 +4,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-//TODO store handler username in storage.
-
 const S_TO_MS = 1000;
 const HEX = 16;
 
-class ClientHandler {
+class ClientHandler extends window.Storage {
+    static get NOTIFICATIONS() {
+        return "notifications";
+    }
+
+    static get TOKEN() {
+        return "token";
+    }
+
+    static get USERNAME() {
+        return "username";
+    }
+
     static getNotificationIcon(notification) {
         if(notification.reason === "invitation") {
             return "images/repo.";
@@ -32,26 +42,23 @@ class ClientHandler {
         return "images/comment.";
     }
 
-    constructor(client) {
-        this.client = client;
-        const uri = new URL(Object.getPrototypeOf(this.client).constructor.SITE_URI);
+    constructor(client, area) {
+        const uri = new URL(Object.getPrototypeOf(client).constructor.SITE_URI);
+        super(uri.hostname + client.id, area);
         this._prefix = uri.hostname;
+        this.client = client;
     }
 
     get STORE_PREFIX() {
-        return this._prefix + this.client.id;
+        return this.storageId;
+    }
+
+    get NOTIFICATION_NAME() {
+        return this.getStorageKey(ClientHandler.NOTIFICATIONS);
     }
 
     get TOKEN_NAME() {
-        return `${this.STORE_PREFIX}_token`;
-    }
-
-    get NOTIFICATIONS_NAME() {
-        return `${this.STORE_PREFIX}_notifications`;
-    }
-
-    get USERNAME_NAME() {
-        return `${this.STORE_PREFIX}_username`;
+        return this.getStorageKey(ClientHandler.TOKEN);
     }
 
     get NOTIFICATION_PREFIX() {
@@ -64,11 +71,11 @@ class ClientHandler {
 
     set id(id) {
         this.client.id = id;
+        this.storageId = this._prefix + id;
     }
 
-    async _getNotifications() {
-        const { [this.NOTIFICATIONS_NAME]: notifications = [] } = await browser.storage.local.get(this.NOTIFICATIONS_NAME);
-        return notifications;
+    _getNotifications() {
+        return this.getValue(ClientHandler.NOTIFICATIONS, []);
     }
 
     _getNotificationID(githubID) {
@@ -84,13 +91,10 @@ class ClientHandler {
     }
 
     async _processNewNotifications(json) {
-        const {
-            [this.NOTIFICATIONS_NAME]: notifications,
-            hide
-        } = await browser.storage.local.get({
-            [this.NOTIFICATIONS_NAME]: [],
+        const { hide } = await browser.storage.local.get({
             hide: false
         });
+        const notifications = await this.getValue(ClientHandler.NOTIFICATIONS, []);
         const stillNotificationIds = [];
         let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
             notification.id = this._getNotificationID(notification.id);
@@ -147,9 +151,7 @@ class ClientHandler {
             });
         });
 
-        await browser.storage.local.set({
-            [this.NOTIFICATIONS_NAME]: notifs
-        });
+        await this.setValue(ClientHandler.NOTIFICATIONS, notifs);
         return notifs;
     }
 
@@ -180,10 +182,9 @@ class ClientHandler {
             url.searchParams.get("state") == authState) {
             try {
                 const token = await this.client.getToken(url.searchParams.get('code'), authState);
-                await browser.storage.local.set({
-                    [this.TOKEN_NAME]: token,
-                    [this.USERNAME_NAME]: this.client._username
-                });
+                this.storageId = this._prefix + this.client.id;
+                await this.setValue(ClientHandler.TOKEN, token);
+                await this.setValue(ClientHandler.USERNAME, this.client._username);
             }
             catch(e) {
                 throw new Error("Was not granted required permissions");
@@ -195,24 +196,26 @@ class ClientHandler {
     }
 
     async logout() {
-        const { [this.TOKEN_NAME]: token } = await browser.storage.local.get(this.TOKEN_NAME);
+        const token = await this.getValue(ClientHandler.TOKEN);
         await this.client.authorize(token, "DELETE");
-        await browser.storage.local.set({
-            [this.TOKEN_NAME]: "",
-            [this.NOTIFICATIONS_NAME]: []
-        });
+        await this.removeValues([
+            ClientHandler.TOKEN,
+            ClientHandler.NOTIFICATIONS,
+            ClientHandler.USERNAME
+        ]);
     }
 
     async checkAuth() {
-        const { [this.TOKEN_NAME]: token } = await browser.storage.local.get(this.TOKEN_NAME);
+        if(!this.client.id) {
+            return false;
+        }
+        const token = await this.getValue(ClientHandler.TOKEN);
         if(!token) {
             return false;
         }
         try {
             await this.client.authorize(token);
-            await browser.storage.local.set({
-                [this.USERNAME_NAME]: this.client._username
-            });
+            await this.setValue(ClientHandler.USERNAME, this.client._username);
         }
         catch(e) {
             await this.logout();
@@ -226,9 +229,7 @@ class ClientHandler {
             if(remote) {
                 await this.client.markNotificationsRead();
             }
-            await browser.storage.local.set({
-                [this.NOTIFICATIONS_NAME]: []
-            });
+            await this.setValue(ClientHandler.NOTIFICATIONS, []);
         }
         else {
             if(remote) {
@@ -237,9 +238,7 @@ class ClientHandler {
             }
             const notifications = await this._getNotifications();
             const notifs = notifications.filter((notification) => notification.id != id);
-            await browser.storage.local.set({
-                [this.NOTIFICATIONS_NAME]: notifs
-            });
+            await this.set(ClientHandler.NOTIFICATIONS, notifs);
         }
     }
 

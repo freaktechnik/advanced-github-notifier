@@ -6,7 +6,7 @@
 /* global GitHub, clientId, clientSecret, ClientHandler */
 //TODO some way to handle accounts that have failing logins instead of just removing them.
 
-class ClientManager {
+class ClientManager extends window.StorageManager {
     static get GITHUB() {
         return "github";
     }
@@ -16,6 +16,7 @@ class ClientManager {
     }
 
     constructor() {
+        super(window.ClientHandler);
         this.clients = new Set();
     }
 
@@ -23,23 +24,23 @@ class ClientManager {
         return this.clients.values();
     }
 
-    static async createClient(type) {
+    static async createClient(type, id) {
         let ClientFactory;
         if(type === ClientManager.GITHUB) {
             ClientFactory = GitHub;
         }
         const client = new ClientFactory(clientId, clientSecret);
-        const wrapper = new ClientHandler(client);
+        if(id) {
+            client.id = id;
+        }
+        const wrapper = new ClientHandler(client, this.area);
         return wrapper;
     }
 
-    async loadClients() {
-        const { handlers } = await browser.storage.local.get({
-            handlers: []
-        });
+    async getInstances() {
+        const handlers = await this.getRecords();
         for(const handler of handlers) {
-            const wrapper = await ClientManager.createClient(handler.type);
-            wrapper.id = handler.id;
+            const wrapper = await ClientManager.createClient(handler.type, handler.id);
             const authValid = await wrapper.checkAuth();
             if(authValid) {
                 this.addClient(wrapper);
@@ -66,17 +67,13 @@ class ClientManager {
     saveFields() {
         const handlers = [];
         for(const client of this.getClients()) {
-            handlers.push({
-                type: ClientManager.GITHUB,
-                token: client.TOKEN_NAME,
-                notifications: client.NOTIFICATIONS_NAME,
-                storeId: client.STORE_PREFIX,
-                id: client.id
-            });
+            const obj = window.StorageManager.createRecord(client);
+            obj.type = ClientManager.GITHUB;
+            obj.notifications = client.NOTIFICATIONS_NAME;
+            obj.id = client.id;
+            handlers.push(obj);
         }
-        return browser.storage.local.set({
-            handlers
-        });
+        return this.setRecords(handlers);
     }
 
     async getCount() {

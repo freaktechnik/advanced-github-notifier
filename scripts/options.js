@@ -9,7 +9,7 @@ const PASSIVE_EVENT = {
     passive: true
 };
 
-class Account {
+class Account extends window.Storage {
     static get TYPES() {
         return Object.freeze({
             GITHUB: "github",
@@ -17,7 +17,8 @@ class Account {
         });
     }
 
-    constructor(type, id) {
+    constructor(type, id, area) {
+        super(id, area);
         this.id = id;
         this.type = type;
         this.root = document.createElement("li");
@@ -29,11 +30,7 @@ class Account {
         const typeNode = document.createElement("small");
         typeNode.textContent = browser.i18n.getMessage(`account_${this.type}`);
 
-        const usernameProperty = `${this.id}_username`;
-
-        const { [usernameProperty]: username } = await browser.storage.local.get({
-            [usernameProperty]: ""
-        });
+        const username = await this.getValue('username');
         const usernameNode = document.createTextNode(username);
 
         const logout = document.createElement("button");
@@ -55,8 +52,9 @@ class Account {
     }
 }
 
-class AccountManager {
+class AccountManager extends window.StorageManager {
     constructor(root) {
+        super(Account);
         this.root = root;
         this.form = root.querySelector("#login");
         this.list = root.querySelector("#active");
@@ -67,15 +65,15 @@ class AccountManager {
             if(areaName === "local" && "handlers" in changes) {
                 const handlerIds = new Set();
                 for(const handler of changes.handlers.newValue) {
-                    handlerIds.add(handler.storeId);
-                    if(!this.getAccountRoot(handler.storeId)) {
-                        this.addAccount(handler.type, handler.storeId);
+                    handlerIds.add(handler[window.StorageManager.ID_KEY]);
+                    if(!this.getAccountRoot(handler[window.StorageManager.ID_KEY])) {
+                        this.addAccount(handler.type, handler[window.StorageManager.ID_KEY]);
                     }
                 }
-                if("oldValue" in changes.handlers) {
+                if("oldValue" in changes.handlers && changes.handlers.oldValue) {
                     for(const oldHandler of changes.handlers.oldValue) {
-                        if(!handlerIds.has(oldHandler.storeId)) {
-                            const node = this.getAccountRoot(oldHandler.storeId);
+                        if(!handlerIds.has(oldHandler[window.StorageManager.ID_KEY])) {
+                            const node = this.getAccountRoot(oldHandler[window.StorageManager.ID_KEY]);
                             if(node) {
                                 node.querySelector("button")
                                     .click();
@@ -93,21 +91,17 @@ class AccountManager {
                 type: typeForm.value
             });
         });
+    }
 
-        browser.storage.local.get({
-            handlers: []
-        })
-            .then(({ handlers }) => {
-                for(const handler of handlers) {
-                    this.addAccount(handler.type, handler.storeId);
-                }
-            })
-            .catch(console.error);
+    async getInstances() {
+        const records = await this.getRecords();
+        return records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY]));
     }
 
     addAccount(type, id) {
-        const account = new Account(type, id);
+        const account = new this.StorageInstance(type, id, this.area);
         this.list.append(account.root);
+        return account;
     }
 
     getAccountRoot(id) {
