@@ -8,8 +8,6 @@
 const manager = new ClientManager(),
     BASE = 10;
 
-//TODO migrate existing crap.
-
 browser.notifications.onShown.addListener(() => {
     browser.runtime.sendMessage("@notification-sound", "new-notification");
 });
@@ -81,10 +79,7 @@ const needsAuth = () => {
     });
 };
 
-const createHandler = async (type) => {
-    const handler = await ClientManager.createClient(type);
-    await handler.login();
-    manager.addClient(handler);
+const afterAdd = async (handler) => {
     setupNotificationWorker(handler);
 
     const popupURL = await browser.browserAction.getPopup({});
@@ -94,6 +89,13 @@ const createHandler = async (type) => {
         });
         updateBadge();
     }
+};
+
+const createHandler = async (type) => {
+    const handler = await ClientManager.createClient(type);
+    await handler.login();
+    manager.addClient(handler);
+    await afterAdd(handler);
 };
 
 browser.runtime.onMessage.addListener((message) => {
@@ -152,6 +154,23 @@ browser.runtime.onMessage.addListener((message) => {
         createHandler(message.type);
         break;
     default:
+    }
+});
+
+browser.runtime.onInstalled.addListener(async (details) => {
+    if(details.reason === "update") {
+        const { token } = await browser.storage.local.get("token");
+        if(token) {
+            const handler = ClientManager.createClient(ClientManager.GITHUB);
+            await handler.setValue("token", token);
+            const authValid = await handler.checkAuth();
+            if(authValid) {
+                manager.addClient(handler);
+                await afterAdd(handler);
+            }
+
+            await browser.storage.local.remove("token");
+        }
     }
 });
 
