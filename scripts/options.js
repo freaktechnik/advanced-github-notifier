@@ -112,7 +112,8 @@ class AccountManager extends window.StorageManager {
 window.addEventListener("DOMContentLoaded", () => {
     const notifications = document.getElementById("notifications");
     const footer = document.getElementById("footer");
-    new AccountManager(document.getElementById("accounts"));
+    const manager = new AccountManager(document.getElementById("accounts"));
+    manager.getInstances().catch(console.error);
 
     notifications.addEventListener("change", () => {
         browser.storage.local.set({ hide: !notifications.checked });
