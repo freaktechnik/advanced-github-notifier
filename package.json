@@ -10,7 +10,7 @@
     "lint": "npm run lint:js && npm run lint:css && npm run lint:webext",
     "test": "npm run lint && nyc ava",
     "start": "web-ext run -i test coverage package*.json",
-    "build": "web-ext build -i test coverage package*.json",
+    "build": "tx pull && web-ext build -i test coverage package*.json",
     "coverage": "nyc report && codecov"
   },
   "repository": {
