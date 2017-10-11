@@ -21,21 +21,28 @@ virtualConsole.on("jsdomError", (error) => {
 const wf = util.promisify(fs.writeFile); // eslint-disable-line security/detect-non-literal-fs-filename
 const mk = util.promisify(mkdirp);
 const ef = util.promisify(execFile);
+const rf = util.promisify(fs.readFile);
 
 const instrumentCache = new Map();
 // the nyc integration here is hacky as hell, but it works, so who am I to judge.
 // inspired by https://github.com/lukasoppermann/html5sortable/pull/269
 const instrument = async (sourcePath) => {
     if(!instrumentCache.has(sourcePath)) {
-        const instrumented = await ef(process.execPath, [
-            './node_modules/.bin/nyc',
-            'instrument',
-            sourcePath
-        ], {
-            cwd: process.cwd(),
-            env: process.env
-        });
-        instrumentCache.set(sourcePath, instrumented.stdout.toString('utf-8'));
+        if(!process.env.NYC_CONFIG) {
+            const source = await rf(sourcePath, 'utf8');
+            instrumentCache.set(sourcePath, source);
+        }
+        else {
+            const instrumented = await ef(process.execPath, [
+                './node_modules/.bin/nyc',
+                'instrument',
+                sourcePath
+            ], {
+                cwd: process.cwd(),
+                env: process.env
+            });
+            instrumentCache.set(sourcePath, instrumented.stdout.toString('utf-8'));
+        }
     }
     return instrumentCache.get(sourcePath);
 };
@@ -58,8 +65,10 @@ export const getEnv = async (files, html = aboutBlank) => {
 
 let id = 0;
 export const cleanUp = async (window) => {
-    const nycConfig = JSON.parse(process.env.NYC_CONFIG);
-    await mk(nycConfig.tempDirectory);
-    await wf(path.join(nycConfig.tempDirectory, `${Date.now()}_${process.pid}_${++id}.json`), JSON.stringify(window.__coverage__), 'utf-8');
+    if(process.env.NYC_CONFIG) {
+        const nycConfig = JSON.parse(process.env.NYC_CONFIG);
+        await mk(nycConfig.tempDirectory);
+        await wf(path.join(nycConfig.tempDirectory, `${Date.now()}_${process.pid}_${++id}.json`), JSON.stringify(window.__coverage__), 'utf-8');
+    }
     window.close();
 };

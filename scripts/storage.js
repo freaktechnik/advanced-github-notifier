@@ -17,7 +17,7 @@ class Storage {
     async getValue(key, defaultValue) {
         const storageKey = this.getStorageKey(key);
         const result = await browser.storage[this.area].get(storageKey);
-        if(defaultValue !== undefined && (!(storageKey in result) || storageKey[result] === undefined)) {
+        if(defaultValue !== undefined && (!(storageKey in result) || result[storageKey] === undefined)) {
             return defaultValue;
         }
         return result[storageKey];
