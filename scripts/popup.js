@@ -3,7 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-//TODO add account selector.
 
 const loaded = new Promise((resolve) => {
     window.addEventListener("DOMContentLoaded", resolve, {
@@ -61,7 +60,9 @@ const contextMenu = {
 const accountSelector = {
     SINGLE_ACCOUNT: 1,
     root: null,
+    storage: null,
     init() {
+        this.storage = new window.StorageManager(window.Storage);
         this.root = document.getElementById("accounts");
         this.root.addEventListener("input", () => {
             this.selectAccount();
@@ -69,10 +70,13 @@ const accountSelector = {
             passive: true,
             capture: false
         });
+        this.storage.getInstances()
+            .then((accounts) => this.setAccounts(accounts))
+            .catch(console.error);
     },
     async addAccount(account) {
-        //TODO get username
-        const option = new Option(account.notificationId, username);
+        const username = await account.getValue("username");
+        const option = new Option(account.getStorageKey("notifications"), username);
         this.root.append(option);
     },
     setAccounts(accounts) {
@@ -202,7 +206,6 @@ Promise.all([
     loaded
 ])
     .then(([ { handlers } ]) => {
-        accountSelector.setAccounts(handlers);
         return browser.storage.local.get(handlers.map((h) => h.notifications));
     })
     .then((result) => {

@@ -4,6 +4,8 @@ import { FakeClient } from './_mocks';
 
 test.beforeEach(async (t) => {
     const dom = await getEnv([
+        '../scripts/storage.js',
+        '../scripts/storage-manager.js',
         '../scripts/handler.js',
         '../scripts/client-manager.js'
     ]);
@@ -32,9 +34,9 @@ test('add handler client', async (t) => {
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
         handlers: [ {
             type: t.context.window.ClientManager.GITHUB,
-            notifications: handler.NOTIFICATIONS_NAME,
+            notifications: handler.NOTIFICATION_NAME,
             id: handler.id,
-            storeId: handler.STORE_PREFIX
+            handlerId: handler.STORE_PREFIX
         } ]
     });
 });

@@ -69,7 +69,7 @@ class ClientManager extends window.StorageManager {
         for(const client of this.getClients()) {
             const obj = window.StorageManager.createRecord(client);
             obj.type = ClientManager.GITHUB;
-            obj.notifications = client.NOTIFICATIONS_NAME;
+            obj.notifications = client.NOTIFICATION_NAME;
             obj.id = client.id;
             handlers.push(obj);
         }
