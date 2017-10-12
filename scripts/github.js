@@ -179,9 +179,6 @@ class GitHub {
                 body
             });
             if(response.ok && response.status == STATUS_RESET) {
-                browser.runtime.sendMessage({
-                    target: "all-notifications-read"
-                });
                 return true;
             }
 
@@ -196,14 +193,9 @@ class GitHub {
             headers: this.headers
         });
         if(response.ok) {
-            browser.runtime.sendMessage({
-                target: "notification-read",
-                notificationId: notificationID
-            });
+            return true;
         }
-        else {
-            throw response.status;
-        }
+        throw new Error(`Marking ${notificationID} as read returned a ${response.status} error`);
     }
 
     async unsubscribeNotification(notificationId) {

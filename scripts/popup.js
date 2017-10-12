@@ -57,22 +57,125 @@ const contextMenu = {
     }
 };
 
+const notificationList = {
+    IMAGE_SIZE: 16,
+    root: null,
+    markRead: null,
+    init() {
+        this.root = document.getElementById("notifications");
+        this.markRead = document.getElementById("mark-read");
+        this.markRead.addEventListener("click", () => {
+            if(!this.markRead.classList.contains("disabled")) {
+                browser.runtime.sendMessage({ topic: "mark-all-read" });
+            }
+        }, {
+            capture: false,
+            passive: true
+        });
+    },
+    toggleEmpty(state) {
+        this.root.hidden = state;
+        document.getElementById("empty").hidden = !state;
+        this.markRead.classList.toggle("disabled", state);
+    },
+    create(notification) {
+        const root = document.createElement("li");
+        root.id = idPrefix + notification.id;
+        root.classList.add("panel-list-item");
+        const date = new Date(notification.updated_at);
+        const formatter = new Intl.DateTimeFormat(browser.i18n.getUILanguage().replace("_", "-"), {
+            weekday: "short",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+        root.title = formatter.format(date);
+
+        if(notification.subject.type == "Issue" || notification.subject.type == "PullRequest") {
+            root.title = `#${notification.subjectDetails.number} (${root.title})`;
+        }
+
+        const image = new Image(this.IMAGE_SIZE, this.IMAGE_SIZE);
+        image.src = `${notification.icon}svg`;
+        image.classList.add("icon");
+
+        const title = document.createElement("span");
+        title.classList.add("text");
+        title.textContent = notification.subject.title;
+
+        const repo = document.createElement("span");
+        repo.classList.add("text-shortcut");
+        repo.textContent = notification.repository.full_name;
+
+        root.append(image, title, repo);
+        root.addEventListener("click", clickListener.bind(null, notification.id));
+        root.addEventListener("contextmenu", () => contextMenu.openFor(notification.id));
+        this.root.append(root);
+
+        this.toggleEmpty(false);
+    },
+    delete(notificationId) {
+        const root = document.getElementById(idPrefix + notificationId);
+        if(root) {
+            root.remove();
+        }
+        if(!parent.childElementCount) {
+            this.toggleEmpty(true);
+        }
+    },
+    clear() {
+        while(this.root.hasChildNodes()) {
+            this.root.firstChild.remove();
+        }
+    },
+    async show(stores = []) {
+        const storedNotifications = await browser.storage.local.get(stores);
+
+        this.clear();
+
+        let notifications = [];
+        for(const r in storedNotifications) {
+            notifications = notifications.concat(storedNotifications[r]);
+        }
+        for(const notification of notifications) {
+            this.create(notification);
+        }
+    }
+};
+
 const accountSelector = {
     SINGLE_ACCOUNT: 1,
+    ALL_ACCOUNTS: "all",
     root: null,
     storage: null,
     init() {
         this.storage = new window.StorageManager(window.Storage);
         this.root = document.getElementById("accounts");
+
         this.root.addEventListener("input", () => {
-            this.selectAccount();
+            this.selectAccount(this.currentAccout);
         }, {
             passive: true,
             capture: false
         });
+
+        browser.storage.onChanged.addListener((changes, area) => {
+            // Only listening for notification changes, since accounts shouldn't
+            // change while the popup is open.
+            if(area === this.storage.area && (this.currentAccout === this.ALL_ACCOUNTS || this.currentAccout in changes)) {
+                this.selectAccount(this.currentAccout);
+            }
+        });
+
         this.storage.getInstances()
             .then((accounts) => this.setAccounts(accounts))
             .catch(console.error);
+    },
+    get currentAccout() {
+        return this.root.value;
     },
     async addAccount(account) {
         const username = await account.getValue("username");
@@ -87,95 +190,26 @@ const accountSelector = {
         for(const account of accounts) {
             this.addAccount(account);
         }
-    }
-};
-
-const IMAGE_SIZE = 16;
-const createNotification = (notification) => {
-    const root = document.createElement("li");
-    root.id = idPrefix + notification.id;
-    root.classList.add("panel-list-item");
-    const date = new Date(notification.updated_at);
-    const formatter = new Intl.DateTimeFormat(browser.i18n.getUILanguage().replace("_", "-"), {
-        weekday: "short",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-    });
-    root.title = formatter.format(date);
-
-    if(notification.subject.type == "Issue" || notification.subject.type == "PullRequest") {
-        root.title = `#${notification.subjectDetails.number} (${root.title})`;
-    }
-
-    const image = new Image(IMAGE_SIZE, IMAGE_SIZE);
-    image.src = `${notification.icon}svg`;
-    image.classList.add("icon");
-
-    const title = document.createElement("span");
-    title.classList.add("text");
-    title.textContent = notification.subject.title;
-
-    const repo = document.createElement("span");
-    repo.classList.add("text-shortcut");
-    repo.textContent = notification.repository.full_name;
-
-    root.append(image, title, repo);
-    root.addEventListener("click", clickListener.bind(null, notification.id));
-    root.addEventListener("contextmenu", () => contextMenu.openFor(notification.id));
-    const parent = document.getElementById("notifications");
-    parent.append(root);
-    parent.hidden = false;
-
-    document.getElementById("empty").hidden = true;
-    document.getElementById("mark-read").classList.remove("disabled");
-};
-
-const deleteNotification = (notificationId) => {
-    const root = document.getElementById(idPrefix + notificationId);
-    if(root) {
-        root.remove();
-    }
-
-    const parent = document.getElementById("notifications");
-    if(!parent.childElementCount) {
-        document.getElementById("empty").hidden = false;
-        parent.hidden = true;
-        document.getElementById("mark-read").classList.add("disabled");
-    }
-};
-
-browser.runtime.onMessage.addListener((message) => {
-    if(message.topic === "new-notification") {
-        createNotification(message.notification);
-    }
-    else if(message.topic === "notification-read") {
-        deleteNotification(message.notificationId);
-    }
-    else if(message.topic === "all-notifications-read") {
-        const container = document.getElementById("notifications");
-        while(container.hasChildNodes()) {
-            container.firstChild.remove();
+    },
+    getAccounts() {
+        return Array.from(this.root.options)
+            .filter((o) => o.value === this.ALL_ACCOUNTS)
+            .map((o) => o.value);
+    },
+    selectAccount(account) {
+        if(account === this.ALL_ACCOUNTS) {
+            notificationList.show(this.getAccounts()).catch(console.error);
+        }
+        else {
+            notificationList.show(account).catch(console.error);
         }
     }
-});
+};
 
 loaded
     .then(() => {
-        const markRead = document.getElementById("mark-read");
-        markRead.addEventListener("click", () => {
-            if(!markRead.classList.contains("disabled")) {
-                browser.runtime.sendMessage({ topic: "mark-all-read" });
-            }
-        }, {
-            capture: false,
-            passive: true
-        });
-
         contextMenu.init();
+        notificationList.init();
         accountSelector.init();
         return browser.storage.local.get({
             "footer": "all"
@@ -201,18 +235,9 @@ loaded
 
 Promise.all([
     browser.storage.local.get({
-        handlers: []
+        [window.StorageManager.KEY]: []
     }),
     loaded
 ])
-    .then(([ { handlers } ]) => browser.storage.local.get(handlers.map((h) => h.notifications)))
-    .then((result) => {
-        let notifications = [];
-        for(const r in result) {
-            notifications = notifications.concat(result[r]);
-        }
-        for(const notification of notifications) {
-            createNotification(notification);
-        }
-    })
+    .then(([ { [window.StorageManager.KEY]: result } ]) => notificationList.show(result.map((h) => h.notifications)))
     .catch(console.error);

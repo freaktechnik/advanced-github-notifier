@@ -134,22 +134,10 @@ class ClientHandler extends window.Storage {
                         iconUrl: `${notification.icon}png`
                     });
                 }
-                browser.runtime.sendMessage({
-                    topic: "new-notification",
-                    notification
-                });
             }
             return notification;
         }));
         notifs = notifs.filter((n) => n !== null);
-
-        notifications.filter((n) => !stillNotificationIds.includes(n.id)).forEach((notification) => {
-            //TODO shouldn't be here
-            browser.runtime.sendMessage({
-                topic: "notification-read",
-                notificationId: notification.id
-            });
-        });
 
         await this.setValue(ClientHandler.NOTIFICATIONS, notifs);
         return notifs;
