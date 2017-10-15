@@ -15,15 +15,6 @@ class ClientManager extends window.StorageManager {
         return "enterprise";
     }
 
-    constructor() {
-        super(window.ClientHandler);
-        this.clients = new Set();
-    }
-
-    getClients() {
-        return this.clients.values();
-    }
-
     static async createClient(type, id) {
         let ClientFactory;
         if(type === ClientManager.GITHUB) {
@@ -35,6 +26,15 @@ class ClientManager extends window.StorageManager {
         }
         const wrapper = new ClientHandler(client, this.area);
         return wrapper;
+    }
+
+    constructor() {
+        super(window.ClientHandler);
+        this.clients = new Set();
+    }
+
+    getClients() {
+        return this.clients.values();
     }
 
     async getInstances() {

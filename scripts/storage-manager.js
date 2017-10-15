@@ -13,6 +13,12 @@ class StorageManager {
         return "handlerId";
     }
 
+    static createRecord(storageInstance) {
+        return {
+            [StorageManager.ID_KEY]: storageInstance.storageId
+        };
+    }
+
     constructor(storageConstructor = window.Storage, area = "local") {
         this.StorageInstance = storageConstructor;
         this.area = area;
@@ -28,12 +34,6 @@ class StorageManager {
             [StorageManager.KEY]: []
         });
         return results[StorageManager.KEY];
-    }
-
-    static createRecord(storageInstance) {
-        return {
-            [StorageManager.ID_KEY]: storageInstance.storageId
-        };
     }
 
     setRecords(array) {

@@ -74,73 +74,8 @@ class ClientHandler extends window.Storage {
         this.storageId = this._prefix + id;
     }
 
-    _getNotifications() {
-        return this.getValue(ClientHandler.NOTIFICATIONS, []);
-    }
-
-    _getNotificationID(githubID) {
-        return this.NOTIFICATION_PREFIX + githubID;
-    }
-
-    _getOriginalID(id) {
-        return id.substr(this.NOTIFICATION_PREFIX.length);
-    }
-
     ownsNotification(id) {
         return id.startsWith(this.NOTIFICATION_PREFIX);
-    }
-
-    async _processNewNotifications(json) {
-        const { hide } = await browser.storage.local.get({
-            hide: false
-        });
-        const notifications = await this.getValue(ClientHandler.NOTIFICATIONS, []);
-        const stillNotificationIds = [];
-        let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
-            notification.id = this._getNotificationID(notification.id);
-            stillNotificationIds.push(notification.id);
-            let fetchDetails = false;
-            const existingNotif = notifications.find((n) => n.id == notification.id);
-            if(!existingNotif) {
-                notification.new = true;
-                fetchDetails = true;
-            }
-            else if(existingNotif.updated_at != notification.updated_at) {
-                fetchDetails = true;
-            }
-            else {
-                notification.subjectDetails = existingNotif.subjectDetails;
-                notification.icon = existingNotif.icon;
-            }
-
-            if(fetchDetails) {
-                try {
-                    const details = await this.client.getNotificationDetails(notification);
-                    notification.subjectDetails = details;
-                    notification.icon = ClientHandler.getNotificationIcon(notification);
-                }
-                catch(e) {
-                    return null;
-                }
-            }
-            if(notification.new) {
-                //TODO shouldn't be here
-                if(!hide) {
-                    await browser.notifications.create(notification.id, {
-                        type: "basic",
-                        title: notification.subject.title,
-                        message: notification.repository.full_name,
-                        eventTime: Date.parse(notification.updated_at),
-                        iconUrl: `${notification.icon}png`
-                    });
-                }
-            }
-            return notification;
-        }));
-        notifs = notifs.filter((n) => n !== null);
-
-        await this.setValue(ClientHandler.NOTIFICATIONS, notifs);
-        return notifs;
     }
 
     /**
@@ -250,6 +185,71 @@ class ClientHandler extends window.Storage {
 
     unsubscribeNotification(id) {
         return this.client.unsubscribeNotification(this._getOriginalID(id));
+    }
+
+    _getNotifications() {
+        return this.getValue(ClientHandler.NOTIFICATIONS, []);
+    }
+
+    _getNotificationID(githubID) {
+        return this.NOTIFICATION_PREFIX + githubID;
+    }
+
+    _getOriginalID(id) {
+        return id.substr(this.NOTIFICATION_PREFIX.length);
+    }
+
+    async _processNewNotifications(json) {
+        const { hide } = await browser.storage.local.get({
+            hide: false
+        });
+        const notifications = await this.getValue(ClientHandler.NOTIFICATIONS, []);
+        const stillNotificationIds = [];
+        let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
+            notification.id = this._getNotificationID(notification.id);
+            stillNotificationIds.push(notification.id);
+            let fetchDetails = false;
+            const existingNotif = notifications.find((n) => n.id == notification.id);
+            if(!existingNotif) {
+                notification.new = true;
+                fetchDetails = true;
+            }
+            else if(existingNotif.updated_at != notification.updated_at) {
+                fetchDetails = true;
+            }
+            else {
+                notification.subjectDetails = existingNotif.subjectDetails;
+                notification.icon = existingNotif.icon;
+            }
+
+            if(fetchDetails) {
+                try {
+                    const details = await this.client.getNotificationDetails(notification);
+                    notification.subjectDetails = details;
+                    notification.icon = ClientHandler.getNotificationIcon(notification);
+                }
+                catch(e) {
+                    return null;
+                }
+            }
+            if(notification.new) {
+                //TODO shouldn't be here
+                if(!hide) {
+                    await browser.notifications.create(notification.id, {
+                        type: "basic",
+                        title: notification.subject.title,
+                        message: notification.repository.full_name,
+                        eventTime: Date.parse(notification.updated_at),
+                        iconUrl: `${notification.icon}png`
+                    });
+                }
+            }
+            return notification;
+        }));
+        notifs = notifs.filter((n) => n !== null);
+
+        await this.setValue(ClientHandler.NOTIFICATIONS, notifs);
+        return notifs;
     }
 }
 window.ClientHandler = ClientHandler;
