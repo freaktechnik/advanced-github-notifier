@@ -1,10 +1,6 @@
 {
-    "plugins": [
-        "compat"
-    ],
     "rules": {
-        "one-var": 0,
-        "compat/compat": 2
+        "one-var": 0
     },
-    "extends": "plugin:freaktechnik/extension"
+    "extends": "@freaktechnik/eslint-config-extension"
 }
