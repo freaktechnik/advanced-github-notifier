@@ -28,7 +28,6 @@ const parseLinks = (links) => {
     return linkObj;
 };
 
-// eslint-disable-next-line no-unused-vars
 class GitHub {
     static get BASE_URI() {
         return 'https://api.github.com/';
@@ -273,3 +272,5 @@ class GitHub {
         throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
     }
 }
+
+window.GitHub = GitHub;
