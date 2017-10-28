@@ -1,10 +1,10 @@
 import { JSDOM, VirtualConsole } from 'jsdom';
-import fetch from 'node-fetch';
 import path from 'path';
 import { execFile } from 'child_process';
 import mkdirp from 'mkdirp';
 import fs from 'fs';
 import util from 'util';
+import sinon from 'sinon';
 
 const aboutBlank = `<!DOCTYPE html>
 <html>
@@ -52,7 +52,7 @@ export const getEnv = async (files, html = aboutBlank) => {
         runScripts: 'outside-only',
         virtualConsole
     });
-    dom.window.fetch = fetch;
+    dom.window.fetch = sinon.stub();
     dom.window.browser = require("sinon-chrome/webextensions");
     // Purge that instance of the browser stubs, so tests have their own env.
     delete require.cache[path.join(__dirname, '../node_modules/sinon-chrome/webextensions/index.js')];
