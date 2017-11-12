@@ -21,8 +21,8 @@ class ClientHandler extends window.Storage {
     }
 
     static getNotificationIcon(notification) {
-        if(notification.reason === "invitation") {
-            return "images/repo.";
+        if(notification.subject.type === "RepositoryInvitation") {
+            return "images/mail.";
         }
         else if(notification.subject.type == "Issue") {
             return `images/issue-${notification.subjectDetails.state}.`;
@@ -168,7 +168,11 @@ class ClientHandler extends window.Storage {
     async getNotificationURL(id) {
         const notifications = await this._getNotifications();
         const notification = notifications.find((n) => n.id == id);
+        //TODO get anchor to events after last_read_at for issues/prs
         if(notification) {
+            if(notification.subject.type === "RepositoryInvitation") {
+                return `${notification.repository.html_url}/invitations`;
+            }
             return notification.subjectDetails.html_url;
         }
         return "";

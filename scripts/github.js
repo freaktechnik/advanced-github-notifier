@@ -267,12 +267,17 @@ class GitHub {
     }
 
     async getNotificationDetails(notification) {
-        const apiEndpoint = notification.subject.url;
-        const response = await fetch(apiEndpoint, {
-            headers: this.headers
-        });
-        if(response.ok) {
-            return response.json();
+        if(notification.subject.type !== "RepositoryInvitation") {
+            const apiEndpoint = notification.subject.url;
+            const response = await fetch(apiEndpoint, {
+                headers: this.headers
+            });
+            if(response.ok) {
+                return response.json();
+            }
+        }
+        else {
+            return notification.repository;
         }
 
         throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
