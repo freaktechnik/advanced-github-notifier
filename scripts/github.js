@@ -11,6 +11,8 @@
 const STATUS_OK = 200;
 const STATUS_RESET = 205;
 const MS_TO_S = 1000;
+const MIN_POLL_INTEVAL = 10;
+const AVOID_INFINITY = 1;
 
 const parseLinks = (links) => {
     const linkInfo = links.split(",");
@@ -230,9 +232,13 @@ class GitHub {
         });
 
         if(response.ok) {
+            const pollInterval = parseInt(response.headers.get("X-Poll-Interval"), 10),
+                nowS = Math.floor(Date.now() / MS_TO_S),
+                ratelimitReset = Math.max(nowS + MIN_POLL_INTEVAL, parseInt(response.headers.get("X-RateLimit-Reset"), 10)),
+                ratelimitRemaining = Math.max(AVOID_INFINITY, parseInt(response.headers.get("X-RateLimit-Remaining"), 10));
             this.pollInterval = Math.max(
-                response.headers.get("X-Poll-Interval"),
-                Math.ceil((response.headers.get("X-RateLimit-Reset") - Math.floor(Date.now() / MS_TO_S)) / response.headers.get("X-RateLimit-Remaining"))
+                pollInterval,
+                Math.ceil((ratelimitReset - nowS) / ratelimitRemaining)
             );
 
             const now = new Date();
