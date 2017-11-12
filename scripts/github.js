@@ -260,6 +260,20 @@ class GitHub {
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
+    async getOldestCommentURL(issue, date) {
+        const comments = await fetch(issue.comments_url, {
+            headers: this.headers
+        });
+        if(comments.ok) {
+            const commentData = await comments.json();
+            for(const comment of commentData) {
+                if(Date.parse(comment.created_at) > date) {
+                    return comment.html_url;
+                }
+            }
+        }
+    }
+
     async getNotificationDetails(notification) {
         if(notification.subject.type !== "RepositoryInvitation") {
             const apiEndpoint = notification.subject.url;
@@ -267,7 +281,17 @@ class GitHub {
                 headers: this.headers
             });
             if(response.ok) {
-                return response.json();
+                const json = await response.json();
+
+                if(notification.subject.type === "Issue" || notification.subject.type === "PullRequest") {
+                    const commentURL = await this.getOldestCommentURL(json, Date.parse(notification.last_read_at));
+                    if(commentURL) {
+                        // eslint-disable-next-line camelcase, xss/no-mixed-html
+                        json.html_url = commentURL;
+                    }
+                }
+
+                return json;
             }
 
             throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
