@@ -281,7 +281,10 @@ class GitHub {
     }
 
     async getNotificationDetails(notification) {
-        if(notification.subject.type !== "RepositoryInvitation") {
+        if(notification.subject.type === "RepositoryInvitation" || notification.subject.type === "RepositoryVulnerabilityAlert") {
+            return notification.repository;
+        }
+        else {
             const apiEndpoint = notification.subject.url;
             const response = await fetch(apiEndpoint, {
                 headers: this.headers
@@ -301,9 +304,6 @@ class GitHub {
             }
 
             throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
-        }
-        else {
-            return notification.repository;
         }
     }
 }

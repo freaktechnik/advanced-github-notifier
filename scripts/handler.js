@@ -37,6 +37,9 @@ class ClientHandler extends window.Storage {
         else if(notification.subject.type == "Tag" || notification.subject.type == "Release") {
             return "images/tag.";
         }
+        else if(notification.subject.type === "RepositoryVulnerabilityAlert") {
+            return "images/alert.";
+        }
         // It's a commit
 
         return "images/comment.";
@@ -172,6 +175,9 @@ class ClientHandler extends window.Storage {
         if(notification) {
             if(notification.subject.type === "RepositoryInvitation") {
                 return `${notification.repository.html_url}/invitations`;
+            }
+            else if(notification.subject.type === "RepositoryVulnerabilityAlert") {
+                return `${notification.repository.html_url}/network/dependencies`;
             }
             return notification.subjectDetails.html_url;
         }
