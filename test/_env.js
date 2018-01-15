@@ -55,7 +55,7 @@ export const getEnv = async (files, html = aboutBlank) => {
     dom.window.fetch = sinon.stub();
     dom.window.browser = require("sinon-chrome/out/webextensions");
     // Purge that instance of the browser stubs, so tests have their own env.
-    delete require.cache[path.join(__dirname, '../node_modules/sinon-chrome/webextensions/index.js')];
+    delete require.cache[path.join(__dirname, '../node_modules/sinon-chrome/out/webextensions/index.js')];
     for(const file of files) {
         //TODO instrumenting
         dom.window.eval(await instrument(path.join(__dirname, file), 'utf-8'));
