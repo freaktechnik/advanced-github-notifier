@@ -34,7 +34,7 @@
     "@freaktechnik/eslint-config-base": "^6.1.0",
     "@freaktechnik/eslint-config-extension": "^6.1.0",
     "@freaktechnik/eslint-config-test": "^6.1.0",
-    "ava": "^0.24.0",
+    "ava": "^0.25.0",
     "codecov": "^3.0.0",
     "eslint": "^4.15.0",
     "jsdom": "^11.5.1",
