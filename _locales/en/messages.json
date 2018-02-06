@@ -55,11 +55,11 @@
         "message": "Footer links to",
         "description": "Label for the footer function select in the options"
     },
-    "footerGithub.label": {
+    "footerGithub_label": {
         "message": "GitHub",
         "description": "Label of the GitHub options group in the footer function select in the options"
     },
-    "footerLocal.label": {
+    "footerLocal_label": {
         "message": "Local",
         "description": "Label of the Local options group in the footer function select in the options"
     },
@@ -95,7 +95,7 @@
         "message": "Mark as read",
         "description": "Mark as read context menu item on individual notifications"
     },
-    "markAsRead.accesskey": {
+    "markAsRead_accesskey": {
         "message": "M A R",
         "description": "Access key attribute for the mark as read context menu item on individual notifications"
     },
@@ -103,7 +103,7 @@
         "message": "Unsubscribe",
         "description": "Context menu item to unwatch a thread (issue etc.)"
     },
-    "unwatch.accesskey": {
+    "unwatch_accesskey": {
         "message": "U W",
         "description": "Access key attribute for the unwatch context menu item"
     },
@@ -111,7 +111,7 @@
         "message": "Ignore",
         "description": "Context menu item to ignore a thread (don't resubscribe)"
     },
-    "ignore.accesskey": {
+    "ignore_accesskey": {
         "message": "I G",
         "description": "Access key attribute for the ignore context menu item"
     },

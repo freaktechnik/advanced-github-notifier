@@ -26,7 +26,7 @@ function translateElementAttributes(element) {
         'aria-value-text': 'ariaValueText',
         'aria-moz-hint': 'ariaMozHint'
     };
-    const attrSeparator = '.';
+    const attrSeparator = '_';
 
     const presentAttributes = element.dataset.l10nAttrs.split(",");
 
