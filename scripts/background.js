@@ -91,8 +91,8 @@ const afterAdd = async (handler) => {
     }
 };
 
-const createHandler = async (type) => {
-    const handler = await ClientManager.createClient(type);
+const createHandler = async (type, details) => {
+    const handler = await ClientManager.createClient(type, undefined, details);
     await handler.login();
     manager.addClient(handler);
     await afterAdd(handler);
@@ -151,7 +151,7 @@ browser.runtime.onMessage.addListener((message) => {
         break;
     }
     case "login":
-        createHandler(message.type);
+        return createHandler(message.type, message.details);
         break;
     default:
     }
@@ -179,6 +179,7 @@ const init = async () => {
     if(!count) {
         needsAuth();
     }
+    //TODO only here should we have an online check?
     else {
         await setupNotificationWorkers();
     }

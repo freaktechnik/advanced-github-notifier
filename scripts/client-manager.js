@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global GitHub, clientId, clientSecret, ClientHandler */
+/* global GitHub, clientId, clientSecret, ClientHandler, GitHubLight, GitHubEnterprise */
 //TODO some way to handle accounts that have failing logins instead of just removing them.
 
 class ClientManager extends window.StorageManager {
@@ -15,12 +15,33 @@ class ClientManager extends window.StorageManager {
         return "enterprise";
     }
 
-    static async createClient(type, id) {
+    static get GITHUB_LIGHT() {
+        return "github-light";
+    }
+
+    static async createClient(type, id, details) {
         let ClientFactory;
+        const factoryArgs = [];
         if(type === ClientManager.GITHUB) {
             ClientFactory = GitHub;
+            factoryArgs.push(clientId);
+            factoryArgs.push(clientSecret);
         }
-        const client = new ClientFactory(clientId, clientSecret);
+        else if(type === ClientManager.GITHUB_LIGHT) {
+            ClientFactory = GitHubLight;
+            factoryArgs.push(clientId);
+            factoryArgs.push(clientSecret);
+        }
+        else if(type === ClientManager.ENTERPRISE) {
+            ClientFactory = GitHubEnterprise;
+            if(!details) {
+                throw new Error("Details required to create enterprise client");
+            }
+            factoryArgs.push(details.clientId);
+            factoryArgs.push(details.clientSecret);
+            factoryArgs.push(details.instanceURL);
+        }
+        const client = new ClientFactory(...factoryArgs);
         if(id) {
             client.id = id;
         }
@@ -40,7 +61,7 @@ class ClientManager extends window.StorageManager {
     async getInstances() {
         const handlers = await this.getRecords();
         for(const handler of handlers) {
-            const wrapper = await ClientManager.createClient(handler.type, handler.id);
+            const wrapper = await ClientManager.createClient(handler.type, handler.id, handler.details);
             const authValid = await wrapper.checkAuth();
             if(authValid) {
                 this.addClient(wrapper);

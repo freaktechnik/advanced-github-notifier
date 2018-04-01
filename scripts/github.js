@@ -50,7 +50,7 @@ class GitHub {
     static get FOOTER_URLS() {
         return {
             "index": GitHub.SITE_URI,
-            "unread": `${GitHub.SITE_URI}notifications`,
+            "unread": `${GitHub.SIZE_URI}notifications`,
             "all": `${GitHub.SITE_URI}notifications?all=1`,
             "participating": `${GitHub.SITE_URI}notifications/participating`,
             "watched": `${GitHub.SITE_URI}watched`
@@ -74,15 +74,27 @@ class GitHub {
     }
 
     get infoURL() {
-        return `${GitHub.SITE_URI}settings/connections/applications/${this.clientID}`;
+        return this.buildSiteURL(`settings/connections/applications/${this.clientID}`);
+    }
+
+    get scope() {
+        return GitHub.SCOPE;
     }
 
     get username() {
         return this._username;
     }
 
+    buildAPIURL(endpoint) {
+        return GitHub.BASE_URI + endpoint;
+    }
+
+    buildSiteURL(endpoint) {
+        return GitHub.SITE_URI + endpoint;
+    }
+
     authURL(authState) {
-        return `${GitHub.SITE_URI}login/oauth/authorize?client_id=${this.clientID}&scope=${GitHub.SCOPE}&state=${authState}&redirect_uri=${GitHub.REDIRECT_URI.toString()}`;
+        return this.buildSiteURL(`login/oauth/authorize?client_id=${this.clientID}&scope=${this.scope}&state=${authState}&redirect_uri=${encodeURIComponent(GitHub.REDIRECT_URI.toString())}`);
     }
 
     setToken(token) {
@@ -101,7 +113,7 @@ class GitHub {
         params.append("redirect_uri", GitHub.REDIRECT_URI.toString());
         params.append("state", authState);
 
-        const response = await fetch(`${GitHub.SITE_URI}login/oauth/access_token`, {
+        const response = await fetch(this.buildSiteURL('login/oauth/access_token'), {
             method: "POST",
             body: params,
             headers: {
@@ -113,7 +125,7 @@ class GitHub {
             const {
                 access_token: accessToken, scope
             } = await response.json();
-            if(!scope.includes(GitHub.SCOPE)) {
+            if(!scope.includes(this.scope)) {
                 throw new Error("Was not granted required permissions");
             }
             else {
@@ -128,7 +140,7 @@ class GitHub {
     }
 
     async getUsername() {
-        const response = await fetch(`${GitHub.BASE_URI}user`, {
+        const response = await fetch(this.buildAPIURL('user'), {
             headers: this.headers
         });
         if(response.ok && response.status === STATUS_OK) {
@@ -139,7 +151,7 @@ class GitHub {
     }
 
     async authorize(token, method = "GET") {
-        const response = await fetch(`${GitHub.BASE_URI}applications/${this.clientID}/tokens/${token}`, {
+        const response = await fetch(this.buildAPIURL(`applications/${this.clientID}/tokens/${token}`), {
             method,
             headers: {
                 Authorization: `Basic ${window.btoa(`${this.clientID}:${this.clientSecret}`)}`
@@ -150,7 +162,7 @@ class GitHub {
                 const json = await response.json();
                 this._username = json.user.login;
                 this.id = json.user.id;
-                if(json.scopes.includes(GitHub.SCOPE)) {
+                if(json.scopes.includes(this.scope)) {
                     this.setToken(token);
                     return true;
                 }
@@ -174,7 +186,7 @@ class GitHub {
     async markNotificationsRead() {
         if(this.lastUpdate !== null && this.authorized) {
             const body = JSON.stringify({ "last_read_at": this.lastUpdate });
-            const response = await fetch(`${GitHub.BASE_URI}notifications`, {
+            const response = await fetch(this.buildAPIURL('notifications'), {
                 headers: this.headers,
                 method: "PUT",
                 body
@@ -189,7 +201,7 @@ class GitHub {
     }
 
     async markNotificationRead(notificationID) {
-        const response = await fetch(`${GitHub.BASE_URI}notifications/threads/${notificationID}`, {
+        const response = await fetch(this.buildAPIURL(`notifications/threads/${notificationID}`), {
             method: "PATCH",
             headers: this.headers
         });
@@ -200,7 +212,7 @@ class GitHub {
     }
 
     async unsubscribeNotification(notificationId) {
-        const response = await fetch(`${GitHub.BASE_URI}notifications/threads/${notificationId}/subscription`, {
+        const response = await fetch(this.buildAPIURL(`notifications/threads/${notificationId}/subscription`), {
             method: "PUT",
             headers: this.headers,
             body: `{"subscribed":false}`
@@ -212,7 +224,7 @@ class GitHub {
     }
 
     async ignoreNotification(notificationId) {
-        const response = await fetch(`${GitHub.BASE_URI}notifications/threads/${notificationId}/subscription`, {
+        const response = await fetch(this.buildAPIURL(`notifications/threads/${notificationId}/subscription`), {
             method: "PUT",
             headers: this.headers,
             body: `{"subscribed":false,"ignored":true}`
@@ -223,7 +235,7 @@ class GitHub {
         }
     }
 
-    async getNotifications(url = `${GitHub.BASE_URI}notifications`) {
+    async getNotifications(url = this.buildAPIURL('notifications')) {
         const response = await fetch(url, {
             headers: this.headers,
             // Have to bypass cache when there are notifications, as the Etag doesn't

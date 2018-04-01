@@ -13,6 +13,7 @@ class Account extends window.Storage {
     static get TYPES() {
         return Object.freeze({
             GITHUB: "github",
+            GITHUB_LIGHT: "github-light",
             ENTERPRISE: "enterprise"
         });
     }
@@ -86,10 +87,26 @@ class AccountManager extends window.StorageManager {
 
         this.form.addEventListener("submit", async (e) => {
             e.preventDefault();
+            if(!this.validateForm()) {
+                //TODO show error
+                return;
+            }
             browser.runtime.sendMessage({
                 topic: "login",
-                type: typeForm.value
+                type: typeForm.value,
+                details: this.getDetails()
+            }).catch((e) => {
+                this.showError(e.message);
             });
+        }, {
+            passive: false
+        });
+
+        typeForm.addEventListener("change", () => {
+            this.validateForm();
+        }, {
+            passive: true,
+            capture: false
         });
     }
 
@@ -106,6 +123,40 @@ class AccountManager extends window.StorageManager {
 
     getAccountRoot(id) {
         return this.list.querySelector(`[data-id="${id}"]`);
+    }
+
+    getDetails() {
+        const inputs = this.form.querySelectorAll('fieldset[nane="enterprise"] input'),
+            details = {};
+        for(const input of inputs) {
+            if(input.value && !input.disabled) {
+                details[input.name] = input.value;
+            }
+        }
+        return details;
+    }
+
+    validateForm() {
+        this.hideError();
+        const enterprise = this.form.querySelector('fieldset[name="enterprise"]'),
+            inputs = enterprise.querySelectorAll('input');
+        const visible = this.form.querySelector("select").value === 'enterprise';
+        enterprise.hidden = !visible;
+        for(const input of inputs) {
+            input.disabled = !visible;
+            input.required = visible;
+        }
+        return this.form.checkValidity();
+    }
+
+    showError(error) {
+        const errorContainer = this.form.querySelector("#error");
+        errorContainer.querySelector("output").textContent = error;
+        errorContainer.hidden = false;
+    }
+
+    hideError() {
+        this.form.querySelector("#error").hidden = true;
     }
 }
 

@@ -10,6 +10,8 @@
         "scripts": [
             "scripts/config.js",
             "scripts/github.js",
+            "scripts/github-light.js",
+            "scripts/github-enterprise.js",
             "scripts/storage.js",
             "scripts/storage-manager.js",
             "scripts/handler.js",

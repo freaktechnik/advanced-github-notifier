@@ -117,7 +117,7 @@ class ClientHandler extends window.Storage {
             }
         }
         else {
-            throw new Error(`An error occurred during authorization: ${url.searchParams.get("error_description")}. See ${url.searchParams.get("error_uri")}`);
+            throw new Error(`An error occurred during authorization: "${url.searchParams.get("error_description")}". See ${url.searchParams.get("error_uri")}`);
         }
     }
 

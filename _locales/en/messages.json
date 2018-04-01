@@ -121,6 +121,9 @@
     "account_enterprise": {
         "message": "GitHub Enterprise"
     },
+    "account_github_light": {
+        "message": "GitHub (no private repos)"
+    },
     "addAccount": {
         "message": "Add account"
     },
