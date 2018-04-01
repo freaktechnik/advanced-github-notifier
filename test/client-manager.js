@@ -9,6 +9,10 @@ test.beforeEach(async (t) => {
         '../scripts/storage.js',
         '../scripts/storage-manager.js',
         '../scripts/handler.js',
+        '../scripts/github.js',
+        '../scripts/github-enterprise.js',
+        '../scripts/github-light.js',
+        '../scripts/github-user-token.js',
         '../scripts/client-manager.js'
     ]);
     t.context.window = dom.window;
@@ -35,6 +39,7 @@ test('add handler client', async (t) => {
     t.true(t.context.window.browser.storage.local.set.calledOnce);
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
         handlers: [ {
+            details: {},
             type: t.context.window.ClientManager.GITHUB,
             notifications: handler.NOTIFICATION_NAME,
             id: handler.id,

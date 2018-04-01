@@ -31,7 +31,7 @@ test('redirect URI', (t) => {
     t.true(t.context.window.GitHub.REDIRECT_URI instanceof t.context.window.URL);
 
     const redirectUri = new t.context.window.URL(t.context.window.redirectUri);
-    t.deepEqual(t.context.window.GitHub.REDIRECT_URI.toString(), encodeURIComponent(redirectUri.toString()));
+    t.deepEqual(t.context.window.GitHub.REDIRECT_URI.toString(), redirectUri.toString());
 });
 
 test('footer urls', (t) => {
@@ -103,7 +103,7 @@ test('auth url', (t) => {
     const clientId = 'foo bar';
     const client = new GitHub(clientId);
     const authState = 'lorem ipsum';
-    t.is(client.authURL(authState), `${GitHub.SITE_URI}login/oauth/authorize?client_id=${clientId}&scope=${GitHub.SCOPE}&state=${authState}&redirect_uri=${GitHub.REDIRECT_URI.toString()}`);
+    t.is(client.authURL(authState), `${GitHub.SITE_URI}login/oauth/authorize?client_id=${clientId}&scope=${GitHub.SCOPE}&state=${authState}&redirect_uri=${encodeURIComponent(GitHub.REDIRECT_URI.toString())}`);
 });
 
 test('set token', (t) => {

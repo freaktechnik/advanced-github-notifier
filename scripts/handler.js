@@ -68,7 +68,7 @@ class ClientHandler extends window.Storage {
     }
 
     constructor(client, area) {
-        const uri = new URL(Object.getPrototypeOf(client).constructor.SITE_URI);
+        const uri = new URL(client.buildSiteURL());
         super(uri.hostname + client.id, area);
         this._prefix = uri.hostname;
         this.client = client;
