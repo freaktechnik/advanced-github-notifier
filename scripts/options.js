@@ -94,7 +94,7 @@ class AccountManager extends window.StorageManager {
             browser.runtime.sendMessage({
                 topic: "login",
                 type: typeForm.value,
-                details: this.getDetails()
+                details: this.getDetails(typeForm.value)
             }).catch((error) => {
                 this.showError(error.message);
             });
@@ -128,8 +128,8 @@ class AccountManager extends window.StorageManager {
         return this.list.querySelector(`[data-id="${id}"]`);
     }
 
-    getDetails() {
-        const inputs = this.form.querySelectorAll('fieldset[nane="enterprise"] input'),
+    getDetails(type) {
+        const inputs = this.form.querySelectorAll(`fieldset[name="${type}"] input`),
             details = {};
         for(const input of inputs) {
             if(input.value && !input.disabled) {

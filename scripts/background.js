@@ -178,21 +178,29 @@ const init = async () => {
     if(!count) {
         needsAuth();
     }
-    //TODO only here should we have an online check?
     else {
         await setupNotificationWorkers();
     }
 };
 
-if(navigator.onLine) {
-    init().catch(console.error);
-}
-else {
-    window.addEventListener("online", () => {
-        init().catch(console.error);
-    }, {
-        passive: true,
-        capture: false,
-        once: true
-    });
-}
+window.requestIdleCallback(async () => {
+    if(navigator.onLine) {
+        await init().catch(console.error);
+    }
+    else {
+        // If we can't retrieve the accounts, wait for internet and try again.
+        const records = await manager.getRecords().catch(() => [ 0, 1 ]);
+        if(!records.length) {
+            needsAuth();
+        }
+        else {
+            window.addEventListener("online", () => {
+                init().catch(console.error);
+            }, {
+                passive: true,
+                capture: false,
+                once: true
+            });
+        }
+    }
+});

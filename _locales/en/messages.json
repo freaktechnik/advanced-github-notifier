@@ -121,11 +121,11 @@
     "account_enterprise": {
         "message": "GitHub Enterprise"
     },
-    "account_github_light": {
+    "account_github-light": {
         "message": "GitHub (no private repos)"
     },
-    "account_github_user": {
-        "message": "GitHub (User Access Token)"
+    "account_github-user": {
+        "message": "GitHub (Personal access token)"
     },
     "addAccount": {
         "message": "Add account"
@@ -143,6 +143,9 @@
         "message": "Instance URL"
     },
     "userToken": {
-        "message": "User Access Token"
+        "message": "Personal access token"
+    },
+    "generate_token": {
+        "message": "Create personal access token"
     }
 }
