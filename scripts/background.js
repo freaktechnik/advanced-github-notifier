@@ -189,7 +189,10 @@ window.requestIdleCallback(async () => {
     }
     else {
         // If we can't retrieve the accounts, wait for internet and try again.
-        const records = await manager.getRecords().catch(() => [ 0, 1 ]);
+        const records = await manager.getRecords().catch(() => [
+            0,
+            1
+        ]);
         if(!records.length) {
             needsAuth();
         }
