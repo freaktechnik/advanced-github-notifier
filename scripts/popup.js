@@ -12,6 +12,15 @@ const loaded = new Promise((resolve) => {
     });
 });
 const idPrefix = "ghnotif";
+const formatter = new Intl.DateTimeFormat(undefined, {
+    weekday: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+});
 
 const clickListener = (id) => {
     browser.runtime.sendMessage({
@@ -83,15 +92,6 @@ const notificationList = {
         root.id = idPrefix + notification.id;
         root.classList.add("panel-list-item");
         const date = new Date(notification.updated_at);
-        const formatter = new Intl.DateTimeFormat(browser.i18n.getUILanguage().replace("_", "-"), {
-            weekday: "short",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-        });
         root.title = formatter.format(date);
 
         if(notification.subject.type == "Issue" || notification.subject.type == "PullRequest") {

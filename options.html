@@ -14,26 +14,33 @@
         <section id="accounts">
             <form id="login">
                 <select class="browser-style">
-                    <option value="github" data-l10n-id="account_github">GitHub</option>
-                    <option value="github-light" data-l10n-id="account_github_light">GitHub (no private repos)</option>
+                    <option value="github" data-l10n-id="account_github" disabled>GitHub</option>
+                    <option value="github-light" data-l10n-id="account_github_light" disabled>GitHub (no private repos)</option>
                     <option value="enterprise" data-l10n-id="account_enterprise">GitHub Enterprise</option>
+                    <option value="github-user" data-l10n-id="account_github_user" selected>GitHub (User Access Token)</option><!-- default because OAuth flow is broken -->
                 </select>
                 <fieldset name="enterprise" hidden>
                     <p class="browser-style">
-                        <label for="enterprise-clientid">Client ID</label>
+                        <label for="enterprise-clientid" data-l10n-id="clientID">Client ID</label>
                         <input type="text" id="enterprise-clientid" class="browser-style" name="clientId" disabled>
                     </p>
                     <p class="browser-style">
-                        <label for="enterprise-clientsecret">Client Secret</label>
+                        <label for="enterprise-clientsecret" data-l10n-id="clientSecret">Client secret</label>
                         <input type="password" id="enterprise-clientsecret" class="browser-style" name="clientSecret" disabled>
                     </p>
                     <p class="browser-style">
-                        <label for="enterprise-url">Instance URL</label>
+                        <label for="enterprise-url" data-l10n-id="instanceURL">Instance URL</label>
                         <input type="url" id="enterprise-url" class="browser-style" name="instanceURL" disabled>
                     </p>
                 </fieldset>
+                <fieldset name="github-user" hidden>
+                    <p class="browser-style">
+                        <label for="github-user-token" data-l10n-id="userToken">User Access Token</label>
+                        <input type="password" id="github-user-token" name="token" disabled>
+                    </p>
+                </fieldset>
                 <button class="browser-style" type="submit" data-l10n-id="addAccount">Add account</button>
-                <p hidden id="error"><output></output></p>
+                <p hidden id="error"><img src="images/alert.svg"> <output></output></p>
             </form>
             <ul id="active">
             </ul>

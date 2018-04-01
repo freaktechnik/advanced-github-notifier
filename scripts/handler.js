@@ -45,6 +45,28 @@ class ClientHandler extends window.Storage {
         return "images/comment.";
     }
 
+    static buildNotificationDetails(notification) {
+        // Try to build the details as good as we can
+        const subjectDetails = {
+            "html_url": this.client.buildSiteURL()
+        };
+
+        /* eslint-disable camelcase */
+        if(notification.subject.type === "Issue" || notification.subject.type === "PullRequest") {
+            subjectDetails.state = "undefined";
+            subjectDetails.merged = false;
+            subjectDetails.number = parseInt(notification.subject.url.split("/").pop(), 10);
+            if("repository" in notification.subject) {
+                subjectDetails.html_url = `${notification.subject.repository.html_url}/issues/${subjectDetails.number}`;
+            }
+        }
+        else if("repository" in notification.subject) {
+            subjectDetails.html_url = notification.subject.repository.html_url;
+        }
+        /* eslint-enable camelcase */
+        return subjectDetails;
+    }
+
     constructor(client, area) {
         const uri = new URL(Object.getPrototypeOf(client).constructor.SITE_URI);
         super(uri.hostname + client.id, area);
@@ -98,12 +120,31 @@ class ClientHandler extends window.Storage {
     }
 
     async login() {
+        // User Token Client.
+        if(this.client.token) {
+            await this.client.getUsername();
+            this.storageId = this._prefix + this.client.id;
+            await this.setValue(ClientHandler.TOKEN, this.client.token);
+            await this.setValue(ClientHandler.USERNAME, this.client._username);
+            return;
+        }
+        // Do OAuth for non-User-Token clients
         const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(HEX);
-        const rawURL = await browser.identity.launchWebAuthFlow({
-            url: this.client.authURL(authState),
-            interactive: true
-        });
-        const url = new URL(rawURL);
+        let url;
+        try {
+            const rawURL = await browser.identity.launchWebAuthFlow({
+                url: this.client.authURL(authState),
+                interactive: true
+            });
+            url = new URL(rawURL);
+        }
+        catch(e) {
+            // Ignore if the user cancelled.
+            if(e.message === 'User cancelled or denied access.') {
+                return;
+            }
+            throw e;
+        }
         if(!url.searchParams.has("error") && url.searchParams.has("code") &&
             url.searchParams.get("state") == authState) {
             try {
@@ -116,7 +157,7 @@ class ClientHandler extends window.Storage {
                 throw new Error("Was not granted required permissions");
             }
         }
-        else {
+        else if(url.searchParams.get('error') !== 'access_denied') {
             throw new Error(`An error occurred during authorization: "${url.searchParams.get("error_description")}". See ${url.searchParams.get("error_uri")}`);
         }
     }
@@ -197,6 +238,10 @@ class ClientHandler extends window.Storage {
         return this.client.unsubscribeNotification(this._getOriginalID(id));
     }
 
+    getDetails() {
+        return this.client.getDetails();
+    }
+
     _getNotifications() {
         return this.getValue(ClientHandler.NOTIFICATIONS, []);
     }
@@ -234,8 +279,13 @@ class ClientHandler extends window.Storage {
 
             if(fetchDetails) {
                 try {
-                    const details = await this.client.getNotificationDetails(notification);
-                    notification.subjectDetails = details;
+                    try {
+                        const details = await this.client.getNotificationDetails(notification);
+                        notification.subjectDetails = details;
+                    }
+                    catch(e) {
+                        notification.subjectDetails = ClientHandler.buildNotificationDetails(notification);
+                    }
                     notification.icon = ClientHandler.getNotificationIcon(notification);
                 }
                 catch(e) {

@@ -31,7 +31,7 @@ test('redirect URI', (t) => {
     t.true(t.context.window.GitHub.REDIRECT_URI instanceof t.context.window.URL);
 
     const redirectUri = new t.context.window.URL(t.context.window.redirectUri);
-    t.deepEqual(t.context.window.GitHub.REDIRECT_URI.toString(), redirectUri.toString());
+    t.deepEqual(t.context.window.GitHub.REDIRECT_URI.toString(), encodeURIComponent(redirectUri.toString()));
 });
 
 test('footer urls', (t) => {

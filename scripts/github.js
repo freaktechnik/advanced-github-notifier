@@ -50,11 +50,18 @@ class GitHub {
     static get FOOTER_URLS() {
         return {
             "index": GitHub.SITE_URI,
-            "unread": `${GitHub.SIZE_URI}notifications`,
+            "unread": `${GitHub.SITE_URI}notifications`,
             "all": `${GitHub.SITE_URI}notifications?all=1`,
             "participating": `${GitHub.SITE_URI}notifications/participating`,
             "watched": `${GitHub.SITE_URI}watched`
         };
+    }
+
+    static buildArgs(clientID, clientSecret) {
+        return [
+            clientID,
+            clientSecret
+        ];
     }
 
     constructor(clientID, clientSecret) {
@@ -85,11 +92,11 @@ class GitHub {
         return this._username;
     }
 
-    buildAPIURL(endpoint) {
+    buildAPIURL(endpoint = '') {
         return GitHub.BASE_URI + endpoint;
     }
 
-    buildSiteURL(endpoint) {
+    buildSiteURL(endpoint = '') {
         return GitHub.SITE_URI + endpoint;
     }
 
@@ -315,6 +322,10 @@ class GitHub {
         }
 
         throw new Error(`Could not load details for ${notification.subject.title}: Error ${response.status}`);
+    }
+
+    getDetails() {
+        return {};
     }
 }
 

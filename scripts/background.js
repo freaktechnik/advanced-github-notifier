@@ -152,7 +152,6 @@ browser.runtime.onMessage.addListener((message) => {
     }
     case "login":
         return createHandler(message.type, message.details);
-        break;
     default:
     }
 });

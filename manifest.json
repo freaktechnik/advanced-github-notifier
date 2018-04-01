@@ -12,6 +12,7 @@
             "scripts/github.js",
             "scripts/github-light.js",
             "scripts/github-enterprise.js",
+            "scripts/github-user-token.js",
             "scripts/storage.js",
             "scripts/storage-manager.js",
             "scripts/handler.js",

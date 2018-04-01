@@ -95,8 +95,8 @@ class AccountManager extends window.StorageManager {
                 topic: "login",
                 type: typeForm.value,
                 details: this.getDetails()
-            }).catch((e) => {
-                this.showError(e.message);
+            }).catch((error) => {
+                this.showError(error.message);
             });
         }, {
             passive: false
@@ -108,6 +108,9 @@ class AccountManager extends window.StorageManager {
             passive: true,
             capture: false
         });
+
+        // Ensure the corect things are shown
+        this.validateForm();
     }
 
     async getInstances() {
@@ -136,15 +139,26 @@ class AccountManager extends window.StorageManager {
         return details;
     }
 
-    validateForm() {
-        this.hideError();
-        const enterprise = this.form.querySelector('fieldset[name="enterprise"]'),
-            inputs = enterprise.querySelectorAll('input');
-        const visible = this.form.querySelector("select").value === 'enterprise';
-        enterprise.hidden = !visible;
+    validateFieldset(fieldset, current) {
+        const visible = fieldset.name === current;
+        if(fieldset.hidden !== visible) {
+            // Only update if visibility state is different.
+            return;
+        }
+        const inputs = fieldset.querySelectorAll('input');
+        fieldset.hidden = !visible;
         for(const input of inputs) {
             input.disabled = !visible;
             input.required = visible;
+        }
+    }
+
+    validateForm() {
+        this.hideError();
+        const current = this.form.querySelector("select").value;
+        const fieldsets = this.form.querySelectorAll('fieldset');
+        for(const fieldset of fieldsets) {
+            this.validateFieldset(fieldset, current);
         }
         return this.form.checkValidity();
     }

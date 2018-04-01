@@ -124,10 +124,25 @@
     "account_github_light": {
         "message": "GitHub (no private repos)"
     },
+    "account_github_user": {
+        "message": "GitHub (User Access Token)"
+    },
     "addAccount": {
         "message": "Add account"
     },
     "allAccounts": {
         "message": "All accounts"
+    },
+    "clientID": {
+        "message": "Client ID"
+    },
+    "clientSecret": {
+        "message": "Client secret"
+    },
+    "instanceURL": {
+        "message": "Instance URL"
+    },
+    "userToken": {
+        "message": "User Access Token"
     }
 }

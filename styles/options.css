@@ -24,3 +24,8 @@ section {
 section + section {
     border-top: 1px solid #d7d7db;
 }
+
+#error img {
+    height: 1em;
+    width: 1em;
+}

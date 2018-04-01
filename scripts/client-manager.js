@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global GitHub, clientId, clientSecret, ClientHandler, GitHubLight, GitHubEnterprise */
+/* global clientId, clientSecret */
 //TODO some way to handle accounts that have failing logins instead of just removing them.
 
 class ClientManager extends window.StorageManager {
@@ -19,33 +19,49 @@ class ClientManager extends window.StorageManager {
         return "github-light";
     }
 
+    static get GITHUB_USER_TOKEN() {
+        return "github-user";
+    }
+
+    static getTypeForClient(client) {
+        if(client instanceof window.GitHubEnterprise) {
+            return ClientManager.ENTERPRISE;
+        }
+        else if(client instanceof window.GitHubLight) {
+            return ClientManager.GITHUB_LIGHT;
+        }
+        else if(client instanceof window.GitHubUserToken) {
+            return ClientManager.GITHUB_USER_TOKEN;
+        }
+        return ClientManager.GITHUB;
+    }
+
     static async createClient(type, id, details) {
         let ClientFactory;
-        const factoryArgs = [];
         if(type === ClientManager.GITHUB) {
-            ClientFactory = GitHub;
-            factoryArgs.push(clientId);
-            factoryArgs.push(clientSecret);
+            ClientFactory = window.GitHub;
         }
         else if(type === ClientManager.GITHUB_LIGHT) {
-            ClientFactory = GitHubLight;
-            factoryArgs.push(clientId);
-            factoryArgs.push(clientSecret);
+            ClientFactory = window.GitHubLight;
         }
         else if(type === ClientManager.ENTERPRISE) {
-            ClientFactory = GitHubEnterprise;
+            ClientFactory = window.GitHubEnterprise;
             if(!details) {
                 throw new Error("Details required to create enterprise client");
             }
-            factoryArgs.push(details.clientId);
-            factoryArgs.push(details.clientSecret);
-            factoryArgs.push(details.instanceURL);
         }
+        else if(type === ClientManager.GITHUB_USER_TOKEN) {
+            ClientFactory = window.GitHubUserToken;
+            if(!details) {
+                throw new Error("Details required to create enterprise client");
+            }
+        }
+        const factoryArgs = ClientFactory.buildArgs(clientId, clientSecret, details);
         const client = new ClientFactory(...factoryArgs);
         if(id) {
             client.id = id;
         }
-        const wrapper = new ClientHandler(client, this.area);
+        const wrapper = new window.ClientHandler(client, this.area);
         return wrapper;
     }
 
@@ -73,7 +89,7 @@ class ClientManager extends window.StorageManager {
 
     addClient(client) {
         //TODO ensure no duplicates of accounts are added.
-        if(client instanceof ClientHandler) {
+        if(client instanceof window.ClientHandler) {
             this.clients.add(client);
             return this.saveFields();
         }
@@ -89,9 +105,10 @@ class ClientManager extends window.StorageManager {
         const handlers = [];
         for(const client of this.getClients()) {
             const obj = window.StorageManager.createRecord(client);
-            obj.type = ClientManager.GITHUB;
+            obj.type = ClientManager.getTypeForClient(client.client);
             obj.notifications = client.NOTIFICATION_NAME;
             obj.id = client.id;
+            obj.details = client.getDetails();
             handlers.push(obj);
         }
         return this.setRecords(handlers);

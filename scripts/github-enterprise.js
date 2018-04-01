@@ -3,8 +3,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global GitHub */
-class GitHubEnterprise extends GitHub {
+
+class GitHubEnterprise extends window.GitHub {
+    static buildArgs(clientID, clientSecret, details) {
+        return [
+            details.clientId,
+            details.clientSecret,
+            details.instanceURL
+        ];
+    }
+
     constructor(clientID, clientSecret, baseURI) {
         super(clientID, clientSecret);
         this.instanceURL = baseURI;
@@ -19,6 +27,14 @@ class GitHubEnterprise extends GitHub {
 
     buildAPIUrl(endpoint) {
         return this.buildSiteUrl(`api/v3/${endpoint}`);
+    }
+
+    getDetails() {
+        return {
+            clientId: this.clientID,
+            clientSecret: this.clientSecret,
+            instanceURL: this.instanceURL
+        };
     }
 }
 
