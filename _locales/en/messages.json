@@ -48,7 +48,7 @@
         "description": "Label of button to log out from the extension"
     },
     "showNotifications": {
-        "message": "Show notifications",
+        "message": "Show desktop notifications",
         "description": "Label for the settings checkbox to control if the extension shows notifications"
     },
     "footerLabel": {
