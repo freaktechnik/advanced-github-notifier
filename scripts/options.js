@@ -264,11 +264,13 @@ window.addEventListener("DOMContentLoaded", () => {
         })
         .catch(console.error);
 
-    browser.storage.managed.get('enterprise')
-        .then((result) => {
-            if(result.enterprise) {
-                manager.addEnterpriseInstance(result.enterprise);
-            }
-        })
-        .catch(console.error);
+    if("managed" in browser.storage) {
+        browser.storage.managed.get('enterprise')
+            .then((result) => {
+                if(result.enterprise) {
+                    manager.addEnterpriseInstance(result.enterprise);
+                }
+            })
+            .catch(console.error);
+    }
 }, PASSIVE_EVENT);
