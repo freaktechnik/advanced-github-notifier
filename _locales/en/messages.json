@@ -147,5 +147,11 @@
     },
     "generate_token": {
         "message": "Create personal access token"
+    },
+    "token_scopes": {
+        "message": "The token must at least have the \"notifications\" scope. For private repos it needs \"repo\" to function correctly."
+    },
+    "enterprise_redirect": {
+        "message": "The redirect URL is \"https://localhost/github-auth\""
     }
 }

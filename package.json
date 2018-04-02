@@ -76,7 +76,10 @@
         "test",
         "coverage",
         "package*.json",
-        "node_modules"
+        "node_modules",
+        ".*",
+        "web-ext-artifacts",
+        "*.md"
      ]
   }
 }

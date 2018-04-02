@@ -32,12 +32,14 @@
                         <label for="enterprise-url" data-l10n-id="instanceURL">Instance URL</label>
                         <input type="url" id="enterprise-url" class="browser-style" name="instanceURL" disabled>
                     </p>
+                    <small data-l10n-id="enterprise_redirect">The redirect URL is "https://localhost/github-auth"</small>
                 </fieldset>
                 <fieldset name="github-user" hidden>
                     <p class="browser-style">
                         <label for="github-user-token" data-l10n-id="userToken">Personal access token</label>
                         <input type="password" id="github-user-token" class="browser-style" name="token" disabled>
                         <a href="https://github.com/settings/tokens/new" data-l10n-id="generate_token" rel="noopener" target="_blank">Create personal access token</a>
+                        <small data-l10n-id="token_scopes">The token must at least have the "notifications" scope. For private repos it needs "repo" to function correctly.</small>
                     </p>
                 </fieldset>
                 <button class="browser-style" type="submit" data-l10n-id="addAccount">Add account</button>
