@@ -13,7 +13,7 @@
     margin-left: 0.5em;
 }
 
-#active li button {
+.account-controls {
     float: right;
 }
 
@@ -28,4 +28,9 @@ section + section {
 #error img {
     height: 1em;
     width: 1em;
+}
+
+#active label.disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
 }

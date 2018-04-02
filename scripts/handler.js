@@ -20,6 +20,10 @@ class ClientHandler extends window.Storage {
         return "username";
     }
 
+    static get SHOW_NOTIFICATIONS() {
+        return "showNotifications";
+    }
+
     static getNotificationIcon(notification) {
         if(notification.subject.type === "RepositoryInvitation") {
             return "images/mail.";
@@ -84,6 +88,10 @@ class ClientHandler extends window.Storage {
 
     get TOKEN_NAME() {
         return this.getStorageKey(ClientHandler.TOKEN);
+    }
+
+    get SHOW_NAME() {
+        return this.getStorageKey(ClientHandler.SHOW_NOTIFICATIONS);
     }
 
     get NOTIFICATION_PREFIX() {
@@ -171,7 +179,8 @@ class ClientHandler extends window.Storage {
         await this.removeValues([
             ClientHandler.TOKEN,
             ClientHandler.NOTIFICATIONS,
-            ClientHandler.USERNAME
+            ClientHandler.USERNAME,
+            ClientHandler.SHOW_NOTIFICATIONS
         ]);
     }
 
@@ -262,6 +271,7 @@ class ClientHandler extends window.Storage {
             hide: false
         });
         const notifications = await this.getValue(ClientHandler.NOTIFICATIONS, []);
+        const showNotifications = await this.getValue(ClientHandler.SHOW_NOTIFICATIONS, true);
         const stillNotificationIds = [];
         let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
             notification.id = this._getNotificationID(notification.id);
@@ -297,7 +307,7 @@ class ClientHandler extends window.Storage {
             }
             if(notification.new) {
                 //TODO shouldn't be here
-                if(!hide) {
+                if(!hide && showNotifications) {
                     await browser.notifications.create(notification.id, {
                         type: "basic",
                         title: notification.subject.title,

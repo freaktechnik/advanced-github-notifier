@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-//TODO add enterprise login via amangement.
+//TODO add enterprise login via management.
 const PASSIVE_EVENT = {
     capturing: false,
     passive: true
@@ -34,11 +34,35 @@ class Account extends window.Storage {
 
         // Show what enterprise instance the account belongs to
         if(this.type.startsWith('enterprise')) {
-            typeNode.textContent += ` (${this.details.instanceURL})`;
+            typeNode.textContent += ` - ${this.details.instanceURL}`;
         }
 
         const username = await this.getValue('username');
         const usernameNode = document.createTextNode(username);
+
+        const controls = document.createElement("div");
+        controls.classList.add("account-controls")
+
+        const showNotifications = document.createElement("label");
+        const checkbox = document.createElement("input");
+        const checkboxDummy = document.createElement("label");
+        showNotifications.classList.add("browser-style");
+        showNotifications.append(document.createTextNode(browser.i18n.getMessage('showNotifications')));
+
+        checkbox.type = "checkbox";
+        checkbox.disabled = !document.getElementById("notifications").checked;
+        checkbox.id = `notifs-${this.id}`;
+        checkbox.classList.add('visually-hidden');
+        checkbox.classList.add('account-notifs');
+        checkbox.checked = await this.getValue('showNotifications', true);
+        //TODO add setting and listener and all that
+
+        checkboxDummy.htmlFor = checkbox.id;
+
+        showNotifications.classList.toggle("disabled", checkbox.disabled);
+        showNotifications.append(checkbox);
+        showNotifications.insertAdjacentText('beforeend', ' ');
+        showNotifications.append(checkboxDummy);
 
         const logout = document.createElement("button");
         logout.classList.add('browser-style');
@@ -47,7 +71,9 @@ class Account extends window.Storage {
 
         this.root.append(usernameNode);
         this.root.append(typeNode);
-        this.root.append(logout);
+        controls.append(showNotifications);
+        controls.append(logout);
+        this.root.append(controls);
     }
 
     logout() {
@@ -188,6 +214,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
     notifications.addEventListener("change", () => {
         browser.storage.local.set({ hide: !notifications.checked });
+        // Disable account-specific notifications checkboxes if notifications are not to be shown
+        const accountCheckboxes = document.querySelectorAll('input.account-notifs');
+        for(const checkbox of accountCheckboxes) {
+            checkbox.disabled = !notifications.checked;
+            checkbox.parentNode.classList.toggle("disabled", !notifications.checked);
+        }
     }, PASSIVE_EVENT);
 
     footer.addEventListener("change", () => {
