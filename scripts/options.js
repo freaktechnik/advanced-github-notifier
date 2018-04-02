@@ -4,19 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+//TODO add enterprise login via amangement.
 const PASSIVE_EVENT = {
     capturing: false,
     passive: true
 };
 
 class Account extends window.Storage {
-    static get TYPES() {
-        return Object.freeze({
-            GITHUB: "github",
-            GITHUB_LIGHT: "github-light",
-            ENTERPRISE: "enterprise"
-        });
-    }
 
     constructor(type, id, area) {
         super(id, area);
@@ -25,6 +19,13 @@ class Account extends window.Storage {
         this.root = document.createElement("li");
         this.root.dataset.id = this.id;
         this.buildAccount();
+    }
+
+    get removeAction() {
+        if(this.type === 'enterprise-pat' || this.type === 'github-user') {
+            return browser.i18n.getMessage('remove');
+        }
+        return browser.i18n.getMessage('logout');
     }
 
     async buildAccount() {
@@ -36,7 +37,7 @@ class Account extends window.Storage {
 
         const logout = document.createElement("button");
         logout.classList.add('browser-style');
-        logout.textContent = browser.i18n.getMessage("logout");
+        logout.textContent = this.removeAction;
         logout.addEventListener("click", () => this.logout(), PASSIVE_EVENT);
 
         this.root.append(usernameNode);

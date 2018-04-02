@@ -162,5 +162,8 @@
     },
     "group_enterprise_label": {
         "message": "GitHub Enterprise"
+    },
+    "remove": {
+        "message": "Remove"
     }
 }
