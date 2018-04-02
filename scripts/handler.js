@@ -126,7 +126,7 @@ class ClientHandler extends window.Storage {
             this.storageId = this._prefix + this.client.id;
             await this.setValue(ClientHandler.TOKEN, this.client.token);
             await this.setValue(ClientHandler.USERNAME, this.client._username);
-            return;
+            return true;
         }
         // Do OAuth for non-User-Token clients
         const authState = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(HEX);
@@ -141,7 +141,7 @@ class ClientHandler extends window.Storage {
         catch(e) {
             // Ignore if the user cancelled.
             if(e.message === 'User cancelled or denied access.') {
-                return;
+                return false;
             }
             throw e;
         }
@@ -156,10 +156,13 @@ class ClientHandler extends window.Storage {
             catch(e) {
                 throw new Error("Was not granted required permissions");
             }
+            return true;
         }
         else if(url.searchParams.get('error') !== 'access_denied') {
             throw new Error(`An error occurred during authorization: "${url.searchParams.get("error_description")}". See ${url.searchParams.get("error_uri")}`);
         }
+        // Access denied
+        return false;
     }
 
     async logout() {

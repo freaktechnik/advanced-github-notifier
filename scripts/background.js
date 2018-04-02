@@ -93,9 +93,10 @@ const afterAdd = async (handler) => {
 
 const createHandler = async (type, details) => {
     const handler = await ClientManager.createClient(type, undefined, details);
-    await handler.login();
-    manager.addClient(handler);
-    await afterAdd(handler);
+    if(await handler.login()) {
+        manager.addClient(handler);
+        await afterAdd(handler);
+    }
 };
 
 browser.runtime.onMessage.addListener((message) => {
