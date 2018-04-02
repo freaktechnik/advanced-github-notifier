@@ -125,10 +125,19 @@ class AccountManager extends window.StorageManager {
                 //TODO show error
                 return;
             }
+            let type = typeForm.value,
+                details;
+            if(type === 'enterprise-preconfig') {
+                type = 'enterprise';
+                details = this.enterpriseInstance;
+            }
+            else {
+                details = this.getDetails(type);
+            }
             browser.runtime.sendMessage({
                 topic: "login",
-                type: typeForm.value,
-                details: this.getDetails(typeForm.value)
+                type,
+                details
             }).catch((error) => {
                 this.showError(error.message);
             });
@@ -206,6 +215,19 @@ class AccountManager extends window.StorageManager {
     hideError() {
         this.form.querySelector("#error").hidden = true;
     }
+
+    addEnterpriseInstance(instanceConfig) {
+        if(this.enterpriseInstance) {
+            document.getElementById('enterprise-preconfigured').remove();
+        }
+        this.enterpriseInstance = instanceConfig;
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = instanceConfig.instanceURL;
+        optgroup.id = 'enterprise-preconfigured';
+        const option = new Option(browser.i18n.getMessage('account_enterprise-preconfig', instanceConfig.instanceURL), 'enterprise-preconfig', true, true);
+        optgroup.appned(option);
+        this.form.querySelector("select").append(optgroup);
+    }
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -238,6 +260,14 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             if(result.footer) {
                 footer.value = result.footer;
+            }
+        })
+        .catch(console.error);
+
+    browser.storage.managed.get('enterprise')
+        .then((result) => {
+            if(result.enterprise) {
+                manager.addEnterpriseInstance(result.enterprise);
             }
         })
         .catch(console.error);

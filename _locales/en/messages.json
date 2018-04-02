@@ -127,6 +127,9 @@
     "account_github-user": {
         "message": "GitHub (Personal access token)"
     },
+    "account_enterprise-preconfig": {
+        "message": "GitHub Enterprise ($1)"
+    },
     "addAccount": {
         "message": "Add account"
     },
