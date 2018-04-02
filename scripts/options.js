@@ -41,7 +41,7 @@ class Account extends window.Storage {
         const usernameNode = document.createTextNode(username);
 
         const controls = document.createElement("div");
-        controls.classList.add("account-controls")
+        controls.classList.add("account-controls");
 
         const showNotifications = document.createElement("label");
         const checkbox = document.createElement("input");
@@ -59,7 +59,7 @@ class Account extends window.Storage {
             this.setValue('showNotifications', checkbox.checked);
         }, PASSIVE_EVENT);
 
-        checkboxDummy.htmlFor = checkbox.id;
+        checkboxDummy.htmlFor = checkbox.id; // eslint-disable-line xss/no-mixed-html
 
         showNotifications.classList.toggle("disabled", checkbox.disabled);
         showNotifications.append(checkbox);

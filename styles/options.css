@@ -32,5 +32,5 @@ section + section {
 
 #active label.disabled {
     opacity: 0.8;
-    cursor: not-allowed;
+    cursor: not-allowed; /* stylelint-disable-line plugin/no-unsupported-browser-features */
 }
