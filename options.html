@@ -13,11 +13,17 @@
     <body>
         <section id="accounts">
             <form id="login">
-                <select class="browser-style">
-                    <option value="github" data-l10n-id="account_github" disabled>GitHub</option>
-                    <option value="github-light" data-l10n-id="account_github-light" disabled>GitHub (no private repos)</option>
-                    <option value="enterprise" data-l10n-id="account_enterprise">GitHub Enterprise</option>
-                    <option value="github-user" data-l10n-id="account_github-user" selected>GitHub (Personal access token)</option><!-- default because OAuth flow is broken -->
+                <label for="account-type" data-l10n-id="account_type">Account type</label>
+                <select class="browser-style" id="account-type">
+                    <optgroup label="GitHub.com" data-l10n-id="group_github" data-l10n-nocontent="yes" data-l10n-attrs="label">
+                        <option value="github" data-l10n-id="account_github" disabled>GitHub</option>
+                        <option value="github-light" data-l10n-id="account_github-light" disabled>GitHub (no private repos)</option>
+                        <option value="github-user" data-l10n-id="account_github-user" selected>GitHub (Personal access token)</option><!-- default because OAuth flow is broken -->
+                    </optgroup>
+                    <optgroup label="GitHub Enterprise" data-l10n-id="group_enterprise" data-l10n-nocontent="yes" data-l10n-attrs="label">
+                        <option value="enterprise" data-l10n-id="account_enterprise">GitHub Enterprise (OAuth)</option>
+                        <option value="enterprise-pat" data-l10n-id="account_enterprise-pat">GitHub Enterprise (Personal access token)</option>
+                    </optgroup>
                 </select>
                 <fieldset name="enterprise" hidden>
                     <p class="browser-style">
@@ -40,6 +46,17 @@
                         <input type="password" id="github-user-token" class="browser-style" name="token" disabled>
                         <a href="https://github.com/settings/tokens/new" data-l10n-id="generate_token" rel="noopener" target="_blank">Create personal access token</a>
                         <small data-l10n-id="token_scopes">The token must at least have the "notifications" scope. For private repos it needs "repo" to function correctly.</small>
+                    </p>
+                </fieldset>
+                <fieldset name="enterprise-pat" hidden>
+                    <p class="browser-style">
+                        <label for="enterprise-user-token" data-l10n-id="userToken">Personal access token</label>
+                        <input type="password" id="enterprise-user-token" class="browser-style" name="token" disabled>
+                        <small data-l10n-id="token_scopes">The token must at least have the "notifications" scope. For private repos it needs "repo" to function correctly.</small>
+                    </p>
+                    <p class="browser-style">
+                        <label for="enterprise-pat-url" data-l10n-id="instanceURL">Instance URL</label>
+                        <input type="url" id="enterprise-pat-url" class="browser-style" name="instanceURL" disabled>
                     </p>
                 </fieldset>
                 <button class="browser-style" type="submit" data-l10n-id="addAccount">Add account</button>

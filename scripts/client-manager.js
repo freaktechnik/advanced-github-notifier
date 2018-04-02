@@ -23,7 +23,14 @@ class ClientManager extends window.StorageManager {
         return "github-user";
     }
 
+    static get ENTERPRISE_PAT() {
+        return "enterprise-pat";
+    }
+
     static getTypeForClient(client) {
+        if(client instanceof window.GitHubEnterpriseUserToken) {
+            return ClientManager.ENTERPRISE_PAT;
+        }
         if(client instanceof window.GitHubEnterprise) {
             return ClientManager.ENTERPRISE;
         }
@@ -53,7 +60,13 @@ class ClientManager extends window.StorageManager {
         else if(type === ClientManager.GITHUB_USER_TOKEN) {
             ClientFactory = window.GitHubUserToken;
             if(!details) {
-                throw new Error("Details required to create enterprise client");
+                throw new Error("Details required to create PAT client");
+            }
+        }
+        else if(type === ClientManager.ENTERPRISE_PAT) {
+            ClientFactory = window.GitHubEnterpriseUserToken;
+            if(!details) {
+                throw new Error("Details required to create enterprise PAT client");
             }
         }
         const factoryArgs = ClientFactory.buildArgs(clientId, clientSecret, details);
