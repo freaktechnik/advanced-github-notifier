@@ -55,7 +55,9 @@ class Account extends window.Storage {
         checkbox.classList.add('visually-hidden');
         checkbox.classList.add('account-notifs');
         checkbox.checked = await this.getValue('showNotifications', true);
-        //TODO add setting and listener and all that
+        checkbox.addEventListener("input", () => {
+            this.setValue('showNotifications', checkbox.checked);
+        }, PASSIVE_EVENT);
 
         checkboxDummy.htmlFor = checkbox.id;
 
