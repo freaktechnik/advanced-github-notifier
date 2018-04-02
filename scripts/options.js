@@ -11,11 +11,11 @@ const PASSIVE_EVENT = {
 };
 
 class Account extends window.Storage {
-
-    constructor(type, id, area) {
+    constructor(type, id, area, details = {}) {
         super(id, area);
         this.id = id;
         this.type = type;
+        this.details = details;
         this.root = document.createElement("li");
         this.root.dataset.id = this.id;
         this.buildAccount();
@@ -31,6 +31,11 @@ class Account extends window.Storage {
     async buildAccount() {
         const typeNode = document.createElement("small");
         typeNode.textContent = browser.i18n.getMessage(`account_${this.type}`);
+
+        // Show what enterprise instance the account belongs to
+        if(this.type.startsWith('enterprise')) {
+            typeNode.textContent += ` (${this.details.instanceURL})`;
+        }
 
         const username = await this.getValue('username');
         const usernameNode = document.createTextNode(username);
@@ -116,11 +121,11 @@ class AccountManager extends window.StorageManager {
 
     async getInstances() {
         const records = await this.getRecords();
-        return records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY]));
+        return records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY], r.details));
     }
 
-    addAccount(type, id) {
-        const account = new this.StorageInstance(type, id, this.area);
+    addAccount(type, id, details) {
+        const account = new this.StorageInstance(type, id, this.area, details);
         this.list.append(account.root);
         return account;
     }
