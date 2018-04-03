@@ -72,14 +72,14 @@
     "last 1 FirefoxAndroid versions"
   ],
   "webExt": {
-     "ignoreFiles": [
-        "test",
-        "coverage",
-        "package*.json",
-        "node_modules",
-        ".*",
-        "web-ext-artifacts",
-        "*.md"
-     ]
+    "ignoreFiles": [
+      "test",
+      "coverage",
+      "package*.json",
+      "node_modules",
+      ".*",
+      "web-ext-artifacts",
+      "*.md"
+    ]
   }
 }
