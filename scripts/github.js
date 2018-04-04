@@ -53,7 +53,7 @@ class GitHub {
             "unread": `${GitHub.SITE_URI}notifications`,
             "all": `${GitHub.SITE_URI}notifications?all=1`,
             "participating": `${GitHub.SITE_URI}notifications/participating`,
-            "watched": `${GitHub.SITE_URI}watched`
+            "watched": `${GitHub.SITE_URI}watching`
         };
     }
 
