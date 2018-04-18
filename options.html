@@ -36,7 +36,7 @@
                     </p>
                     <p class="browser-style">
                         <label for="enterprise-url" data-l10n-id="instanceURL">Instance URL</label>
-                        <input type="url" id="enterprise-url" class="browser-style" name="instanceURL" disabled>
+                        <input type="url" id="enterprise-url" class="browser-style" name="instanceURL" pattern="https://.+" placeholder="https://example.com" disabled>
                     </p>
                     <small data-l10n-id="enterprise_redirect">The redirect URL is "https://localhost/github-auth"</small>
                 </fieldset>
@@ -56,7 +56,7 @@
                     </p>
                     <p class="browser-style">
                         <label for="enterprise-pat-url" data-l10n-id="instanceURL">Instance URL</label>
-                        <input type="url" id="enterprise-pat-url" class="browser-style" name="instanceURL" disabled>
+                        <input type="url" id="enterprise-pat-url" class="browser-style" name="instanceURL" pattern="https://.+" placeholder="https://example.com" disabled>
                     </p>
                 </fieldset>
                 <button class="browser-style" type="submit" data-l10n-id="addAccount">Add account</button>

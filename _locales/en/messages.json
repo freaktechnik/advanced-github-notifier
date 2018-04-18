@@ -130,6 +130,9 @@
     "account_enterprise-preconfig": {
         "message": "GitHub Enterprise ($1)"
     },
+    "account_enterprise-pat": {
+        "message": "GitHub Enterprise (Personal access token)"
+    },
     "addAccount": {
         "message": "Add account"
     },

@@ -150,10 +150,6 @@ class AccountManager extends window.StorageManager {
             }
 
             if(type === 'enterprise') {
-                if(!details.instanceURL.startsWith('https:')) {
-                    this.showError("Instance must be reachable via HTTPS for OAuth");
-                    return;
-                }
                 let permissionURL = details.instanceURL;
                 if(!permissionURL.endsWith('/')) {
                     permissionURL += '/';
