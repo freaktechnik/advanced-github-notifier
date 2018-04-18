@@ -26,7 +26,7 @@ class GitHubEnterprise extends window.GitHub {
     }
 
     buildAPIURL(endpoint) {
-        return this.buildSiteUrl(`api/v3/${endpoint}`);
+        return this.buildSiteURL(`api/v3/${endpoint}`);
     }
 
     getDetails() {
