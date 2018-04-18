@@ -4,11 +4,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-//TODO add enterprise login via management.
 const PASSIVE_EVENT = {
-    capturing: false,
-    passive: true
-};
+        capturing: false,
+        passive: true
+    },
+    MIN_OAUTH_VERSION = 60;
 
 class Account extends window.Storage {
     constructor(type, id, area, details = {}) {
@@ -99,12 +99,13 @@ class AccountManager extends window.StorageManager {
         browser.runtime.getBrowserInfo()
             .then(({ version }) => {
                 const [ major ] = version.split('.');
-                if(parseInt(major, 10) >= 60) {
+                if(parseInt(major, 10) >= MIN_OAUTH_VERSION) {
                     const disabledOptions = typeForm.querySelectorAll('option[disabled]');
-                    typeForm.querySelector('option[selected]').selected = false;
                     for(const option of disabledOptions) {
                         option.disabled = false;
                     }
+                    // Default selection
+                    typeForm.value = "github";
                 }
             })
             .catch(console.error);
