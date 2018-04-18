@@ -45,6 +45,9 @@
         "storage",
         "https://github.com/login/oauth/access_token"
     ],
+    "optional_permissions": [
+        "https://*/*"
+    ],
     "version": "1.3.4",
     "icons": {
         "48": "images/icon-48.png",

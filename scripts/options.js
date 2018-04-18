@@ -148,6 +148,25 @@ class AccountManager extends window.StorageManager {
             else {
                 details = this.getDetails(type);
             }
+
+            if(type === 'enterprise') {
+                if(!details.instanceURL.startsWith('https:')) {
+                    this.showError("Instance must be reachable via HTTPS for OAuth");
+                    return;
+                }
+                let permissionURL = details.instanceURL;
+                if(!permissionURL.endsWith('/')) {
+                    permissionURL += '/';
+                }
+                permissionURL += 'login/oauth/access_token';
+                const granted = await browser.permissions.request({
+                    origins: [ permissionURL ]
+                });
+                if(!granted) {
+                    this.showError("Can not OAuth without host permission for Enterprise instance");
+                    return;
+                }
+            }
             browser.runtime.sendMessage({
                 topic: "login",
                 type,
@@ -239,7 +258,7 @@ class AccountManager extends window.StorageManager {
         optgroup.label = instanceConfig.instanceURL;
         optgroup.id = 'enterprise-preconfigured';
         const option = new Option(browser.i18n.getMessage('account_enterprise-preconfig', instanceConfig.instanceURL), 'enterprise-preconfig', true, true);
-        optgroup.appned(option);
+        optgroup.append(option);
         this.form.querySelector("select").append(optgroup);
     }
 }
