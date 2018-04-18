@@ -96,6 +96,19 @@ class AccountManager extends window.StorageManager {
 
         const typeForm = this.form.querySelector("select");
 
+        browser.runtime.getBrowserInfo()
+            .then(({ version }) => {
+                const [ major ] = version.split('.');
+                if(parseInt(major, 10) >= 60) {
+                    const disabledOptions = typeForm.querySelectorAll('option[disabled]');
+                    typeForm.querySelector('option[selected]').selected = false;
+                    for(const option of disabledOptions) {
+                        option.disabled = false;
+                    }
+                }
+            })
+            .catch(console.error);
+
         browser.storage.onChanged.addListener((changes, areaName) => {
             if(areaName === "local" && "handlers" in changes) {
                 const handlerIds = new Set();
