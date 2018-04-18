@@ -21,11 +21,11 @@ class GitHubEnterprise extends window.GitHub {
         }
     }
 
-    buildSiteUrl(endpoint) {
+    buildSiteURL(endpoint) {
         return this.instanceURL + endpoint;
     }
 
-    buildAPIUrl(endpoint) {
+    buildAPIURL(endpoint) {
         return this.buildSiteUrl(`api/v3/${endpoint}`);
     }
 
