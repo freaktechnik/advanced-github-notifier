@@ -106,6 +106,7 @@ class AccountManager extends window.StorageManager {
                     }
                     // Default selection
                     typeForm.value = "github";
+                    typeForm.dispatchEvent(new Event("change"));
                 }
             })
             .catch(console.error);
