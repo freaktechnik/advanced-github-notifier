@@ -48,7 +48,7 @@
     "optional_permissions": [
         "https://*/*"
     ],
-    "version": "1.4.0",
+    "version": "1.4.1",
     "icons": {
         "48": "images/icon-48.png",
         "64": "images/icon-64.png",
