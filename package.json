@@ -1,6 +1,6 @@
 {
   "name": "advanced-github-notifier",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A Firefox extension, that not only shows a count of notifications, but also shows notification popups and has a popup that gives direct access to the notifications.",
   "main": "manifest.json",
   "scripts": {
