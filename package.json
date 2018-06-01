@@ -39,7 +39,7 @@
     "eslint": "^4.19.1",
     "jsdom": "^11.7.0",
     "mkdirp": "^0.5.1",
-    "nyc": "^11.6.0",
+    "nyc": "^12.0.1",
     "sinon-chrome": "^2.3.1",
     "stylelint": "^9.2.0",
     "stylelint-config-standard": "^18.2.0",
