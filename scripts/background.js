@@ -27,9 +27,9 @@ const updateBadge = (count) => {
 
 const getNotifications = async (alarm) => {
     if(navigator.onLine) {
+        const handler = manager.getClientById(alarm.name);
         try {
-            const handler = manager.getClientById(alarm.name),
-                update = await handler.check();
+            const update = await handler.check();
             if(update) {
                 updateBadge(await manager.getCount());
             }
