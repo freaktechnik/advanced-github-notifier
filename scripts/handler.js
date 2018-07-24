@@ -76,6 +76,7 @@ class ClientHandler extends window.Storage {
         super(uri.hostname + client.id, area);
         this._prefix = uri.hostname;
         this.client = client;
+        this.pollInterval = 60;
     }
 
     get STORE_PREFIX() {

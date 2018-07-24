@@ -27,14 +27,21 @@ const updateBadge = (count) => {
 
 const getNotifications = async (alarm) => {
     if(navigator.onLine) {
-        const handler = manager.getClientById(alarm.name),
-            update = await handler.check();
-        if(update) {
-            updateBadge(await manager.getCount());
+        try {
+            const handler = manager.getClientById(alarm.name),
+                update = await handler.check();
+            if(update) {
+                updateBadge(await manager.getCount());
+            }
         }
-        browser.alarms.create(handler.STORE_PREFIX, {
-            when: handler.getNextCheckTime()
-        });
+        catch(e) {
+            console.error(e);
+        }
+        finally {
+            browser.alarms.create(handler.STORE_PREFIX, {
+                when: handler.getNextCheckTime()
+            });
+        }
     }
     else {
         window.addEventListener('online', () => getNotifications(alarm), {

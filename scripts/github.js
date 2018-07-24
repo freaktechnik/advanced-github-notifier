@@ -257,7 +257,8 @@ class GitHub {
                 ratelimitRemaining = Math.max(AVOID_INFINITY, parseInt(response.headers.get("X-RateLimit-Remaining"), 10));
             this.pollInterval = Math.max(
                 pollInterval,
-                Math.ceil((ratelimitReset - nowS) / ratelimitRemaining)
+                Math.ceil((ratelimitReset - nowS) / ratelimitRemaining),
+                MIN_POLL_INTEVAL
             );
 
             const now = new Date();
