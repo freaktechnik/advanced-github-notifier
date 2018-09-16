@@ -34,8 +34,8 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-| [<img src="https://avatars0.githubusercontent.com/u/640949?v=4" width="100px;"/><br /><sub><b>Martin Giger</b></sub>](https://humanoids.be)<br />[💻](https://github.com/freaktechnik/advanced-github-notifier/commits?author=freaktechnik "Code") [🌍](#translation-freaktechnik "Translation") [⚠️](https://github.com/freaktechnik/advanced-github-notifier/commits?author=freaktechnik "Tests") |
-| :---: |
+| [<img src="https://avatars0.githubusercontent.com/u/640949?v=4" width="100px;"/><br /><sub><b>Martin Giger</b></sub>](https://humanoids.be)<br />[💻](https://github.com/freaktechnik/advanced-github-notifier/commits?author=freaktechnik "Code") [🌍](#translation-freaktechnik "Translation") [⚠️](https://github.com/freaktechnik/advanced-github-notifier/commits?author=freaktechnik "Tests") | [<img src="https://avatars2.githubusercontent.com/u/272550?v=4" width="100px;"/><br /><sub><b>tooom</b></sub>](https://github.com/Tooom)<br />[📖](https://github.com/freaktechnik/advanced-github-notifier/commits?author=Tooom "Documentation") |
+| :---: | :---: |
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
