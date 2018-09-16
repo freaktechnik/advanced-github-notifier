@@ -39,7 +39,8 @@
       "profile": "https://www.google.com/+SaranTanpituckpong",
       "contributions": [
         "code",
-        "bug"
+        "bug",
+        "translation"
       ]
     },
     {
@@ -108,6 +109,15 @@
         "bug",
         "ideas",
         "test"
+      ]
+    },
+    {
+      "login": "vl.maksime",
+      "name": "Vladimir Maksimenko",
+      "avatar_url": "https://secure.gravatar.com/avatar/4feb84897d4178746e4b0a63a79a7dff?s=100&d=identicon",
+      "profile": "https://www.transifex.com/user/profile/vl.maksime/",
+      "contributions": [
+        "translation"
       ]
     }
   ]
