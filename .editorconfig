@@ -9,7 +9,11 @@ trim_trailing_whitespace = true
 charset = utf-8
 indent_style = space
 indent_size = 4
+# C-style doc comments for eclint
+block_comment_start = /*
+block_comment = *
+block_comment_end = */
 
-[{package.json,.travis.yml}]
+[{package.json,.travis.yml,package-lock.json,codecov.yml}]
 indent_style = space
 indent_size = 2
