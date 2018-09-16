@@ -22,17 +22,6 @@
       ]
     },
     {
-      "login": "Tooom",
-      "name": "tooom",
-      "avatar_url": "https://avatars2.githubusercontent.com/u/272550?v=4",
-      "profile": "https://github.com/Tooom",
-      "contributions": [
-        "doc",
-        "bug",
-        "ideas"
-      ]
-    },
-    {
       "login": "gluons",
       "name": "Saran Tanpituckpong",
       "avatar_url": "https://avatars3.githubusercontent.com/u/4688092?v=4",
@@ -136,6 +125,17 @@
       "profile": "https://www.transifex.com/user/profile/tw0517tw/",
       "contributions": [
         "translation"
+      ]
+    },
+    {
+      "login": "tooomm",
+      "name": "tooomm",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/9874850?v=4",
+      "profile": "https://github.com/tooomm",
+      "contributions": [
+        "doc",
+        "bug",
+        "ideas"
       ]
     }
   ]
