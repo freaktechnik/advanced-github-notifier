@@ -98,6 +98,17 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "sergioc",
+      "name": "Sergio",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/493451?v=4",
+      "profile": "https://github.com/sergioc",
+      "contributions": [
+        "bug",
+        "ideas",
+        "test"
+      ]
     }
   ]
 }
