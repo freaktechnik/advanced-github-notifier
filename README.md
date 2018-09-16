@@ -27,3 +27,15 @@ This product is not developed or run by GitHub. It is a hobbyist project that
 uses the official GitHub API to display information about the notifications
 of a user on the GitHub platform. GitHub and the associated imagery are subject
 to copyright and trademarks of GitHub, Inc.
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+| [<img src="https://avatars0.githubusercontent.com/u/640949?v=4" width="100px;"/><br /><sub><b>Martin Giger</b></sub>](https://humanoids.be)<br />[💻](https://github.com/freaktechnik/advanced-github-notifier/commits?author=freaktechnik "Code") [🌍](#translation-freaktechnik "Translation") [⚠️](https://github.com/freaktechnik/advanced-github-notifier/commits?author=freaktechnik "Tests") |
+| :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
