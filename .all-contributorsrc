@@ -47,6 +47,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Mte90",
+      "name": "Daniele Scasciafratte",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/403283?v=4",
+      "profile": "https://daniele.tech",
+      "contributions": [
+        "bug",
+        "translation"
+      ]
     }
   ]
 }
