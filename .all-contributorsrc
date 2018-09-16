@@ -128,6 +128,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "tw0517tw",
+      "name": "東曄 吳",
+      "avatar_url": "https://secure.gravatar.com/avatar/5ede715d039ef2ff3e747ae6ce2a9ff5?s=100&d=identicon",
+      "profile": "https://www.transifex.com/user/profile/tw0517tw/",
+      "contributions": [
+        "translation"
+      ]
     }
   ]
 }
