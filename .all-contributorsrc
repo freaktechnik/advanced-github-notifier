@@ -60,6 +60,16 @@
         "translation",
         "ideas"
       ]
+    },
+    {
+      "login": "Acid-Crash",
+      "name": "acid-crash",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/32600318?v=4",
+      "profile": "https://github.com/Acid-Crash",
+      "contributions": [
+        "bug",
+        "test"
+      ]
     }
   ]
 }
