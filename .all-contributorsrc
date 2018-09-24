@@ -12,7 +12,7 @@
     "translation": {
       "symbol": "🌍",
       "description": "Translation",
-      "link": "https://www.transifex.com/<%= options.projectOwner %>/<%= options.projectName %>/dashboard/ \"<%= description %>\""
+      "link": "https://www.transifex.com/<%= options.projectOwner %>/<%= options.projectName %>/dashboard/"
     }
   },
   "contributors": [
