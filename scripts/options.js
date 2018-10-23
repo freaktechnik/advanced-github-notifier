@@ -45,26 +45,21 @@ class Account extends window.Storage {
 
         const showNotifications = document.createElement("label");
         const checkbox = document.createElement("input");
-        const checkboxDummy = document.createElement("label");
         showNotifications.classList.add("browser-style");
         showNotifications.append(document.createTextNode(browser.i18n.getMessage('showNotifications')));
 
         checkbox.type = "checkbox";
         checkbox.disabled = !document.getElementById("notifications").checked;
         checkbox.id = `notifs-${this.id}`;
-        checkbox.classList.add('visually-hidden');
         checkbox.classList.add('account-notifs');
         checkbox.checked = await this.getValue('showNotifications', true);
         checkbox.addEventListener("input", () => {
             this.setValue('showNotifications', checkbox.checked);
         }, PASSIVE_EVENT);
 
-        checkboxDummy.htmlFor = checkbox.id; // eslint-disable-line xss/no-mixed-html
-
         showNotifications.classList.toggle("disabled", checkbox.disabled);
         showNotifications.append(checkbox);
         showNotifications.insertAdjacentText('beforeend', ' ');
-        showNotifications.append(checkboxDummy);
 
         const logout = document.createElement("button");
         logout.classList.add('browser-style');
