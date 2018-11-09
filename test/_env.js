@@ -70,8 +70,8 @@ let id = 0;
 export const cleanUp = async (window) => {
     if(process.env.NYC_CONFIG) {
         const nycConfig = JSON.parse(process.env.NYC_CONFIG);
-        await mk(nycConfig.tempDirectory);
-        await wf(path.join(nycConfig.tempDirectory, `${Date.now()}_${process.pid}_${++id}.json`), JSON.stringify(window.__coverage__), 'utf-8');
+        await mk(nycConfig.tempDir);
+        await wf(path.join(nycConfig.tempDir, `${Date.now()}_${process.pid}_${++id}.json`), JSON.stringify(window.__coverage__), 'utf-8');
     }
     window.close();
 };
