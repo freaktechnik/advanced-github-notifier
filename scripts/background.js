@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global GitHub, ClientManager */
+/* global GitHub, ClientManager, MENU_SPEC */
 const manager = new ClientManager(),
     BASE = 10;
 
@@ -192,7 +192,10 @@ const init = async () => {
 };
 
 window.requestIdleCallback(async () => {
-    for(const [ id, messageId ] of Object.entries(MENU_SPEC)) {
+    for(const [
+        id,
+        messageId
+    ] of Object.entries(MENU_SPEC)) {
         browser.menus.create({
             viewTypes: [ 'popup' ],
             documentUrlPatterns: [ browser.runtime.getURL('popup.html') ],
