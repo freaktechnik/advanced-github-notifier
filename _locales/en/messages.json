@@ -92,28 +92,16 @@
         "description": "Label for the hidden button option in the footer function select in the options"
     },
     "markAsRead": {
-        "message": "Mark as read",
+        "message": "&Mark as read",
         "description": "Mark as read context menu item on individual notifications"
     },
-    "markAsRead_accesskey": {
-        "message": "M A R",
-        "description": "Access key attribute for the mark as read context menu item on individual notifications"
-    },
     "unwatch": {
-        "message": "Unsubscribe",
+        "message": "&Unsubscribe",
         "description": "Context menu item to unwatch a thread (issue etc.)"
     },
-    "unwatch_accesskey": {
-        "message": "U W",
-        "description": "Access key attribute for the unwatch context menu item"
-    },
     "ignore": {
-        "message": "Ignore",
+        "message": "&Ignore",
         "description": "Context menu item to ignore a thread (don't resubscribe)"
-    },
-    "ignore_accesskey": {
-        "message": "I G",
-        "description": "Access key attribute for the ignore context menu item"
     },
     "account_github": {
         "message": "GitHub"

@@ -192,6 +192,15 @@ const init = async () => {
 };
 
 window.requestIdleCallback(async () => {
+    for(const [ id, messageId ] of Object.entries(MENU_SPEC)) {
+        browser.menus.create({
+            viewTypes: [ 'popup' ],
+            documentUrlPatterns: [ browser.runtime.getURL('popup.html') ],
+            id,
+            title: browser.i18n.getMessage(messageId),
+            enabled: false
+        });
+    }
     if(navigator.onLine) {
         await init().catch(console.error);
     }

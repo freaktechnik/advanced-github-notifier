@@ -9,6 +9,7 @@
     "background": {
         "scripts": [
             "scripts/config.js",
+            "scripts/menu-spec.js",
             "scripts/github.js",
             "scripts/github-light.js",
             "scripts/github-enterprise.js",
@@ -43,7 +44,9 @@
         "notifications",
         "alarms",
         "storage",
-        "https://github.com/login/oauth/access_token"
+        "https://github.com/login/oauth/access_token",
+        "menus",
+        "menus.overrideContext"
     ],
     "optional_permissions": [
         "https://*/*"

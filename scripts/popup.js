@@ -32,18 +32,38 @@ const clickListener = (id) => {
 
 const contextMenu = {
     target: null,
+    items: Object.keys(MENU_SPEC),
+    menuId: 0,
     init() {
-        this.addListener("markAsRead", "markAsRead");
-        this.addListener("unsubscribe", "unsubscribe");
-        this.addListener("ignore", "ignore");
-    },
-    addListener(id, listenerName) {
-        document.getElementById(id).addEventListener("click", () => this[listenerName](), {
-            capture: false,
-            passive: true
+        //TODO maybe one can toggle shown/hidden from a contextmenu event, i.e. it's early enough?
+        browser.menus.onClicked.addListener(({ menuItemId }) => {
+            this[menuItemId]();
+        });
+        browser.menus.onShown.addListener(({ targetElementId }) => {
+            let target = browser.menus.getTargetElement(targetElementId);
+            if(!target.tagName.toLowerCase() !== 'li') {
+                target = target.closest('li');
+            }
+            const isNotification = target != null && target.classList.contains('panel-list-item'),
+                menuId = this.menuId;
+            //TODO only update if needed? -> always needed the first time since we can't know the initial state between panel opens
+            Promise.all(this.items.map((id) => browser.menus.update(id, {
+                enabled: isNotification
+            }))).then(() => {
+                if(menuId === this.menuId) {
+                    browser.menus.refresh();
+                }
+            });
+        });
+        browser.menus.onHidden.addListener(() => {
+            this.target = null;
+            ++this.menuId;
         });
     },
     openFor(notificationId) {
+        browser.menus.overrideContext({
+            showDefaults: true,
+        });
         this.target = notificationId;
     },
     markAsRead() {
@@ -240,4 +260,19 @@ Promise.all([
     loaded
 ])
     .then(([ { [window.StorageManager.KEY]: result } ]) => notificationList.show(result.map((h) => h.notifications)))
-    .catch(console.error);
+    .catch(console.error)
+    .then(() =>
+        notificationList.create({
+            id: 'test',
+            updated_at: "1999-03-21T14:35:35Z",
+            subject: {
+                type: "Issue",
+                title: "test"
+            },
+            subjectDetails: {
+                number: 1
+            },
+            repository: {
+                full_name: "lorem/ipsum"
+            }
+        }));
