@@ -32,59 +32,69 @@ const clickListener = (id) => {
 };
 
 const contextMenu = {
-    target: null,
     items: Object.keys(MENU_SPEC),
     menuId: 0,
+    areVisible: null,
     init() {
         //TODO maybe one can toggle shown/hidden from a contextmenu event, i.e. it's early enough?
-        browser.menus.onClicked.addListener(({ menuItemId }) => {
-            this[menuItemId]();
+        browser.menus.onClicked.addListener(({
+            menuItemId,
+            targetElementId
+        }) => {
+            const target = this.getTarget(targetElementId);
+            this[menuItemId](target);
         });
         browser.menus.onShown.addListener(({ targetElementId }) => {
-            let target = browser.menus.getTargetElement(targetElementId);
-            if(!target.tagName.toLowerCase() !== 'li') {
-                target = target.closest('li');
-            }
-            const isNotification = target != null && target.classList.contains('panel-list-item'),
+            const isNotification = this.getTarget(targetElementId) !== null,
                 menuId = this.menuId;
-            //TODO only update if needed? -> always needed the first time since we can't know the initial state between panel opens
-            Promise.all(this.items.map((id) => browser.menus.update(id, {
-                enabled: isNotification
-            })))
-                .then(() => {
-                    if(menuId === this.menuId) {
-                        browser.menus.refresh();
-                    }
-                })
-                .catch(console.error);
+            if(this.areVisible !== isNotification) {
+                Promise.all(this.items.map((id) => browser.menus.update(id, {
+                    enabled: isNotification
+                })))
+                    .then(() => {
+                        if(menuId === this.menuId) {
+                            browser.menus.refresh();
+                        }
+                    })
+                    .catch(console.error);
+                this.areVisible = isNotification;
+            }
         });
         browser.menus.onHidden.addListener(() => {
-            this.target = null;
             ++this.menuId;
         });
     },
-    openFor(notificationId) {
+    getTarget(targetElementId) {
+        let target = browser.menus.getTargetElement(targetElementId);
+        if(!target.tagName.toLowerCase() !== 'li') {
+            target = target.closest('li');
+        }
+        if(target != null && target.classList.contains('panel-list-item')) {
+            return target.id.substr(idPrefix.length);
+        }
+        return null;
+    },
+    open() {
         browser.menus.overrideContext({
             showDefaults: true
         });
-        this.target = notificationId;
     },
-    markAsRead() {
+    markAsRead(notificationId) {
         browser.runtime.sendMessage({
             topic: "mark-notification-read",
-            notificationId: this.target
+            notificationId
         });
     },
-    unsubscribe() {
+    unsubscribe(notificationId) {
         browser.runtime.sendMessage({
             topic: "unsubscribe-notification",
-            notificationId: this.target
+            notificationId
         });
     },
-    ignore() {
+    ignore(notificationId) {
         browser.runtime.sendMessage({
             topic: "ignore-notification",
-            notificationId: this.target
+            notificationId
         });
     }
 };
@@ -134,8 +144,12 @@ const notificationList = {
         repo.textContent = notification.repository.full_name;
 
         root.append(image, title, repo);
-        root.addEventListener("click", clickListener.bind(null, notification.id));
-        root.addEventListener("contextmenu", () => contextMenu.openFor(notification.id));
+        root.addEventListener("click", () => clickListener(notification.id), {
+            passive: true
+        });
+        root.addEventListener("contextmenu", () => contextMenu.open(), {
+            passive: true
+        });
         this.root.append(root);
 
         this.toggleEmpty(false);
