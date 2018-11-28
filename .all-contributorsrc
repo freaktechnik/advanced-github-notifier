@@ -144,6 +144,15 @@
         "bug",
         "ideas"
       ]
+    },
+    {
+      "login": "AlexDafonte",
+      "name": "Alejandro Dafonte",
+      "avatar_url": "https://secure.gravatar.com/avatar/0598a2be942c96cbc8fe77232d95389d?s=128&d=identicon",
+      "profile": "https://www.transifex.com/user/profile/AlexDafonte/",
+      "contributions": [
+        "translation"
+      ]
     }
   ]
 }
