@@ -28,7 +28,7 @@ test('constructor', (t) => {
 
 test('add non-handler Client', (t) => {
     const manager = new t.context.window.ClientManager();
-    return t.throws(manager.addClient({}), t.context.window.TypeError);
+    return t.throwsAsync(manager.addClient({}), t.context.window.TypeError);
 });
 
 test('add handler client', async (t) => {
