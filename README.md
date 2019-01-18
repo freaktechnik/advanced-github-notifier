@@ -16,8 +16,8 @@ To run the in-development version from this repository, you either need to use
 about:debugging or the `web-ext` tool. Further the API credentials stored in `config.js` are not
 included in this repo.
 
-## Translation
-The strings for this extension can be translated on [Transifex](https://www.transifex.com/freaktechnik/advanced-github-notifier/).
+## Contributing
+Please check the [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## License
 This extension is licensed under the [MPL-2.0](LICENSE), the octocat and octicons
