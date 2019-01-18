@@ -9,7 +9,8 @@
     "lint:webext": "web-ext lint",
     "lint:ec": "eclint check $(git ls-files)",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:ec && npm run lint:webext",
-    "test": "nyc ava",
+    "test:js": "nyc ava",
+    "test": "npm run lint && npm run test:js",
     "start": "web-ext run",
     "build": "tx pull && web-ext build",
     "coverage": "nyc report && codecov"

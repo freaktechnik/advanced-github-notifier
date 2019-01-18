@@ -12,8 +12,7 @@ In theory all you should have to do is run `npm ci` (after installing npm and no
 and you should be able to launch a Firefox instance with the extension in debugging
 mode with live reloading with `npm run start`.
 
-There are some linters and tests. `npm run lint` and `npm test` execute
-those respectively.
+There are some linters and tests. `npm test` runs all linters and tests.
 
 ### License
 All code should be licensed under the [MPL-2.0](LICENSE). By submitting a pull

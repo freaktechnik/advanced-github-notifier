@@ -23,4 +23,5 @@ jobs:
     - script: npm run lint:webext
       name: "Lint Extension"
     - stage: test
+      script: npm run test:js
       after_success: npm run coverage
