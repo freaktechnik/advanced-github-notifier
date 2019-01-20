@@ -159,5 +159,8 @@
     },
     "remove": {
         "message": "Remove"
+    },
+    "shortcutDescription": {
+        "message": "Open popup with unread notifications"
     }
 }

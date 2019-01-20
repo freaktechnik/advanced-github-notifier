@@ -65,7 +65,8 @@
         "_execute_browser_action": {
             "suggested_key": {
                 "default": "Alt+G"
-            }
+            },
+            "description": "__MSG_shortcutDescription__"
         }
     }
 }
