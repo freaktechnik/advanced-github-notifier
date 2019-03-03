@@ -12,6 +12,7 @@
     </head>
     <body>
         <section id="accounts">
+            <h2>Manage accounts</h2>
             <form id="login">
                 <label for="account-type" data-l10n-id="account_type">Account type</label>
                 <select class="browser-style" id="account-type">
@@ -66,26 +67,29 @@
             </ul>
         </section>
         <section>
-            <label for="notifications" class="browser-style-label" data-l10n-id="showNotifications">Show desktop notifications</label>
-            <span class="browser-style">
-                <input type="checkbox" checked id="notifications">
-            </span>
-        </section>
-        <section>
-            <label for="footer" class="browser-style-label" data-l10n-id="footerLabel">Footer links to</label>
-            <select id="footer" class="browser-style">
-                <optgroup label="GitHub" data-l10n-id="footerGithub" data-l10n-attrs="label" data-l10n-nocontent="yes">
-                    <option selected value="all" data-l10n-id="footerSelectAll">All notifications</option>
-                    <option value="unread" data-l10n-id="footerSelectUnread">Unread notifications</option>
-                    <option value="participating" data-l10n-id="footerSelectParticipating">Participating notifications</option>
-                    <option value="watched" data-l10n-id="footerSelectWatched">Watched repositories</option>
-                    <option value="index" data-l10n-id="footerSelectIndex">GitHub frontpage</option>
-                </optgroup>
-                <optgroup label="Local" data-l10n-id="footerLocal" data-l10n-attrs="label" data-l10n-nocontent="yes">
-                    <option value="options" data-l10n-id="footerSelectOptions">Add-on options</option>
-                    <option value="hidden" data-l10n-id="footerSelectHidden">Hide footer button</option>
-                </optgroup>
-            </select>
+            <h2>Global settings</h2>
+            <section>
+                    <label for="notifications" class="browser-style-label" data-l10n-id="showNotifications">Show desktop notifications</label>
+                    <span class="browser-style">
+                        <input type="checkbox" checked id="notifications">
+                    </span>
+                </section>
+                <section>
+                    <label for="footer" class="browser-style-label" data-l10n-id="footerLabel">Footer links to</label>
+                    <select id="footer" class="browser-style">
+                        <optgroup label="GitHub" data-l10n-id="footerGithub" data-l10n-attrs="label" data-l10n-nocontent="yes">
+                            <option selected value="all" data-l10n-id="footerSelectAll">All notifications</option>
+                            <option value="unread" data-l10n-id="footerSelectUnread">Unread notifications</option>
+                            <option value="participating" data-l10n-id="footerSelectParticipating">Participating notifications</option>
+                            <option value="watched" data-l10n-id="footerSelectWatched">Watched repositories</option>
+                            <option value="index" data-l10n-id="footerSelectIndex">GitHub frontpage</option>
+                        </optgroup>
+                        <optgroup label="Local" data-l10n-id="footerLocal" data-l10n-attrs="label" data-l10n-nocontent="yes">
+                            <option value="options" data-l10n-id="footerSelectOptions">Add-on options</option>
+                            <option value="hidden" data-l10n-id="footerSelectHidden">Hide footer button</option>
+                        </optgroup>
+                    </select>
+                </section>
         </section>
     </body>
 </html>

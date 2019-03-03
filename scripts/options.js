@@ -29,6 +29,7 @@ class Account extends window.Storage {
     }
 
     async buildAccount() {
+        const start = document.createElement("div");
         const typeNode = document.createElement("small");
         typeNode.textContent = browser.i18n.getMessage(`account_${this.type}`);
 
@@ -66,8 +67,9 @@ class Account extends window.Storage {
         logout.textContent = this.removeAction;
         logout.addEventListener("click", () => this.logout(), PASSIVE_EVENT);
 
-        this.root.append(usernameNode);
-        this.root.append(typeNode);
+        start.append(usernameNode);
+        start.append(typeNode);
+        this.root.append(start);
         controls.append(showNotifications);
         controls.append(logout);
         this.root.append(controls);
