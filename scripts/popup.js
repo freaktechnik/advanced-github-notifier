@@ -46,7 +46,7 @@ const contextMenu = {
         });
         browser.menus.onShown.addListener(({ targetElementId }) => {
             const isNotification = this.getTarget(targetElementId) !== null,
-                menuId = this.menuId;
+                { menuId } = this;
             if(this.areVisible !== isNotification) {
                 Promise.all(this.items.map((id) => browser.menus.update(id, {
                     enabled: isNotification
