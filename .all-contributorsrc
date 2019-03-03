@@ -171,6 +171,16 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "domoritz",
+      "name": "Dominik Moritz",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/589034?v=4",
+      "profile": "https://www.domoritz.de",
+      "contributions": [
+        "ideas"
+      ]
     }
-  ]
+  ],
+  "contributorsPerLine": 7
 }
