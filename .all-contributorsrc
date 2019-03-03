@@ -162,6 +162,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "Doryan",
+      "name": "Doryan R",
+      "avatar_url": "https://secure.gravatar.com/avatar/22de3450962f68fefa85cfe4d65148e7?s=128&d=identicon",
+      "profile": "https://www.transifex.com/user/profile/Doryan/",
+      "contributions": [
+        "translation"
+      ]
     }
   ]
 }
