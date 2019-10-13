@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class Storage {
+class Storage { // eslint-disable-line no-redeclare
     constructor(storageId, area = "local") {
         this.storageId = storageId;
         this.area = area;

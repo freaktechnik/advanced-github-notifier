@@ -1,6 +1,5 @@
 /**
- * Translates a HTMl page in the web l10n style from the Add-on SDK with
- * WebExtensions strings.
+ * Translates a HTMl page in the web l10n style from the Add-on SDK with WebExtension strings.
  * Large parts of the logic are very similar to the SDK implmentation.
  * All you have to do to use this in a document is load it.
  *

@@ -293,6 +293,7 @@ class ClientHandler extends window.Storage {
 
             if(fetchDetails) {
                 try {
+                    /* eslint-disable require-atomic-updates */
                     try {
                         const details = await this.client.getNotificationDetails(notification);
                         notification.subjectDetails = details;
@@ -301,6 +302,7 @@ class ClientHandler extends window.Storage {
                         notification.subjectDetails = ClientHandler.buildNotificationDetails(notification);
                     }
                     notification.icon = ClientHandler.getNotificationIcon(notification);
+                    /* eslint-enable require-atomic-updates */
                 }
                 catch(e) {
                     return null;

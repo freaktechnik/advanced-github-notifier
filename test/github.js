@@ -9,7 +9,9 @@ test.beforeEach(async (t) => {
     dom.window.redirectUri = 'https://example.com';
 });
 
-test.afterEach.always((t) => cleanUp(t.context.window));
+test.afterEach.always((t) => {
+    cleanUp(t.context.window);
+});
 
 const STATIC_STRING_CONSTANTS = [
     'BASE_URI',

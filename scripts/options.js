@@ -53,7 +53,7 @@ class Account extends window.Storage {
         checkbox.disabled = !document.getElementById("notifications").checked;
         checkbox.id = `notifs-${this.id}`;
         checkbox.classList.add('account-notifs');
-        checkbox.checked = await this.getValue('showNotifications', true);
+        checkbox.checked = await this.getValue('showNotifications', true); // eslint-disable-line require-atomic-updates
         checkbox.addEventListener("input", () => {
             this.setValue('showNotifications', checkbox.checked);
         }, PASSIVE_EVENT);

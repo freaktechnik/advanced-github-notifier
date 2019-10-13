@@ -11,7 +11,9 @@ test.beforeEach(async (t) => {
     t.context.window = dom.window;
 });
 
-test.afterEach.always((t) => cleanUp(t.context.window));
+test.afterEach.always((t) => {
+    cleanUp(t.context.window);
+});
 
 const STATIC_MEMBERS = [
     'KEY',

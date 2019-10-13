@@ -19,7 +19,9 @@ test.beforeEach(async (t) => {
     t.context.window = dom.window;
 });
 
-test.afterEach.always((t) => cleanUp(t.context.window));
+test.afterEach.always((t) => {
+    cleanUp(t.context.window);
+});
 
 test('constructor', (t) => {
     const manager = new t.context.window.ClientManager();
