@@ -46,7 +46,7 @@
     "sinon-chrome": "^3.0.1",
     "stylelint": "^11.1.1",
     "stylelint-config-standard": "^19.0.0",
-    "stylelint-no-unsupported-browser-features": "^3.0.2",
+    "stylelint-no-unsupported-browser-features": "^4.0.0",
     "web-ext": "^3.2.0"
   },
   "stylelint": {
