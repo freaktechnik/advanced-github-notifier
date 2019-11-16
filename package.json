@@ -44,7 +44,7 @@
     "mkdirp": "^0.5.1",
     "nyc": "^14.1.1",
     "sinon-chrome": "^3.0.1",
-    "stylelint": "^11.1.1",
+    "stylelint": "^12.0.0",
     "stylelint-config-standard": "^19.0.0",
     "stylelint-no-unsupported-browser-features": "^4.0.0",
     "web-ext": "^3.2.0"
