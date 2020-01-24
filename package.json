@@ -41,7 +41,7 @@
     "eclint": "^2.8.1",
     "eslint": "^6.5.1",
     "jsdom": "^15.1.1",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.0",
     "nyc": "^15.0.0",
     "sinon-chrome": "^3.0.1",
     "stylelint": "^12.0.0",
