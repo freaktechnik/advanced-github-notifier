@@ -22,7 +22,6 @@ virtualConsole.on("jsdomError", (error) => {
     console.error(error.stack, error.detail);
 });
 const wf = util.promisify(fs.writeFile);
-const mk = util.promisify(mkdirp);
 const ef = util.promisify(execFile);
 const rf = util.promisify(fs.readFile);
 
@@ -70,7 +69,7 @@ let id = 0;
 export const cleanUp = async (window) => {
     if(process.env.NYC_CONFIG) {
         const nycConfig = JSON.parse(process.env.NYC_CONFIG);
-        await mk(nycConfig.tempDir);
+        await mkdirp(nycConfig.tempDir);
         await wf(path.join(nycConfig.tempDir, `${Date.now()}_${process.pid}_${++id}.json`), JSON.stringify(window.__coverage__), 'utf-8');
     }
     window.close();
