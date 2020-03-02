@@ -264,7 +264,7 @@ class ClientHandler extends window.Storage {
     }
 
     _getOriginalID(id) {
-        return id.substr(this.NOTIFICATION_PREFIX.length);
+        return id.slice(this.NOTIFICATION_PREFIX.length);
     }
 
     async _processNewNotifications(json) {

@@ -16,7 +16,7 @@ const AVOID_INFINITY = 1;
 
 const parseLinks = (links) => {
     const linkInfo = links.split(",");
-    const linkObj = {};
+    const linkObject = {};
     linkInfo.forEach((link) => {
         const [
             match,
@@ -24,10 +24,10 @@ const parseLinks = (links) => {
             rel
         ] = link.match(/<([^>]+)>;\s+rel="([^"]+)"/) || [];
         if(match && url && rel) {
-            linkObj[rel] = url;
+            linkObject[rel] = url;
         }
     });
-    return linkObj;
+    return linkObject;
 };
 
 class GitHub {
@@ -113,16 +113,16 @@ class GitHub {
     }
 
     async getToken(code, authState) {
-        const params = new URLSearchParams();
-        params.append("client_id", this.clientID);
-        params.append("client_secret", this.clientSecret);
-        params.append("code", code);
-        params.append("redirect_uri", GitHub.REDIRECT_URI.toString());
-        params.append("state", authState);
+        const parameters = new URLSearchParams();
+        parameters.append("client_id", this.clientID);
+        parameters.append("client_secret", this.clientSecret);
+        parameters.append("code", code);
+        parameters.append("redirect_uri", GitHub.REDIRECT_URI.toString());
+        parameters.append("state", authState);
 
         const response = await fetch(this.buildSiteURL('login/oauth/access_token'), {
             method: "POST",
-            body: params,
+            body: parameters,
             headers: {
                 Accept: "application/json"
             }

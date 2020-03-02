@@ -70,7 +70,7 @@ const contextMenu = {
             target = target.closest('li');
         }
         if(target != null && target.classList.contains('panel-list-item')) {
-            return target.id.substr(idPrefix.length);
+            return target.id.slice(idPrefix.length);
         }
         return null;
     },

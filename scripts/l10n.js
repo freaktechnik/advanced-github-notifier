@@ -8,7 +8,7 @@
  */
 
 function translateElementAttributes(element) {
-    const attrList = [
+    const attributeList = [
         'title',
         'accesskey',
         'alt',
@@ -20,24 +20,24 @@ function translateElementAttributes(element) {
         'srcdoc',
         'value'
     ];
-    const ariaAttrMap = {
+    const ariaAttributeMap = {
         'aria-label': 'ariaLabel',
         'aria-value-text': 'ariaValueText',
         'aria-moz-hint': 'ariaMozHint'
     };
-    const attrSeparator = '_';
+    const attributeSeparator = '_';
 
     const presentAttributes = element.dataset.l10nAttrs.split(",");
 
     // Translate allowed attributes.
     for(const attribute of presentAttributes) {
         let data;
-        if(attrList.includes(attribute)) {
-            data = browser.i18n.getMessage(element.dataset.l10nId + attrSeparator + attribute);
+        if(attributeList.includes(attribute)) {
+            data = browser.i18n.getMessage(element.dataset.l10nId + attributeSeparator + attribute);
         }
         // Translate ARIA attributes
-        else if(attribute in ariaAttrMap) {
-            data = browser.i18n.getMessage(element.dataset.l10nId + attrSeparator + ariaAttrMap[attribute]);
+        else if(attribute in ariaAttributeMap) {
+            data = browser.i18n.getMessage(element.dataset.l10nId + attributeSeparator + ariaAttributeMap[attribute]);
         }
 
         if(data && data != "??") {

@@ -60,7 +60,7 @@ class Account extends window.Storage {
 
         showNotifications.classList.toggle("disabled", checkbox.disabled);
         showNotifications.append(checkbox);
-        showNotifications.insertAdjacentText('beforeend', ' ');
+        showNotifications.append(' ');
 
         const logout = document.createElement("button");
         logout.classList.add('browser-style');

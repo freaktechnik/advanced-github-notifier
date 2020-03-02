@@ -69,8 +69,8 @@ class ClientManager extends window.StorageManager {
                 throw new Error("Details required to create enterprise PAT client");
             }
         }
-        const factoryArgs = ClientFactory.buildArgs(clientId, clientSecret, details);
-        const client = new ClientFactory(...factoryArgs);
+        const factoryArguments = ClientFactory.buildArgs(clientId, clientSecret, details);
+        const client = new ClientFactory(...factoryArguments);
         if(id) {
             client.id = id;
         }
@@ -117,12 +117,12 @@ class ClientManager extends window.StorageManager {
     saveFields() {
         const handlers = [];
         for(const client of this.getClients()) {
-            const obj = window.StorageManager.createRecord(client);
-            obj.type = ClientManager.getTypeForClient(client.client);
-            obj.notifications = client.NOTIFICATION_NAME;
-            obj.id = client.id;
-            obj.details = client.getDetails();
-            handlers.push(obj);
+            const object = window.StorageManager.createRecord(client);
+            object.type = ClientManager.getTypeForClient(client.client);
+            object.notifications = client.NOTIFICATION_NAME;
+            object.id = client.id;
+            object.details = client.getDetails();
+            handlers.push(object);
         }
         return this.setRecords(handlers);
     }

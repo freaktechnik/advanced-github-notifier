@@ -1,10 +1,10 @@
 import test from 'ava';
 import {
-    getEnv, cleanUp
+    getEnv as getEnvironment, cleanUp
 } from './_env';
 
 test.beforeEach(async (t) => {
-    const dom = await getEnv([ '../scripts/github.js' ]);
+    const dom = await getEnvironment([ '../scripts/github.js' ]);
     t.context.window = dom.window;
     dom.window.redirectUri = 'https://example.com';
 });
@@ -19,14 +19,14 @@ const STATIC_STRING_CONSTANTS = [
     'SCOPE'
 ];
 
-const testStaticConstants = (t, prop) => {
-    t.true(prop in t.context.window.GitHub);
-    t.is(typeof t.context.window.GitHub[prop], 'string');
+const testStaticConstants = (t, property) => {
+    t.true(property in t.context.window.GitHub);
+    t.is(typeof t.context.window.GitHub[property], 'string');
 };
-testStaticConstants.title = (title, prop) => `${title} ${prop}`;
+testStaticConstants.title = (title, property) => `${title} ${property}`;
 
-for(const prop of STATIC_STRING_CONSTANTS) {
-    test('static', testStaticConstants, prop);
+for(const property of STATIC_STRING_CONSTANTS) {
+    test('static', testStaticConstants, property);
 }
 
 test('redirect URI', (t) => {
@@ -42,14 +42,14 @@ test('footer urls', (t) => {
 
     t.is(typeof GitHub.FOOTER_URLS, 'object');
 
-    const props = [
+    const properties = [
         'index',
         'unread',
         'all',
         'participating',
         'watched'
     ];
-    for(const p of props) {
+    for(const p of properties) {
         t.true(p in GitHub.FOOTER_URLS);
         t.true(GitHub.FOOTER_URLS[p].includes(GitHub.SITE_URI));
     }

@@ -1,10 +1,10 @@
 import test from 'ava';
 import {
-    getEnv, cleanUp
+    getEnv as getEnvironment, cleanUp
 } from './_env';
 
 test.beforeEach(async (t) => {
-    const dom = await getEnv([
+    const dom = await getEnvironment([
         '../scripts/storage.js',
         '../scripts/storage-manager.js'
     ]);
@@ -20,14 +20,14 @@ const STATIC_MEMBERS = [
     'ID_KEY'
 ];
 
-const testStaticMember = (t, prop) => {
-    t.true(prop in t.context.window.StorageManager);
-    t.is(typeof t.context.window.StorageManager[prop], 'string');
+const testStaticMember = (t, property) => {
+    t.true(property in t.context.window.StorageManager);
+    t.is(typeof t.context.window.StorageManager[property], 'string');
 };
-testStaticMember.title = (title, prop) => `${title} ${prop}`;
+testStaticMember.title = (title, property) => `${title} ${property}`;
 
-for(const prop of STATIC_MEMBERS) {
-    test('static', testStaticMember, prop);
+for(const property of STATIC_MEMBERS) {
+    test('static', testStaticMember, property);
 }
 
 test('create record', (t) => {

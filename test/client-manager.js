@@ -1,11 +1,11 @@
 import test from 'ava';
 import {
-    getEnv, cleanUp
+    getEnv as getEnvironment, cleanUp
 } from './_env';
 import { FakeClient } from './_mocks';
 
 test.beforeEach(async (t) => {
-    const dom = await getEnv([
+    const dom = await getEnvironment([
         '../scripts/storage.js',
         '../scripts/storage-manager.js',
         '../scripts/handler.js',
