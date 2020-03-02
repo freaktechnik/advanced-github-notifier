@@ -4,6 +4,7 @@ node_js: stable
 cache:
   directories:
     - $HOME/.npm
+    - node_modules/.cache
 stages:
   - dependencies
   - lint
