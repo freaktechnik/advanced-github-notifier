@@ -92,6 +92,7 @@
       "compileAsTests": [
         "test/_*.js"
       ]
-    }
+    },
+    "timeout": "30s"
   }
 }
