@@ -176,7 +176,7 @@ class ClientHandler extends window.Storage {
 
     async logout() {
         const token = await this.getValue(ClientHandler.TOKEN);
-        await this.client.authorize(token, "DELETE");
+        await this.client.authorize(token, "PATCH");
         await this.removeValues([
             ClientHandler.TOKEN,
             ClientHandler.NOTIFICATIONS,

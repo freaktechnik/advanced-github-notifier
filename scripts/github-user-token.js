@@ -19,9 +19,9 @@ class GitHubUserToken extends window.GitHub {
         return this.token;
     }
 
-    async authorize(token, method = "GET") {
+    async authorize(token, method = "POST") {
         //TODO check scopes of token we have in this.token.
-        if(method === "GET") {
+        if(method === "POST") {
             await this.getUsername();
         }
     }

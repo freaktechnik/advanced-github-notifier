@@ -6,7 +6,7 @@ import {
 test.beforeEach(async (t) => {
     const dom = await getEnvironment([ '../scripts/github.js' ]);
     t.context.window = dom.window;
-    dom.window.redirectUri = 'https://example.com';
+    dom.window.browser.identity.getRedirectURL.returns('https://example.com');
 });
 
 test.afterEach.always((t) => {
@@ -32,7 +32,7 @@ for(const property of STATIC_STRING_CONSTANTS) {
 test('redirect URI', (t) => {
     t.true(t.context.window.GitHub.REDIRECT_URI instanceof t.context.window.URL);
 
-    const redirectUri = new t.context.window.URL(t.context.window.redirectUri);
+    const redirectUri = new t.context.window.URL(t.context.window.browser.identity.getRedirectURL());
     t.deepEqual(t.context.window.GitHub.REDIRECT_URI.toString(), redirectUri.toString());
 });
 

@@ -4,9 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global redirectUri */
 //TODO make the URIs overridable for Enterprise
-//TODO replace redirectUri with identity API (blocked by 53 being stable)
 
 const STATUS_OK = 200;
 const STATUS_RESET = 205;
@@ -21,10 +19,10 @@ const parseLinks = (links) => {
         const [
             match,
             url,
-            rel
+            relation
         ] = link.match(/<([^>]+)>;\s+rel="([^"]+)"/) || [];
-        if(match && url && rel) {
-            linkObject[rel] = url;
+        if(match && url && relation) {
+            linkObject[relation] = url;
         }
     });
     return linkObject;
@@ -40,7 +38,7 @@ class GitHub {
     }
 
     static get REDIRECT_URI() {
-        return new URL(redirectUri);
+        return new URL(browser.identity.getRedirectURL());
     }
 
     static get SCOPE() {
@@ -157,14 +155,18 @@ class GitHub {
         }
     }
 
-    async authorize(token, method = "GET") {
-        const response = await fetch(this.buildAPIURL(`applications/${this.clientID}/tokens/${token}`), {
+    async authorize(token, method = "POST") {
+        const response = await fetch(this.buildAPIURL(`applications/${this.clientID}/token`), {
             method,
+            body: JSON.stringify({
+                'access_token': token
+            }),
             headers: {
-                Authorization: `Basic ${window.btoa(`${this.clientID}:${this.clientSecret}`)}`
+                Authorization: `Basic ${window.btoa(`${this.clientID}:${this.clientSecret}`)}`,
+                Accept: 'application/vnd.github.doctor-strange-preview+json'
             }
         });
-        if(method == "GET") {
+        if(method == "POST") {
             if(response.ok && response.status === STATUS_OK) {
                 const json = await response.json();
                 this._username = json.user.login;
@@ -180,14 +182,14 @@ class GitHub {
                 throw new Error("Token invalid");
             }
         }
-        else if(method == "DELETE") {
+        else if(method == "PATCH") {
             this.unsetToken();
         }
         return "Token updated";
     }
 
     deauthorize(token) {
-        return this.authorize(token, "DELETE");
+        return this.authorize(token, "PATCH");
     }
 
     async markNotificationsRead() {
