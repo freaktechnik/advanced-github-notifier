@@ -1,7 +1,7 @@
 import test from 'ava';
 import {
-    getEnv as getEnvironment, cleanUp
-} from './_env';
+    getEnvironment, cleanUp
+} from './_environment';
 import { FakeClient } from './_mocks';
 
 test.beforeEach(async (t) => {

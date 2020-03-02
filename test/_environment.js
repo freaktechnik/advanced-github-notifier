@@ -49,7 +49,7 @@ const instrument = async (sourcePath) => {
     return instrumentCache.get(sourcePath);
 };
 
-export const getEnv = async (files, html = aboutBlank) => {
+export const getEnvironment = async (files, html = aboutBlank) => {
     const dom = new JSDOM(html, {
         runScripts: 'outside-only',
         virtualConsole

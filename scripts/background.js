@@ -34,8 +34,8 @@ const getNotifications = async (alarm) => {
                 updateBadge(await manager.getCount());
             }
         }
-        catch(e) {
-            console.error(e);
+        catch(error) {
+            console.error(error);
         }
         finally {
             browser.alarms.create(handler.STORE_PREFIX, {
@@ -109,7 +109,7 @@ const createHandler = async (type, details) => {
 browser.runtime.onMessage.addListener((message) => {
     switch(message.topic) {
     case "open-notification":
-        openNotification(message.notificationId).catch((e) => console.error(e));
+        openNotification(message.notificationId).catch((error) => console.error(error));
         break;
     case "open-notifications":
         browser.storage.local.get({
@@ -129,14 +129,14 @@ browser.runtime.onMessage.addListener((message) => {
     case "mark-all-read":
         Promise.all(Array.from(manager.getClients(), (handler) => handler.markAsRead()))
             .then(() => updateBadge([]))
-            .catch((e) => console.error(e));
+            .catch((error) => console.error(error));
         break;
     case "mark-notification-read": {
         const handler = manager.getClientForNotificationID(message.notificationId);
         handler.markAsRead(message.notificationId)
             .then(() => manager.getCount())
             .then(updateBadge)
-            .catch((e) => console.error(e));
+            .catch((error) => console.error(error));
         break;
     }
     case "unsubscribe-notification": {

@@ -131,8 +131,8 @@ class AccountManager extends window.StorageManager {
             }
         });
 
-        this.form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        this.form.addEventListener("submit", async (event) => {
+            event.preventDefault();
             if(!this.validateForm()) {
                 //TODO show error
                 return;

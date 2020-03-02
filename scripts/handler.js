@@ -147,12 +147,12 @@ class ClientHandler extends window.Storage {
             });
             url = new URL(rawURL);
         }
-        catch(e) {
+        catch(error) {
             // Ignore if the user cancelled.
-            if(e.message === 'User cancelled or denied access.') {
+            if(error.message === 'User cancelled or denied access.') {
                 return false;
             }
-            throw e;
+            throw error;
         }
         if(!url.searchParams.has("error") && url.searchParams.has("code") &&
             url.searchParams.get("state") == authState) {
@@ -162,7 +162,7 @@ class ClientHandler extends window.Storage {
                 await this.setValue(ClientHandler.TOKEN, token);
                 await this.setValue(ClientHandler.USERNAME, this.client._username);
             }
-            catch(e) {
+            catch(error) {
                 throw new Error("Was not granted required permissions");
             }
             return true;
@@ -197,7 +197,7 @@ class ClientHandler extends window.Storage {
             await this.client.authorize(token);
             await this.setValue(ClientHandler.USERNAME, this.client._username);
         }
-        catch(e) {
+        catch(error) {
             await this.logout();
             return false;
         }
@@ -298,13 +298,13 @@ class ClientHandler extends window.Storage {
                         const details = await this.client.getNotificationDetails(notification);
                         notification.subjectDetails = details;
                     }
-                    catch(e) {
+                    catch(error) {
                         notification.subjectDetails = ClientHandler.buildNotificationDetails(notification);
                     }
                     notification.icon = ClientHandler.getNotificationIcon(notification);
                     /* eslint-enable require-atomic-updates */
                 }
-                catch(e) {
+                catch(error) {
                     return null;
                 }
             }
