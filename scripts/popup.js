@@ -209,6 +209,7 @@ const accountSelector = {
 
         this.storage.getInstances()
             .then((accounts) => this.setAccounts(accounts))
+            .then(() => this.selectAccount(this.currentAccout))
             .catch(console.error);
     },
     get currentAccout() {
