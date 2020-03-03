@@ -216,7 +216,7 @@ const accountSelector = {
     },
     async addAccount(account) {
         const username = await account.getValue("username");
-        const option = new Option(account.getStorageKey("notifications"), username);
+        const option = new Option(username, account.getStorageKey("notifications"));
         this.root.append(option);
     },
     setAccounts(accounts) {
