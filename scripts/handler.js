@@ -218,7 +218,7 @@ class ClientHandler extends window.Storage {
             }
             const notifications = await this._getNotifications();
             const notifs = notifications.filter((notification) => notification.id != id);
-            await this.set(ClientHandler.NOTIFICATIONS, notifs);
+            await this.setValue(ClientHandler.NOTIFICATIONS, notifs);
             try {
                 await browser.notifications.clear(id);
             }
