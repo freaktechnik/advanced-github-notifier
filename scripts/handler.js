@@ -271,24 +271,23 @@ class ClientHandler extends window.Storage {
         const { hide } = await browser.storage.local.get({
             hide: false
         });
-        const notifications = await this.getValue(ClientHandler.NOTIFICATIONS, []);
+        const notifications = await this._getNotifications();
         const showNotifications = await this.getValue(ClientHandler.SHOW_NOTIFICATIONS, true);
         const stillNotificationIds = [];
         let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
             notification.id = this._getNotificationID(notification.id);
-            stillNotificationIds.push(notification.id);
-            let fetchDetails = false;
             const existingNotif = notifications.find((n) => n.id == notification.id);
+            if(existingNotif) {
+                stillNotificationIds.push(notification.id);
+            }
+            let fetchDetails = true;
             if(!existingNotif) {
                 notification.new = true;
-                fetchDetails = true;
             }
-            else if(existingNotif.updated_at != notification.updated_at) {
-                fetchDetails = true;
-            }
-            else {
+            else if(existingNotif.updated_at == notification.updated_at) {
                 notification.subjectDetails = existingNotif.subjectDetails;
                 notification.icon = existingNotif.icon;
+                fetchDetails = false;
             }
 
             if(fetchDetails) {
@@ -319,10 +318,24 @@ class ClientHandler extends window.Storage {
                         iconUrl: `${notification.icon}png`
                     });
                 }
+                delete notification.new;
             }
             return notification;
         }));
         notifs = notifs.filter((n) => n !== null);
+
+        if(!hide && showNotifications) {
+            for(const existingNotification of notifications) {
+                if(!stillNotificationIds.includes(existingNotification.id)) {
+                    try {
+                        await browser.notifications.clear(existingNotification.id);
+                    }
+                    catch(error) {
+                        // ignore clearing errors.
+                    }
+                }
+            }
+        }
 
         await this.setValue(ClientHandler.NOTIFICATIONS, notifs);
         return notifs;

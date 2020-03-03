@@ -38,7 +38,7 @@ class GitHub {
     }
 
     static get REDIRECT_URI() {
-        return new URL(browser.identity.getRedirectURL());
+        return new URL(`${browser.identity.getRedirectURL()}login`);
     }
 
     static get SCOPE() {

@@ -32,7 +32,7 @@ for(const property of STATIC_STRING_CONSTANTS) {
 test('redirect URI', (t) => {
     t.true(t.context.window.GitHub.REDIRECT_URI instanceof t.context.window.URL);
 
-    const redirectUri = new t.context.window.URL(t.context.window.browser.identity.getRedirectURL());
+    const redirectUri = new t.context.window.URL(`${t.context.window.browser.identity.getRedirectURL()}login`);
     t.deepEqual(t.context.window.GitHub.REDIRECT_URI.toString(), redirectUri.toString());
 });
 
