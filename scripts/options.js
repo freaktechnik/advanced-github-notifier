@@ -258,6 +258,7 @@ class AccountManager extends window.StorageManager {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("enterprise_redirect").textContent = browser.i18n.getMessage("enterprise_redirect", `${browser.identity.getRedirectURL()}login`);
     const notifications = document.getElementById("notifications");
     const footer = document.getElementById("footer");
     const manager = new AccountManager(document.getElementById("accounts"));

@@ -55,3 +55,8 @@ section + section {
     opacity: 0.8;
     cursor: not-allowed; /* stylelint-disable-line plugin/no-unsupported-browser-features */
 }
+
+#enterprise_redirect {
+    user-select: text;
+    -moz-user-select: text;
+}

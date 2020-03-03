@@ -146,7 +146,13 @@
         "message": "The token must at least have the \"notifications\" scope. For private repos it needs \"repo\" to function correctly."
     },
     "enterprise_redirect": {
-        "message": "The redirect URL is \"https://localhost/github-auth\""
+        "message": "The redirect URL is \"$URL$\"",
+        "placeholders": {
+            "url": {
+                "content": "$1",
+                "example": "https://asdf.extensions.allizom.org/login"
+            }
+        }
     },
     "account_type": {
         "message": "Account type"
