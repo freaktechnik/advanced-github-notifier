@@ -193,7 +193,7 @@ const accountSelector = {
         this.root = document.getElementById("accounts");
 
         this.root.addEventListener("input", () => {
-            this.selectAccount(this.currentAccout);
+            this.selectAccount(this.currentAccount);
         }, {
             passive: true,
             capture: false
@@ -202,17 +202,17 @@ const accountSelector = {
         browser.storage.onChanged.addListener((changes, area) => {
             // Only listening for notification changes, since accounts shouldn't
             // change while the popup is open.
-            if(area === this.storage.area && (this.currentAccout === this.ALL_ACCOUNTS || this.currentAccout in changes)) {
-                this.selectAccount(this.currentAccout);
+            if(area === this.storage.area && (this.currentAccount === this.ALL_ACCOUNTS || this.currentAccount in changes)) {
+                this.selectAccount(this.currentAccount);
             }
         });
 
         this.storage.getInstances()
             .then((accounts) => this.setAccounts(accounts))
-            .then(() => this.selectAccount(this.currentAccout))
+            .then(() => this.selectAccount(this.currentAccount))
             .catch(console.error);
     },
-    get currentAccout() {
+    get currentAccount() {
         return this.root.value;
     },
     async addAccount(account) {
@@ -220,13 +220,13 @@ const accountSelector = {
         const option = new Option(username, account.getStorageKey("notifications"));
         this.root.append(option);
     },
-    setAccounts(accounts) {
+    async setAccounts(accounts) {
         if(accounts.length === this.SINGLE_ACCOUNT) {
             this.root.hidden = true;
             this.root.disabled = true;
         }
         for(const account of accounts) {
-            this.addAccount(account);
+            await this.addAccount(account);
         }
     },
     getAccounts() {
