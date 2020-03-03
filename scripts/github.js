@@ -99,7 +99,11 @@ class GitHub {
     }
 
     authURL(authState) {
-        return this.buildSiteURL(`login/oauth/authorize?client_id=${this.clientID}&scope=${this.scope}&state=${authState}&redirect_uri=${encodeURIComponent(GitHub.REDIRECT_URI.toString())}`);
+        const standardURL = this.buildSiteURL(`login/oauth/authorize?client_id=${this.clientID}&scope=${this.scope}&state=${authState}&redirect_uri=${encodeURIComponent(GitHub.REDIRECT_URI.toString())}`);
+        if(this.username) {
+            return `${standardURL}&login=${encodeURIComponent(this.username)}`;
+        }
+        return standardURL;
     }
 
     setToken(token) {
