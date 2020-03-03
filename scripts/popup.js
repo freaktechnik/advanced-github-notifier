@@ -222,7 +222,7 @@ const accountSelector = {
     setAccounts(accounts) {
         if(accounts.length === this.SINGLE_ACCOUNT) {
             this.root.hidden = true;
-            return;
+            this.root.disabled = true;
         }
         for(const account of accounts) {
             this.addAccount(account);
@@ -230,7 +230,7 @@ const accountSelector = {
     },
     getAccounts() {
         return Array.from(this.root.options)
-            .filter((o) => o.value === this.ALL_ACCOUNTS)
+            .filter((o) => o.value !== this.ALL_ACCOUNTS)
             .map((o) => o.value);
     },
     selectAccount(account) {
@@ -268,13 +268,4 @@ loaded
             open.textContent = browser.i18n.getMessage(`footer_${footer}`);
         }
     })
-    .catch(console.error);
-
-Promise.all([
-    browser.storage.local.get({
-        [window.StorageManager.KEY]: []
-    }),
-    loaded
-])
-    .then(([ { [window.StorageManager.KEY]: result } ]) => notificationList.show(result.map((h) => h.notifications)))
     .catch(console.error);
