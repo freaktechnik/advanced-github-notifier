@@ -21,19 +21,19 @@ You can pre-configure an OAuth app to authenticate against your enterprise insta
 
 ```json
 {
-  "policies": {
-    "3rdparty": {
-      "Extensions": {
-        "{8d4b86c5-64bf-4780-b029-0112386735ab}": {
-          "enterprise": {
-            "instanceURL": "Base URL of your GitHub enterprise instance (HTTPS only)",
-            "clientId": "Client ID of the OAuth app",
-            "clientSecret": "Client secret of the OAuth app"
-          }
+    "policies": {
+        "3rdparty": {
+            "Extensions": {
+                "{8d4b86c5-64bf-4780-b029-0112386735ab}": {
+                    "enterprise": {
+                        "instanceURL": "Base URL of your GitHub enterprise instance (HTTPS only)",
+                        "clientId": "Client ID of the OAuth app",
+                        "clientSecret": "Client secret of the OAuth app"
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
 ```
 
