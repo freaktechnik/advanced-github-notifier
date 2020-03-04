@@ -16,6 +16,29 @@ To run the in-development version from this repository, you either need to use
 about:debugging or the `web-ext` tool. Further the API credentials stored in `config.js` are not
 included in this repo.
 
+### Pre-configuring a GitHub enterprise OAuth app
+You can pre-configure an OAuth app to authenticate against your enterprise installation using [Firefox Enterprise Policies](https://support.mozilla.org/en-US/kb/enforcing-policies-firefox-enterprise). The policy should look something like this (or equivalent registry keys, however that works):
+
+```json
+{
+  "policies": {
+    "3rdparty": {
+      "Extensions": {
+        "{8d4b86c5-64bf-4780-b029-0112386735ab}": {
+          "enterprise": {
+            "instanceURL": "Base URL of your GitHub enterprise instance (HTTPS only)",
+            "clientId": "Client ID of the OAuth app",
+            "clientSecret": "Client secret of the OAuth app"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+The OAuth app's redirect URL should be set to `https://8317bdea4958553dcce6194bd09e3d5a2b504f5b.extensions.allizom.org/login` for the release version of this extension.
+
 ## Contributing
 Please check the [CONTRIBUTING.md](CONTRIBUTING.md)
 
