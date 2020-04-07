@@ -72,6 +72,8 @@ const openNotification = async (id) => {
             focused: true
         });
         await handler.markAsRead(id, false);
+        const newCount = await manager.getCount();
+        await updateBadge(newCount);
     }
 };
 browser.notifications.onClicked.addListener(openNotification);
@@ -128,7 +130,7 @@ browser.runtime.onMessage.addListener((message) => {
         break;
     case "mark-all-read":
         Promise.all(Array.from(manager.getClients(), (handler) => handler.markAsRead()))
-            .then(() => updateBadge([]))
+            .then(() => updateBadge(''))
             .catch((error) => console.error(error));
         break;
     case "mark-notification-read": {
