@@ -93,6 +93,6 @@
         "test/_*.js"
       ]
     },
-    "timeout": "30s"
+    "timeout": "2m"
   }
 }
