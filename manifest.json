@@ -51,7 +51,7 @@
     "optional_permissions": [
         "https://*/*"
     ],
-    "version": "1.6.3",
+    "version": "1.7.0",
     "icons": {
         "48": "images/icon-48.png",
         "64": "images/icon-64.png",
