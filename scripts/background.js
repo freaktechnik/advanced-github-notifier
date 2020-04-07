@@ -213,7 +213,9 @@ const init = async () => {
                 .catch(console.error);
         }
     });
-    browser.menus.onClicked.addListener(({ menuItemId, checked }) => {
+    browser.menus.onClicked.addListener(({
+        menuItemId, checked
+    }) => {
         if(menuItemId === 'badge') {
             browser.storage.local.set({
                 disableBadge: !checked
