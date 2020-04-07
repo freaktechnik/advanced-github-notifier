@@ -283,6 +283,12 @@ window.addEventListener("DOMContentLoaded", () => {
         browser.storage.local.set({ footer: footer.value });
     }, PASSIVE_EVENT);
 
+    browser.storage.onChanged.addListener((changes, areaName) => {
+        if(areaName === "local" && changes.disableBadge) {
+            badge.checked = !changes.disableBadge.newValue;
+        }
+    });
+
     browser.storage.local.get([
         "hide",
         "disableBadge",

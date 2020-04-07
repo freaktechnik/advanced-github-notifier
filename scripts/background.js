@@ -193,6 +193,10 @@ browser.runtime.onInstalled.addListener(async (details) => {
 const init = async () => {
     browser.storage.onChanged.addListener((changes, area) => {
         if(area === 'local' && changes.disableBadge) {
+            browser.menus.update('badge', {
+                checked: !changes.disableBadge.newValue
+            })
+                .catch(console.error);
             Promise.all([
                 browser.browserAction.getBadgeText(),
                 manager.getCount()
@@ -207,6 +211,13 @@ const init = async () => {
                     return updateBadge(count);
                 })
                 .catch(console.error);
+        }
+    });
+    browser.menus.onClicked.addListener(({ menuItemId, checked }) => {
+        if(menuItemId === 'badge') {
+            browser.storage.local.set({
+                disableBadge: !checked
+            });
         }
     });
     const count = await manager.getInstances();
@@ -231,6 +242,14 @@ window.requestIdleCallback(async () => {
             enabled: false
         });
     }
+    const { disableBadge = false } = await browser.storage.local.get('disableBadge');
+    browser.menus.create({
+        contexts: [ 'browser_action' ],
+        title: browser.i18n.getMessage('showBadge'),
+        type: 'checkbox',
+        id: 'badge',
+        checked: !disableBadge
+    });
     if(navigator.onLine) {
         await init().catch(console.error);
     }
