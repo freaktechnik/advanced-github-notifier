@@ -6,6 +6,7 @@
 
 /* global GitHub, ClientManager, MENU_SPEC */
 const manager = new ClientManager(),
+    MISSING_AUTH = '?',
     BASE = 10;
 
 browser.notifications.onShown.addListener(() => {
@@ -14,13 +15,19 @@ browser.notifications.onShown.addListener(() => {
 
 //TODO open latest comment?
 
-const updateBadge = (count) => {
-    let text = "?";
+const updateBadge = async (count) => {
+    const { disableBadge = false } = browser.storage.local.get('disableBadge');
+    let text = MISSING_AUTH;
     if(count !== undefined) {
-        text = count ? count.toString(BASE) : "";
+        if(disableBadge) {
+            text = "";
+        }
+        else {
+            text = count ? count.toString(BASE) : "";
+        }
     }
 
-    browser.browserAction.setBadgeText({
+    return browser.browserAction.setBadgeText({
         text
     });
 };
@@ -31,7 +38,7 @@ const getNotifications = async (alarm) => {
         try {
             const update = await handler.check();
             if(update) {
-                updateBadge(await manager.getCount());
+                await updateBadge(await manager.getCount());
             }
         }
         catch(error) {
@@ -96,7 +103,7 @@ const afterAdd = async (handler) => {
         browser.browserAction.setPopup({
             popup: browser.extension.getURL('popup.html')
         });
-        updateBadge();
+        await updateBadge();
     }
 };
 
@@ -184,6 +191,24 @@ browser.runtime.onInstalled.addListener(async (details) => {
 });
 
 const init = async () => {
+    browser.storage.onChanged.addListener((changes, area) => {
+        if(area === 'local' && changes.disableBadge) {
+            Promise.all([
+                browser.browserAction.getBadgeText(),
+                manager.getCount()
+            ])
+                .then(([
+                    currentText,
+                    count
+                ]) => {
+                    if(currentText === MISSING_AUTH) {
+                        return updateBadge();
+                    }
+                    return updateBadge(count);
+                })
+                .catch(console.error);
+        }
+    });
     const count = await manager.getInstances();
     if(!count) {
         needsAuth();

@@ -168,5 +168,8 @@
     },
     "shortcutDescription": {
         "message": "Open popup with unread notifications"
+    },
+    "showBadge": {
+        "message": "Show unread count as badge on button"
     }
 }

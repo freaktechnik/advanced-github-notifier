@@ -260,6 +260,7 @@ class AccountManager extends window.StorageManager {
 window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("enterprise_redirect").textContent = browser.i18n.getMessage("enterprise_redirect", `${browser.identity.getRedirectURL()}login`);
     const notifications = document.getElementById("notifications");
+    const badge = document.getElementById("badge");
     const footer = document.getElementById("footer");
     const manager = new AccountManager(document.getElementById("accounts"));
     manager.getInstances().catch(console.error);
@@ -274,17 +275,25 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     }, PASSIVE_EVENT);
 
+    badge.addEventListener("change", () => {
+        browser.storage.local.set({ disableBadge: !badge.checked });
+    }, PASSIVE_EVENT);
+
     footer.addEventListener("change", () => {
         browser.storage.local.set({ footer: footer.value });
     }, PASSIVE_EVENT);
 
     browser.storage.local.get([
         "hide",
+        "disableBadge",
         "footer"
     ])
         .then((result) => {
             if(result.hide) {
                 notifications.checked = false;
+            }
+            if(result.disableBadge) {
+                badge.checked = false;
             }
             if(result.footer) {
                 footer.value = result.footer;
