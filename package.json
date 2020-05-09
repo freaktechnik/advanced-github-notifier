@@ -13,7 +13,9 @@
     "test": "npm run lint && npm run test:js",
     "start": "web-ext run",
     "build": "tx pull && web-ext build",
-    "coverage": "nyc report && codecov"
+    "coverage": "nyc report && codecov",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -94,5 +96,9 @@
       ]
     },
     "timeout": "2m"
+  },
+  "snyk": true,
+  "dependencies": {
+    "snyk": "^1.316.2"
   }
 }
