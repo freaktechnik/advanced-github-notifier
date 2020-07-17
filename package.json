@@ -13,9 +13,7 @@
     "test": "npm run lint && npm run test:js",
     "start": "web-ext run",
     "build": "tx pull && web-ext build",
-    "coverage": "nyc report && codecov",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "coverage": "nyc report && codecov"
   },
   "repository": {
     "type": "git",
@@ -48,7 +46,6 @@
     "nyc": "^15.0.1",
     "sinon": "^9.0.2",
     "sinon-chrome": "^3.0.1",
-    "snyk": "^1.319.2",
     "stylelint": "^13.3.3",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-no-unsupported-browser-features": "^4.0.0",
@@ -97,6 +94,5 @@
       ]
     },
     "timeout": "2m"
-  },
-  "snyk": true
+  }
 }
