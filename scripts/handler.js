@@ -35,6 +35,9 @@ class ClientHandler extends window.Storage {
             if(notification.subjectDetails.merged) {
                 return "images/pull-merged.";
             }
+            if(notification.subjectDetails.draft && notification.subjectDetails.state === 'open') {
+                return "images/pull-wip.";
+            }
 
             return `images/pull-${notification.subjectDetails.state}.`;
         }
