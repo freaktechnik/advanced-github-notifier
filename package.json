@@ -94,5 +94,6 @@
       ]
     },
     "timeout": "2m"
-  }
+  },
+  "dependencies": {}
 }
