@@ -142,7 +142,8 @@
       "contributions": [
         "doc",
         "bug",
-        "ideas"
+        "ideas",
+        "code"
       ]
     },
     {
@@ -182,5 +183,6 @@
       ]
     }
   ],
-  "contributorsPerLine": 7
+  "contributorsPerLine": 7,
+  "commitConvention": "none"
 }
