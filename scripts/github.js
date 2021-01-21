@@ -48,8 +48,8 @@ class GitHub {
     static get FOOTER_URLS() {
         return {
             "index": GitHub.SITE_URI,
-            "unread": `${GitHub.SITE_URI}notifications`,
-            "all": `${GitHub.SITE_URI}notifications?all=1`,
+            "unread": `${GitHub.SITE_URI}notifications?query=is%3Aunread`,
+            "all": `${GitHub.SITE_URI}notifications?query=`,
             "participating": `${GitHub.SITE_URI}notifications/participating`,
             "watched": `${GitHub.SITE_URI}watching`
         };
