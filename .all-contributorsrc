@@ -181,6 +181,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "peter-kehl",
+      "name": "Peter Kehl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4270240?v=4",
+      "profile": "https://www.linkedin.com/in/PeterKehl",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,

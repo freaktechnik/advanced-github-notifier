@@ -81,6 +81,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
     <td align="center"><a href="https://github.com/Vistaus"><img src="https://avatars1.githubusercontent.com/u/1716229?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Heimen Stoffels</b></sub></a><br /><a href="https://www.transifex.com/freaktechnik/advanced-github-notifier/dashboard/" title="Translation">🌍</a></td>
     <td align="center"><a href="https://www.transifex.com/user/profile/Doryan/"><img src="https://secure.gravatar.com/avatar/22de3450962f68fefa85cfe4d65148e7?s=128&d=identicon?s=100" width="100px;" alt=""/><br /><sub><b>Doryan R</b></sub></a><br /><a href="https://www.transifex.com/freaktechnik/advanced-github-notifier/dashboard/" title="Translation">🌍</a></td>
     <td align="center"><a href="https://www.domoritz.de"><img src="https://avatars2.githubusercontent.com/u/589034?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dominik Moritz</b></sub></a><br /><a href="#ideas-domoritz" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/PeterKehl"><img src="https://avatars.githubusercontent.com/u/4270240?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Peter Kehl</b></sub></a><br /><a href="https://github.com/freaktechnik/advanced-github-notifier/issues?q=author%3Apeter-kehl" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
