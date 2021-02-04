@@ -83,3 +83,4 @@ jobs:
       - uses: actions/setup-node@v1
       - run: npm ci
       - run: npm run test:js
+      - uses: codecov/codecov-action@v1
