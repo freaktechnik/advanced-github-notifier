@@ -12,8 +12,7 @@
     "test:js": "nyc ava",
     "test": "npm run lint && npm run test:js",
     "start": "web-ext run",
-    "build": "tx pull && web-ext build",
-    "coverage": "nyc report && codecov"
+    "build": "tx pull && web-ext build"
   },
   "repository": {
     "type": "git",
@@ -38,7 +37,6 @@
     "@freaktechnik/eslint-config-extension": "^7.2.0",
     "@freaktechnik/eslint-config-test": "^7.2.0",
     "ava": "^3.15.0",
-    "codecov": "^3.8.1",
     "eclint": "^2.8.1",
     "eslint": "^7.19.0",
     "jsdom": "^16.4.0",
