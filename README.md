@@ -1,6 +1,6 @@
 # ![](images/icon-48.png) Advanced GitHub Notifier
 
-[![Add-On Version](https://img.shields.io/amo/v/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?src=external-ghversion) [![AMO Rating](https://img.shields.io/amo/stars/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?src=external-ghrating) [![AMO User Count](https://img.shields.io/amo/users/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?src=external-ghusers) [![AMO Download Count](https://img.shields.io/amo/d/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?src=external-ghdownloads)<br>
+[![Add-On Version](https://img.shields.io/amo/v/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=ghversion) [![AMO Rating](https://img.shields.io/amo/stars/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=ghrating) [![AMO User Count](https://img.shields.io/amo/users/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=ghusers) [![AMO Download Count](https://img.shields.io/amo/d/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=ghdownloads)<br>
 [![codecov](https://codecov.io/gh/freaktechnik/advanced-github-notifier/branch/master/graph/badge.svg)](https://codecov.io/gh/freaktechnik/advanced-github-notifier)
 
 A Firefox extension, that not only shows a count of notifications, but also
@@ -11,7 +11,7 @@ notifications.
 
 A stable release version is availabe here:
 
-[![addons.mozilla.org/](https://addons.cdn.mozilla.net/static/img/addons-buttons/AMO-button_2.png)](https://addons.mozilla.org/addon/advanced-github-notifier/?src=external-ghreadme)
+[![addons.mozilla.org/](https://addons.cdn.mozilla.net/static/img/addons-buttons/AMO-button_2.png)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=ghreadme)
 
 To run the in-development version from this repository, you either need to use
 about:debugging or the `web-ext` tool. Further the API credentials stored in `config.js` are not
