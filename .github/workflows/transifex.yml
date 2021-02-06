@@ -1,0 +1,21 @@
+name: transifex
+on:
+  push:
+    paths:
+    - _locales/en/messages.json
+    branches:
+    - main
+jobs:
+  push-messages:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: docker://sergioisidoro/github-transifex-action:v0.2.0
+      with:
+        TX_TOKEN: ${{ secrets.TX_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        pull_translations: false
+        pull_sources: false
+        push_translations: false
+        push_sources: true
+        translations_folder: ./_locales/
