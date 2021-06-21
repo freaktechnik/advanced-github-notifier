@@ -26,30 +26,39 @@ class ClientHandler extends window.Storage {
 
     static getNotificationIcon(notification) {
         if(notification.subject.type === "RepositoryInvitation") {
-            return "images/mail.";
+            return "mail.";
         }
-        else if(notification.subject.type == "Issue") {
-            return `images/issue-${notification.subjectDetails.state}.`;
+        if(notification.subject.type == "Issue") {
+            return `issue-${notification.subjectDetails.state}.`;
         }
-        else if(notification.subject.type == "PullRequest") {
+        if(notification.subject.type == "PullRequest") {
             if(notification.subjectDetails.merged) {
-                return "images/pull-merged.";
+                return "git-merge.";
             }
             if(notification.subjectDetails.draft && notification.subjectDetails.state === 'open') {
-                return "images/pull-wip.";
+                return "git-pull-request-draft.";
+            }
+            if(notification.subjectDetails.state === 'open') {
+                return "git-pull-request.";
+            }
+            if(notification.subjectDetails.state === 'closed') {
+                return "git-pull-request-closed.";
             }
 
-            return `images/pull-${notification.subjectDetails.state}.`;
+            return "git-pull-request-undefined.";
         }
-        else if(notification.subject.type == "Tag" || notification.subject.type == "Release") {
-            return "images/tag.";
+        if(notification.subject.type == "Tag" || notification.subject.type == "Release") {
+            return "tag.";
         }
-        else if(notification.subject.type === "RepositoryVulnerabilityAlert") {
-            return "images/alert.";
+        if(notification.subject.type === "RepositoryVulnerabilityAlert") {
+            return "alert.";
+        }
+        if(notification.subject.type === "TeamDiscussion") {
+            return "comment.";
         }
         // It's a commit
 
-        return "images/comment.";
+        return "commit.";
     }
 
     static buildNotificationDetails(notification) {
@@ -324,7 +333,7 @@ class ClientHandler extends window.Storage {
                         title: notification.subject.title,
                         message: notification.repository.full_name,
                         eventTime: Date.parse(notification.updated_at),
-                        iconUrl: `${notification.icon}png`
+                        iconUrl: `images/large/${notification.icon}png`
                     });
                 }
                 delete notification.new;

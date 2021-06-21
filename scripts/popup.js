@@ -132,7 +132,7 @@ const notificationList = {
         }
 
         const image = new Image(this.IMAGE_SIZE, this.IMAGE_SIZE);
-        image.src = `${notification.icon}svg`;
+        image.src = `images/small/${notification.icon}svg`;
         image.classList.add("icon");
 
         const title = document.createElement("span");
