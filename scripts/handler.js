@@ -6,6 +6,23 @@
 
 const S_TO_MS = 1000;
 const HEX = 16;
+const TYPES = {
+    RepositoryInvitation: "invite",
+    Issue: "issue",
+    PullRequest: "pull",
+    Tag: "release",
+    Release: "release",
+    RepositoryVulnerabilityAlert: "security",
+    TeamDiscussion: "discussion",
+    Commit: "commit"
+};
+const ICONS = {
+    invite: "mail",
+    release: "tag",
+    security: "alert",
+    discussion: "comment",
+    commit: "commit"
+};
 
 class ClientHandler extends window.Storage {
     static get NOTIFICATIONS() {
@@ -24,39 +41,48 @@ class ClientHandler extends window.Storage {
         return "showNotifications";
     }
 
-    static getNotificationIcon(notification) {
-        if(notification.subject.type === "RepositoryInvitation") {
-            return "mail.";
+    static getNormalizedType(notification) {
+        return TYPES[notification.subject.type] ?? "commit";
+    }
+
+    static getNotificationState(notification) {
+        if(notification.normalizedType === "issue") {
+            return notification.subjectDetails.state;
         }
-        if(notification.subject.type == "Issue") {
-            return `issue-${notification.subjectDetails.state}.`;
-        }
-        if(notification.subject.type == "PullRequest") {
+        if(notification.normalizedType === "pull") {
             if(notification.subjectDetails.merged) {
+                return "merged";
+            }
+            if(notification.subjectDetails.draft && notification.subjectDetails.state === "open") {
+                return "wip";
+            }
+            return notification.subjectDetails.state;
+        }
+    }
+
+    static getNotificationIcon(notification) {
+        if(ICONS[notification.normalizedType]) {
+            return `${ICONS[notification.normalizedType]}.`;
+        }
+        if(notification.normalizedType == "issue") {
+            return `issue-${notification.detailState}.`;
+        }
+        if(notification.normalizedType == "pull") {
+            if(notification.detailState === "merged") {
                 return "git-merge.";
             }
-            if(notification.subjectDetails.draft && notification.subjectDetails.state === 'open') {
+            if(notification.detailState === "wip") {
                 return "git-pull-request-draft.";
             }
-            if(notification.subjectDetails.state === 'open') {
+            if(notification.detailState === 'open') {
                 return "git-pull-request.";
             }
-            if(notification.subjectDetails.state === 'closed') {
+            if(notification.detailState === 'closed') {
                 return "git-pull-request-closed.";
             }
 
             return "git-pull-request-undefined.";
         }
-        if(notification.subject.type == "Tag" || notification.subject.type == "Release") {
-            return "tag.";
-        }
-        if(notification.subject.type === "RepositoryVulnerabilityAlert") {
-            return "alert.";
-        }
-        if(notification.subject.type === "TeamDiscussion") {
-            return "comment.";
-        }
-        // It's a commit
 
         return "commit.";
     }
@@ -304,7 +330,9 @@ class ClientHandler extends window.Storage {
             }
             else if(existingNotif.updated_at == notification.updated_at) {
                 notification.subjectDetails = existingNotif.subjectDetails;
-                notification.icon = existingNotif.icon;
+                notification.normalizedType = ClientHandler.getNormalizedType(notification);
+                notification.detailState = ClientHandler.getNotificationState(notification);
+                notification.icon = ClientHandler.getNotificationIcon(notification);
                 fetchDetails = false;
             }
 
@@ -318,6 +346,8 @@ class ClientHandler extends window.Storage {
                     catch(error) {
                         notification.subjectDetails = ClientHandler.buildNotificationDetails(notification);
                     }
+                    notification.normalizedType = ClientHandler.getNormalizedType(notification);
+                    notification.detailState = ClientHandler.getNotificationState(notification);
                     notification.icon = ClientHandler.getNotificationIcon(notification);
                     /* eslint-enable require-atomic-updates */
                 }
@@ -328,10 +358,18 @@ class ClientHandler extends window.Storage {
             if(notification.new) {
                 //TODO shouldn't be here
                 if(!hide && showNotifications) {
+                    const typeMessage = browser.i18n.getMessage(`type_${notification.normalizedType}`);
+                    let stateMessage = '';
+                    if(notification.detailState) {
+                        const stateMessageId = `status_${notification.detailState}`;
+                        stateMessage = ` (${browser.i18n.getMessage(stateMessageId)})`;
+                    }
+                    let message = `${notification.repository.full_name}
+${typeMessage}${stateMessage}`;
                     await browser.notifications.create(notification.id, {
                         type: "basic",
                         title: notification.subject.title,
-                        message: notification.repository.full_name,
+                        message,
                         eventTime: Date.parse(notification.updated_at),
                         iconUrl: `images/large/${notification.icon}png`
                     });

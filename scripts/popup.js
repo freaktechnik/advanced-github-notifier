@@ -125,11 +125,19 @@ const notificationList = {
         root.id = idPrefix + notification.id;
         root.classList.add("panel-list-item");
         const date = new Date(notification.updated_at);
-        root.title = formatter.format(date);
-
-        if(notification.subject.type == "Issue" || notification.subject.type == "PullRequest") {
-            root.title = `#${notification.subjectDetails.number} (${root.title})`;
+        let typeMessage = browser.i18n.getMessage(`type_${notification.normalizedType}`);
+        if([
+            "issue",
+            "pull"
+        ].includes(notification.normalizedType)) {
+            typeMessage += ` #${notification.subjectDetails.number}`;
         }
+        let stateMessage = '';
+        if(notification.detailState) {
+            const stateMessageId = `status_${notification.detailState}`;
+            stateMessage = ` (${browser.i18n.getMessage(stateMessageId)})`;
+        }
+        root.title = `${typeMessage}${stateMessage} ${formatter.format(date)}`;
 
         const image = new Image(this.IMAGE_SIZE, this.IMAGE_SIZE);
         image.src = `images/small/${notification.icon}svg`;

@@ -171,5 +171,41 @@
     },
     "showBadge": {
         "message": "Show unread count as badge on button"
+    },
+    "status_open": {
+        "message": "Open"
+    },
+    "status_closed": {
+        "message": "Closed"
+    },
+    "status_merged": {
+        "message": "Merged"
+    },
+    "status_wip": {
+        "message": "Draft"
+    },
+    "status_undefined": {
+        "message": "Unknown"
+    },
+    "type_invite": {
+        "message": "Repository invitation"
+    },
+    "type_issue": {
+        "message": "Issue"
+    },
+    "type_pull": {
+        "message": "Pull request"
+    },
+    "type_tag": {
+        "message": "Release"
+    },
+    "type_security": {
+        "message": "Security Alert"
+    },
+    "type_discussion": {
+        "message": "Discussion"
+    },
+    "type_commit": {
+        "message": "Commit"
     }
 }
