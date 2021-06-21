@@ -364,7 +364,7 @@ class ClientHandler extends window.Storage {
                         const stateMessageId = `status_${notification.detailState}`;
                         stateMessage = ` (${browser.i18n.getMessage(stateMessageId)})`;
                     }
-                    let message = `${notification.repository.full_name}
+                    const message = `${notification.repository.full_name}
 ${typeMessage}${stateMessage}`;
                     await browser.notifications.create(notification.id, {
                         type: "basic",
