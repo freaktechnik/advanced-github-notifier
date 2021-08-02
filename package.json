@@ -40,7 +40,7 @@
     "eclint": "^2.8.1",
     "eslint": "^7.31.0",
     "eslint-plugin-no-unsanitized": "^3.1.5",
-    "jsdom": "^16.6.0",
+    "jsdom": "^16.7.0",
     "mkdirp": "^1.0.4",
     "nyc": "^15.1.0",
     "sinon": "^11.1.1",
