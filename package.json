@@ -48,7 +48,7 @@
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "stylelint-no-unsupported-browser-features": "^5.0.2",
-    "web-ext": "^6.4.0"
+    "web-ext": "^6.5.0"
   },
   "stylelint": {
     "extends": "stylelint-config-standard",
