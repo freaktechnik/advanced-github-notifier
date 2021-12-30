@@ -15,7 +15,7 @@ const AVOID_INFINITY = 1;
 const parseLinks = (links) => {
     const linkInfo = links.split(",");
     const linkObject = {};
-    linkInfo.forEach((link) => {
+    for(const link of linkInfo) {
         const [
             match,
             url,
@@ -24,7 +24,7 @@ const parseLinks = (links) => {
         if(match && url && relation) {
             linkObject[relation] = url;
         }
-    });
+    }
     return linkObject;
 };
 

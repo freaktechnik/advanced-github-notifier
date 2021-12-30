@@ -8,7 +8,7 @@
  */
 
 function translateElementAttributes(element) {
-    const attributeList = [
+    const attributeList = new Set([
         'title',
         'accesskey',
         'alt',
@@ -19,7 +19,7 @@ function translateElementAttributes(element) {
         'download',
         'srcdoc',
         'value'
-    ];
+    ]);
     const ariaAttributeMap = {
         'aria-label': 'ariaLabel',
         'aria-value-text': 'ariaValueText',
@@ -32,7 +32,7 @@ function translateElementAttributes(element) {
     // Translate allowed attributes.
     for(const attribute of presentAttributes) {
         let data;
-        if(attributeList.includes(attribute)) {
+        if(attributeList.has(attribute)) {
             data = browser.i18n.getMessage(element.dataset.l10nId + attributeSeparator + attribute);
         }
         // Translate ARIA attributes

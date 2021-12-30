@@ -69,7 +69,7 @@ const contextMenu = {
         if(!target.tagName.toLowerCase() !== 'li') {
             target = target.closest('li');
         }
-        if(target != null && target.classList.contains('panel-list-item')) {
+        if(target != undefined && target.classList.contains('panel-list-item')) {
             return target.id.slice(idPrefix.length);
         }
         return null;
