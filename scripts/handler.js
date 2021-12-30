@@ -214,7 +214,7 @@ class ClientHandler extends window.Storage {
 
     async logout() {
         const token = await this.getValue(ClientHandler.TOKEN);
-        await this.client.authorize(token, "PATCH");
+        await this.client.deauthorize(token);
         await this.removeValues([
             ClientHandler.TOKEN,
             ClientHandler.NOTIFICATIONS,
@@ -271,6 +271,7 @@ class ClientHandler extends window.Storage {
         const notification = notifications.find((n) => n.id == id);
         //TODO get anchor to events after last_read_at for issues/prs
         if(notification) {
+            //TODO normalize html_url in subjectDetails
             if(notification.subject.type === "RepositoryInvitation") {
                 return `${notification.repository.html_url}/invitations`;
             }
