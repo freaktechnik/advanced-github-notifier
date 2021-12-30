@@ -56,7 +56,6 @@ section + section {
     cursor: not-allowed; /* stylelint-disable-line plugin/no-unsupported-browser-features */
 }
 
-#enterprise_redirect {
+#enterprise-redirect {
     user-select: text;
-    -moz-user-select: text;
 }
