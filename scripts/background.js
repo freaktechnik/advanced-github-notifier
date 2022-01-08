@@ -101,7 +101,7 @@ const afterAdd = async (handler) => {
     const popupURL = await browser.browserAction.getPopup({});
     if(popupURL === "") {
         browser.browserAction.setPopup({
-            popup: browser.extension.getURL('popup.html')
+            popup: browser.runtime.getURL('popup.html')
         });
         await updateBadge();
     }

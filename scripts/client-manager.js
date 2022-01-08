@@ -45,29 +45,32 @@ class ClientManager extends window.StorageManager {
 
     static async createClient(type, id, details) {
         let ClientFactory;
-        if(type === ClientManager.GITHUB) {
+        switch(type) {
+        case ClientManager.GITHUB:
             ClientFactory = window.GitHub;
-        }
-        else if(type === ClientManager.GITHUB_LIGHT) {
+            break;
+        case ClientManager.GITHUB_LIGHT:
             ClientFactory = window.GitHubLight;
-        }
-        else if(type === ClientManager.ENTERPRISE) {
+            break;
+        case ClientManager.ENTERPRISE:
             ClientFactory = window.GitHubEnterprise;
             if(!details) {
                 throw new Error("Details required to create enterprise client");
             }
-        }
-        else if(type === ClientManager.GITHUB_USER_TOKEN) {
+            break;
+        case ClientManager.GITHUB_USER_TOKEN:
             ClientFactory = window.GitHubUserToken;
             if(!details) {
                 throw new Error("Details required to create PAT client");
             }
-        }
-        else if(type === ClientManager.ENTERPRISE_PAT) {
+            break;
+        case ClientManager.ENTERPRISE_PAT:
             ClientFactory = window.GitHubEnterpriseUserToken;
             if(!details) {
                 throw new Error("Details required to create enterprise PAT client");
             }
+            break;
+        default:
         }
         const factoryArguments = ClientFactory.buildArgs(clientId, clientSecret, details);
         const client = new ClientFactory(...factoryArguments);

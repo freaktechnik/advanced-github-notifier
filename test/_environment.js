@@ -2,13 +2,13 @@ import {
     JSDOM,
     VirtualConsole
 } from 'jsdom';
-import path from 'path';
-import { execFile } from 'child_process';
+import path from 'node:path';
+import { execFile } from 'node:child_process';
 import mkdirp from 'mkdirp';
-import fs from 'fs';
-import util from 'util';
+import fs from 'node:fs';
+import util from 'node:util';
 import sinon from 'sinon';
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 
 const aboutBlank = `<!DOCTYPE html>
 <html>

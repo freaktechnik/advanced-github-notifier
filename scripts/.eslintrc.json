@@ -1,6 +1,6 @@
 {
-    "parserOptions": {
-        "ecmaVersion": 2020
+    "env": {
+        "es2021": true
     },
     "rules": {
         "one-var": 0
