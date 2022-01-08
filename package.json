@@ -37,7 +37,7 @@
     "@freaktechnik/eslint-config-test": "^8.0.2",
     "ava": "^4.0.1",
     "eclint": "^2.8.1",
-    "eslint": "^7.32.0",
+    "eslint": "^8.6.0",
     "eslint-plugin-no-unsanitized": "^4.0.1",
     "jsdom": "^19.0.0",
     "mkdirp": "^1.0.4",
