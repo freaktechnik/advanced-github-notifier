@@ -1,58 +1,34 @@
 name: checks
 on: [push, pull_request]
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-      - run: npm ci --ignore-scripts --no-audit
   lint-js:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        with:
+          node-version: 'stable'
+          cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run lint:js
   lint-css:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        with:
+          node-version: 'stable'
+          cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run lint:css
   lint-editorconfig:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        with:
+          node-version: 'stable'
+          cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run lint:ec
   lint-webext:
@@ -64,14 +40,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ lint-js, lint-css, lint-editorconfig, lint-webext ]
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        with:
+          node-version: 'stable'
+          cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run test:js
       - uses: codecov/codecov-action@v1

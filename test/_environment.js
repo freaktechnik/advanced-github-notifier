@@ -8,6 +8,7 @@ import mkdirp from 'mkdirp';
 import fs from 'fs';
 import util from 'util';
 import sinon from 'sinon';
+import { createRequire } from 'module';
 
 const aboutBlank = `<!DOCTYPE html>
 <html>
@@ -29,24 +30,24 @@ const instrumentCache = new Map();
 // the nyc integration here is hacky as hell, but it works, so who am I to judge.
 // inspired by https://github.com/lukasoppermann/html5sortable/pull/269
 const instrument = async (sourcePath) => {
-    if(!instrumentCache.has(sourcePath)) {
+    if(!instrumentCache.has(sourcePath.href)) {
         if(!process.env.NYC_CONFIG) {
             const source = await rf(sourcePath, 'utf8');
-            instrumentCache.set(sourcePath, source);
+            instrumentCache.set(sourcePath.href, source);
         }
         else {
             const instrumented = await ef(process.execPath, [
                 './node_modules/.bin/nyc',
                 'instrument',
-                sourcePath
+                sourcePath.pathname
             ], {
                 cwd: process.cwd(),
                 env: process.env
             });
-            instrumentCache.set(sourcePath, instrumented.stdout.toString('utf-8'));
+            instrumentCache.set(sourcePath.href, instrumented.stdout.toString('utf-8'));
         }
     }
-    return instrumentCache.get(sourcePath);
+    return instrumentCache.get(sourcePath.href);
 };
 
 export const getEnvironment = async (files, html = aboutBlank) => {
@@ -55,12 +56,13 @@ export const getEnvironment = async (files, html = aboutBlank) => {
         virtualConsole
     });
     dom.window.fetch = sinon.stub();
+    const require = createRequire(import.meta.url);
     dom.window.browser = require("sinon-chrome/webextensions");
     // Purge that instance of the browser stubs, so tests have their own env.
-    delete require.cache[path.join(__dirname, '../node_modules/sinon-chrome/webextensions/index.js')];
+    delete require.cache[new URL('../node_modules/sinon-chrome/webextensions/index.js', import.meta.url).pathname];
     for(const file of files) {
         //TODO instrumenting
-        dom.window.eval(await instrument(path.join(__dirname, file), 'utf-8'));
+        dom.window.eval(await instrument(new URL(file, import.meta.url), 'utf-8'));
     }
     return dom;
 };

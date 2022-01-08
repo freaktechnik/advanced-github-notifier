@@ -1,8 +1,8 @@
 import test from 'ava';
 import {
     getEnvironment, cleanUp
-} from './_environment';
-import { FakeClient } from './_mocks';
+} from './_environment.js';
+import { FakeClient } from './_mocks.js';
 
 test.beforeEach(async (t) => {
     const dom = await getEnvironment([

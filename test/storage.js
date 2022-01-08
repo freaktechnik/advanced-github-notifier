@@ -1,7 +1,7 @@
 import test from 'ava';
 import {
     getEnvironment, cleanUp
-} from './_environment';
+} from './_environment.js';
 
 test.beforeEach(async (t) => {
     const dom = await getEnvironment([ '../scripts/storage.js' ]);
