@@ -7,7 +7,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 'node'
+          node-version: 'lts/*'
           cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run lint:js
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 'node'
+          node-version: 'lts/*'
           cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run lint:css
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 'node'
+          node-version: 'lts/*'
           cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run lint:ec
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 'node'
+          node-version: 'lts/*'
           cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run test:js
