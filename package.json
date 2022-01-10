@@ -32,7 +32,7 @@
   ],
   "homepage": "https://github.com/freaktechnik/advanced-github-notifier#readme",
   "devDependencies": {
-    "@freaktechnik/eslint-config-base": "^9.0.1",
+    "@freaktechnik/eslint-config-base": "^9.0.2",
     "@freaktechnik/eslint-config-extension": "^9.0.1",
     "@freaktechnik/eslint-config-node": "^9.0.3",
     "@freaktechnik/eslint-config-test": "^9.0.1",
