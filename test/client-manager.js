@@ -14,6 +14,8 @@ test.beforeEach(async (t) => {
         '../scripts/github-light.js',
         '../scripts/github-user-token.js',
         '../scripts/github-enterprise-pat.js',
+        '../scripts/gitlab.js',
+        '../scripts/gitea.js',
         '../scripts/client-manager.js'
     ]);
     t.context.window = dom.window;
