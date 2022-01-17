@@ -25,6 +25,10 @@
                         <option value="enterprise" data-l10n-id="account_enterprise">GitHub Enterprise (OAuth)</option>
                         <option value="enterprise-pat" data-l10n-id="account_enterprise-pat">GitHub Enterprise (Personal access token)</option>
                     </optgroup>
+                    <optgroup label="Others" data-l10n-id="group_others" data-l10n-nocontent="yes" data-l10n-attrs="label">
+                        <option value="gitlab" data-l10n-id="account_gitlab">GitLab (Token)</option>
+                        <option value="gitea" data-l10n-id="account_gitea">Gitea (Token)</option>
+                    </optgroup>
                 </select>
                 <fieldset name="enterprise" hidden>
                     <p class="browser-style">
@@ -58,6 +62,27 @@
                     <p class="browser-style">
                         <label for="enterprise-pat-url" data-l10n-id="instanceURL">Instance URL</label>
                         <input type="url" id="enterprise-pat-url" class="browser-style" name="instanceURL" pattern="https://.+" placeholder="https://example.com" disabled>
+                    </p>
+                </fieldset>
+                <fieldset name="gitlab" hidden>
+                    <p class="browser-style">
+                        <label for="gitlab-user-token" data-l10n-id="userToken">Personal access token</label>
+                        <input type="password" id="gitlab-user-token" class="browser-style" name="token" disabled>
+                        <small data-l10n-id="token_scopes_gitlab">The token must at least have the "read_api" scope. For marking todos as done "api" is required.</small>
+                    </p>
+                    <p class="browser-style">
+                        <label for="gitlab-pat-url" data-l10n-id="instanceURL">Instance URL</label>
+                        <input type="url" id="gitlab-pat-url" class="browser-style" name="instanceURL" pattern="https://.+" placeholder="https://example.com" disabled>
+                    </p>
+                </fieldset>
+                <fieldset name="gitea" hidden>
+                    <p class="browser-style">
+                        <label for="gitea-user-token" data-l10n-id="userToken">Personal access token</label>
+                        <input type="password" id="gitea-user-token" class="browser-style" name="token" disabled>
+                    </p>
+                    <p class="browser-style">
+                        <label for="gitea-pat-url" data-l10n-id="instanceURL">Instance URL</label>
+                        <input type="url" id="gitea-pat-url" class="browser-style" name="instanceURL" pattern="https://.+" placeholder="https://example.com" disabled>
                     </p>
                 </fieldset>
                 <button class="browser-style" type="submit" data-l10n-id="addAccount">Add account</button>

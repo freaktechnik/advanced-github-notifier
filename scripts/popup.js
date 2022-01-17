@@ -34,7 +34,7 @@ const clickListener = (id) => {
 const contextMenu = {
     items: Object.keys(MENU_SPEC),
     menuId: 0,
-    areVisible: null,
+    areVisible: undefined,
     init() {
         //TODO maybe one can toggle shown/hidden from a contextmenu event, i.e. it's early enough?
         browser.menus.onClicked.addListener(({
@@ -45,12 +45,29 @@ const contextMenu = {
             this[menuItemId](target);
         });
         browser.menus.onShown.addListener(({ targetElementId }) => {
-            const isNotification = this.getTarget(targetElementId) !== null,
+            const notificationId = this.getTarget(targetElementId),
+                isNotification = notificationId !== undefined,
                 { menuId } = this;
-            if(this.areVisible !== isNotification) {
-                Promise.all(this.items.map((id) => browser.menus.update(id, {
-                    enabled: isNotification
-                })))
+            let canUnsubscribe = false,
+                canIgnore = false;
+            if(isNotification) {
+                const notifElement = document.getElementById(`${idPrefix}${notificationId}`);
+                canUnsubscribe = notifElement.dataset.canUnsubscribe == "true";
+                canIgnore = notifElement.dataset.canIgnore == "true";
+            }
+            if(this.areVisible !== isNotification || isNotification) {
+                Promise.all(this.items.map((id) => {
+                    let enabled = isNotification;
+                    if(id == "unsubscribe") {
+                        enabled &&= canUnsubscribe;
+                    }
+                    if(id == "ignore") {
+                        enabled &&= canIgnore;
+                    }
+                    return browser.menus.update(id, {
+                        enabled
+                    });
+                }))
                     .then(() => {
                         if(menuId === this.menuId) {
                             browser.menus.refresh();
@@ -72,7 +89,6 @@ const contextMenu = {
         if(target != undefined && target.classList.contains('panel-list-item')) {
             return target.id.slice(idPrefix.length);
         }
-        return null;
     },
     open() {
         browser.menus.overrideContext({
@@ -101,8 +117,8 @@ const contextMenu = {
 
 const notificationList = {
     IMAGE_SIZE: 16,
-    root: null,
-    markRead: null,
+    root: undefined,
+    markRead: undefined,
     init() {
         this.root = document.getElementById("notifications");
         this.markRead = document.getElementById("mark-read");
@@ -123,6 +139,8 @@ const notificationList = {
     create(notification) {
         const root = document.createElement("li");
         root.id = idPrefix + notification.id;
+        root.dataset.canUnsubscribe = notification.subjectDetails.canUnsubscribe ?? true;
+        root.dataset.canIgnore = notification.subjectDetails.canIgnore ?? true;
         root.classList.add("panel-list-item");
         const date = new Date(notification.updated_at);
         let typeMessage = browser.i18n.getMessage(`type_${notification.normalizedType}`);
@@ -130,7 +148,8 @@ const notificationList = {
             "issue",
             "pull"
         ].includes(notification.normalizedType)) {
-            typeMessage += ` #${notification.subjectDetails.number}`;
+            const prefix = notification.subjectDetails.prefix ?? '#';
+            typeMessage += ` ${prefix}${notification.subjectDetails.number}`;
         }
         let stateMessage = '';
         if(notification.detailState) {
@@ -147,11 +166,14 @@ const notificationList = {
         title.classList.add("text");
         title.textContent = notification.subject.title;
 
-        const repo = document.createElement("span");
-        repo.classList.add("text-shortcut");
-        repo.textContent = notification.repository.full_name;
+        root.append(image, title);
+        if(notification.repository) {
+            const repo = document.createElement("span");
+            repo.classList.add("text-shortcut");
+            repo.textContent = notification.repository.full_name;
+            root.append(repo);
+        }
 
-        root.append(image, title, repo);
         root.addEventListener("click", () => clickListener(notification.id), {
             passive: true
         });
@@ -194,8 +216,8 @@ const notificationList = {
 const accountSelector = {
     SINGLE_ACCOUNT: 1,
     ALL_ACCOUNTS: "all",
-    root: null,
-    storage: null,
+    root: undefined,
+    storage: undefined,
     init() {
         this.storage = new window.StorageManager(window.Storage);
         this.root = document.getElementById("accounts");

@@ -22,7 +22,7 @@ class Account extends window.Storage {
     }
 
     get removeAction() {
-        if(this.type === 'enterprise-pat' || this.type === 'github-user') {
+        if(this.type === 'enterprise-pat' || this.type === 'github-user' || this.type === 'gitlab' || this.type === 'gitea') {
             return browser.i18n.getMessage('remove');
         }
         return browser.i18n.getMessage('logout');
@@ -157,7 +157,20 @@ class AccountManager extends window.StorageManager {
                     origins: [ permissionURL ]
                 });
                 if(!granted) {
-                    this.showError("Can not OAuth without host permission for Enterprise instance");
+                    this.showError(browser.i18n.getMessage("error_host_enterprise"));
+                    return;
+                }
+            }
+            if(type == 'gitea') {
+                let permissionURL = details.instanceURL;
+                if(!permissionURL.endsWith('/')) {
+                    permissionURL += '/';
+                }
+                const granted = await browser.permissions.request({
+                    origins: [ permissionURL ]
+                });
+                if(!granted) {
+                    this.showError(browser.i18n.getMessage("error_host_gitea"));
                     return;
                 }
             }

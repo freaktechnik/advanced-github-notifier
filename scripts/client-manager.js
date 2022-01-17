@@ -27,6 +27,14 @@ class ClientManager extends window.StorageManager {
         return "enterprise-pat";
     }
 
+    static get GITLAB() {
+        return "gitlab";
+    }
+
+    static get GITEA() {
+        return "gitea";
+    }
+
     static getTypeForClient(client) {
         if(client instanceof window.GitHubEnterpriseUserToken) {
             return ClientManager.ENTERPRISE_PAT;
@@ -39,6 +47,12 @@ class ClientManager extends window.StorageManager {
         }
         else if(client instanceof window.GitHubUserToken) {
             return ClientManager.GITHUB_USER_TOKEN;
+        }
+        else if(client instanceof window.GitLab) {
+            return ClientManager.GITLAB;
+        }
+        else if(client instanceof window.Gitea) {
+            return ClientManager.GITEA;
         }
         return ClientManager.GITHUB;
     }
@@ -70,7 +84,20 @@ class ClientManager extends window.StorageManager {
                 throw new Error("Details required to create enterprise PAT client");
             }
             break;
+        case ClientManager.GITLAB:
+            ClientFactory = window.GitLab;
+            if(!details) {
+                throw new Error("Details required to create new GitLab client");
+            }
+            break;
+        case ClientManager.GITEA:
+            ClientFactory = window.Gitea;
+            if(!details) {
+                throw new Error("Details required to create new Gitea client");
+            }
+            break;
         default:
+            throw new Error("Unknown account type");
         }
         const factoryArguments = ClientFactory.buildArgs(clientId, clientSecret, details);
         const client = new ClientFactory(...factoryArguments);

@@ -15,6 +15,8 @@
             "scripts/github-enterprise.js",
             "scripts/github-user-token.js",
             "scripts/github-enterprise-pat.js",
+            "scripts/gitlab.js",
+            "scripts/gitea.js",
             "scripts/storage.js",
             "scripts/storage-manager.js",
             "scripts/handler.js",

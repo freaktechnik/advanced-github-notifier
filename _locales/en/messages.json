@@ -121,6 +121,12 @@
     "account_enterprise-pat": {
         "message": "GitHub Enterprise (Personal access token)"
     },
+    "account_gitlab": {
+        "message": "GitLab (Token)"
+    },
+    "account_gitea": {
+        "message": "Gitea (Token)"
+    },
     "addAccount": {
         "message": "Add account"
     },
@@ -162,6 +168,9 @@
     },
     "group_enterprise_label": {
         "message": "GitHub Enterprise"
+    },
+    "group_others_label": {
+        "message": "Others"
     },
     "remove": {
         "message": "Remove"
@@ -207,5 +216,14 @@
     },
     "type_commit": {
         "message": "Commit"
+    },
+    "token_scopes_gitlab": {
+        "message": "The token must at least have the \"read_api\" scope. For marking todos as done \"api\" is required."
+    },
+    "error_host_enterprise": {
+        "message": "Can not OAuth without host permission for Enterprise instance"
+    },
+    "error_host_gitea": {
+        "message": "Host permission required to ensure Gitea API can be interacted with"
     }
 }
