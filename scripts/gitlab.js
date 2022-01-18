@@ -168,7 +168,9 @@ class GitLab {
                     return {
                         id: todo.id,
                         subject,
-                        'updated_at': todo.updated_at
+                        'updated_at': todo.updated_at,
+                        unread: todo.state === 'pending',
+                        repository: subject.repository
                     };
                 });
 
