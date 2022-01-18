@@ -22,6 +22,13 @@ const formatter = new Intl.DateTimeFormat(undefined, {
     minute: "2-digit",
     second: "2-digit"
 });
+const HAS_INSTANCE_URL = new Set([
+        'enterprise',
+        'enterprise-pat',
+        'gitlab',
+        'gitea'
+    ]),
+    SINGLE_ACCOUNT = 1;
 
 const clickListener = (id) => {
     browser.runtime.sendMessage({
@@ -123,6 +130,7 @@ const notificationList = {
         this.root = document.getElementById("notifications");
         this.markRead = document.getElementById("mark-read");
         this.markRead.addEventListener("click", () => {
+            //TODO only mark current account as read
             if(!this.markRead.classList.contains("disabled")) {
                 browser.runtime.sendMessage({ topic: "mark-all-read" });
             }
@@ -136,7 +144,7 @@ const notificationList = {
         document.getElementById("empty").hidden = !state;
         this.markRead.classList.toggle("disabled", state);
     },
-    create(notification) {
+    create(notification, singleAccount = false) {
         const root = document.createElement("li");
         root.id = idPrefix + notification.id;
         root.dataset.canUnsubscribe = notification.subjectDetails.canUnsubscribe ?? true;
@@ -156,7 +164,13 @@ const notificationList = {
             const stateMessageId = `status_${notification.detailState}`;
             stateMessage = ` (${browser.i18n.getMessage(stateMessageId)})`;
         }
-        root.title = `${typeMessage}${stateMessage} ${formatter.format(date)}`;
+        let accountInfo = '';
+        if(!singleAccount) {
+            //TODO should use accountselector instance
+            const account = document.querySelector(`[value=${CSS.escape(notification.accountId)}]`);
+            accountInfo = ` - ${account.textContent}`;
+        }
+        root.title = `${typeMessage}${stateMessage}${accountInfo} ${formatter.format(date)}`;
 
         const image = new Image(this.IMAGE_SIZE, this.IMAGE_SIZE);
         image.src = `images/small/${notification.icon}svg`;
@@ -203,82 +217,114 @@ const notificationList = {
 
         this.clear();
 
-        let notifications = [];
-        for(const r in storedNotifications) {
-            notifications = notifications.concat(storedNotifications[r]);
-        }
+        const notifications = Object.entries(storedNotifications).flatMap(([
+            accountId,
+            notifs
+        ]) => notifs.map((n) => {
+            n.accountId = accountId;
+            return n;
+        }));
+        this.toggleEmpty(!notifications.length);
         for(const notification of notifications) {
-            this.create(notification);
+            this.create(notification, !Array.isArray(stores));
         }
     }
 };
 
-const accountSelector = {
-    SINGLE_ACCOUNT: 1,
-    ALL_ACCOUNTS: "all",
-    root: undefined,
-    storage: undefined,
-    init() {
-        this.storage = new window.StorageManager(window.Storage);
-        this.root = document.getElementById("accounts");
+class Account extends window.Storage {
+    constructor(type, id, area, details = {}) {
+        super(id, area);
+        this.id = id;
+        this.type = type;
+        this.details = details;
+        this.ready = this.buildRoot();
+    }
 
+    async buildRoot() {
+        this.root = new Option(await this.getLabel(), this.getStorageKey("notifications"));
+    }
+
+    async getLabel() {
+        if(HAS_INSTANCE_URL.has(this.type)) {
+            return browser.i18n.getMessage('username_instance', [
+                await this.getValue('username'),
+                this.details.instanceURL
+            ]);
+        }
+        return this.getValue('username');
+    }
+}
+
+class AccountSelector extends window.StorageManager {
+    static get ALL_ACCOUNTS() {
+        return "all";
+    }
+
+    constructor(root) {
+        super(Account);
+        this.root = root;
         this.root.addEventListener("input", () => {
             this.selectAccount(this.currentAccount);
         }, {
             passive: true,
             capture: false
         });
-
         browser.storage.onChanged.addListener((changes, area) => {
             // Only listening for notification changes, since accounts shouldn't
             // change while the popup is open.
-            if(area === this.storage.area && (this.currentAccount === this.ALL_ACCOUNTS || this.currentAccount in changes)) {
+            if(area === "local" && (this.currentAccount === AccountSelector.ALL_ACCOUNTS || this.currentAccount in changes)) {
                 this.selectAccount(this.currentAccount);
             }
         });
-
-        this.storage.getInstances()
-            .then((accounts) => this.setAccounts(accounts))
+        this.getInstances()
             .then(() => this.selectAccount(this.currentAccount))
             .catch(console.error);
-    },
+    }
+
     get currentAccount() {
         return this.root.value;
-    },
-    async addAccount(account) {
-        const username = await account.getValue("username");
-        const option = new Option(username, account.getStorageKey("notifications"));
-        this.root.append(option);
-    },
-    async setAccounts(accounts) {
-        if(accounts.length === this.SINGLE_ACCOUNT) {
+    }
+
+    async getInstances() {
+        const records = await this.getRecords();
+        if(records.length == SINGLE_ACCOUNT) {
             this.root.hidden = true;
             this.root.disabled = true;
         }
-        for(const account of accounts) {
-            await this.addAccount(account);
-        }
-    },
+        return Promise.all(records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY], r.details)));
+    }
+
+    async addAccount(type, id, details) {
+        const account = new this.StorageInstance(type, id, this.area, details);
+        await account.ready;
+        this.root.append(account.root);
+        return account;
+    }
+
+    getAccountRoot(id) {
+        return this.root.querySelector(`[value="${CSS.escape(id)}"]`);
+    }
     getAccounts() {
         return Array.from(this.root.options)
-            .filter((o) => o.value !== this.ALL_ACCOUNTS)
+            .filter((o) => o.value !== AccountSelector.ALL_ACCOUNTS)
             .map((o) => o.value);
-    },
+    }
+
     selectAccount(account) {
-        if(account === this.ALL_ACCOUNTS) {
+        if(account === AccountSelector.ALL_ACCOUNTS) {
             notificationList.show(this.getAccounts()).catch(console.error);
         }
         else {
             notificationList.show(account).catch(console.error);
         }
     }
-};
+}
 
 loaded
     .then(() => {
         contextMenu.init();
         notificationList.init();
-        accountSelector.init();
+        new AccountSelector(document.getElementById("accounts"));
         return browser.storage.local.get({
             "footer": "all"
         });

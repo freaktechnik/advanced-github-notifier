@@ -8,7 +8,19 @@ const PASSIVE_EVENT = {
         capturing: false,
         passive: true
     },
-    MIN_OAUTH_VERSION = 60;
+    MIN_OAUTH_VERSION = 60,
+    HAS_INSTANCE_URL = new Set([
+        'enterprise',
+        'enterprise-pat',
+        'gitlab',
+        'gitea'
+    ]),
+    IS_TOKEN = new Set([
+        'enterprise-pat',
+        'github-user',
+        'gitlab',
+        'gitea'
+    ]);
 
 class Account extends window.Storage {
     constructor(type, id, area, details = {}) {
@@ -22,7 +34,7 @@ class Account extends window.Storage {
     }
 
     get removeAction() {
-        if(this.type === 'enterprise-pat' || this.type === 'github-user' || this.type === 'gitlab' || this.type === 'gitea') {
+        if(IS_TOKEN.has(this.type)) {
             return browser.i18n.getMessage('remove');
         }
         return browser.i18n.getMessage('logout');
@@ -34,7 +46,7 @@ class Account extends window.Storage {
         typeNode.textContent = browser.i18n.getMessage(`account_${this.type}`);
 
         // Show what enterprise instance the account belongs to
-        if(this.type.startsWith('enterprise')) {
+        if(HAS_INSTANCE_URL.has(this.type)) {
             typeNode.textContent += ` - ${this.details.instanceURL}`;
         }
 
@@ -114,7 +126,7 @@ class AccountManager extends window.StorageManager {
                 for(const handler of changes.handlers.newValue) {
                     handlerIds.add(handler[window.StorageManager.ID_KEY]);
                     if(!this.getAccountRoot(handler[window.StorageManager.ID_KEY])) {
-                        this.addAccount(handler.type, handler[window.StorageManager.ID_KEY]);
+                        this.addAccount(handler.type, handler[window.StorageManager.ID_KEY], handler.details);
                     }
                 }
                 if("oldValue" in changes.handlers && changes.handlers.oldValue) {
@@ -174,13 +186,17 @@ class AccountManager extends window.StorageManager {
                     return;
                 }
             }
-            browser.runtime.sendMessage({
-                topic: "login",
-                type,
-                details
-            }).catch((error) => {
+            try {
+                await browser.runtime.sendMessage({
+                    topic: "login",
+                    type,
+                    details
+                });
+                this.form.reset();
+            }
+            catch(error) {
                 this.showError(error.message);
-            });
+            }
         }, {
             passive: false
         });
@@ -208,11 +224,11 @@ class AccountManager extends window.StorageManager {
     }
 
     getAccountRoot(id) {
-        return this.list.querySelector(`[data-id="${id}"]`);
+        return this.list.querySelector(`[data-id="${CSS.escape(id)}"]`);
     }
 
     getDetails(type) {
-        const inputs = this.form.querySelectorAll(`fieldset[name="${type}"] input`),
+        const inputs = this.form.querySelectorAll(`fieldset[name="${CSS.escape(type)}"] input`),
             details = {};
         for(const input of inputs) {
             if(input.value && !input.disabled) {

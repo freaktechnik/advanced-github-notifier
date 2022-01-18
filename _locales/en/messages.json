@@ -225,5 +225,18 @@
     },
     "error_host_gitea": {
         "message": "Host permission required to ensure Gitea API can be interacted with"
+    },
+    "username_instance": {
+        "message": "$USERNAME$ ($URL$)",
+        "placeholders": {
+            "username": {
+                "content": "$1",
+                "example": "freaktechnik"
+            },
+            "url": {
+                "content": "$2",
+                "example": "https://github.com/"
+            }
+        }
     }
 }
