@@ -36,7 +36,7 @@
     "@freaktechnik/eslint-config-extension": "^9.0.1",
     "@freaktechnik/eslint-config-node": "^9.0.3",
     "@freaktechnik/eslint-config-test": "^9.0.1",
-    "ava": "^4.0.1",
+    "ava": "^4.1.0",
     "eclint": "^2.8.1",
     "eslint": "^8.10.0",
     "eslint-plugin-no-unsanitized": "^4.0.1",
