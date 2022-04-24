@@ -160,7 +160,7 @@ browser.runtime.onMessage.addListener((message) => {
     }
     case "logout": {
         const handler = manager.getClientById(message.handlerId);
-        handler.logout().catch(console.error);
+        handler.logout(true).catch(console.error);
         manager.removeClient(handler);
         if(!manager.clients.size) {
             needsAuth();

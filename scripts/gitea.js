@@ -50,6 +50,10 @@ class Gitea {
         return this._username;
     }
 
+    get isOauth() {
+        return false;
+    }
+
     async getToken() {
         return this.token;
     }

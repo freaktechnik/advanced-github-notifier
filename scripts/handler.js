@@ -157,6 +157,12 @@ class ClientHandler extends window.Storage {
      * @returns {boolean} If something changed.
      */
     async check() {
+        if(!this.client.authorized) {
+            const authSuccess = await this.checkAuth();
+            if(!authSuccess) {
+                return false;
+            }
+        }
         const notifications = await this.client.getNotifications();
         if(notifications) {
             await this._processNewNotifications(notifications);
@@ -215,15 +221,19 @@ class ClientHandler extends window.Storage {
         return false;
     }
 
-    async logout() {
-        const token = await this.getValue(ClientHandler.TOKEN);
-        await this.client.deauthorize(token);
-        await this.removeValues([
-            ClientHandler.TOKEN,
-            ClientHandler.NOTIFICATIONS,
-            ClientHandler.USERNAME,
-            ClientHandler.SHOW_NOTIFICATIONS
-        ]);
+    async logout(cleanUp = false) {
+        if(cleanUp) {
+            const token = await this.getValue(ClientHandler.TOKEN);
+            await this.client.deauthorize(token);
+        }
+        const valueToRemove = [ ClientHandler.NOTIFICATIONS ];
+        if(cleanUp) {
+            valueToRemove.push(ClientHandler.TOKEN, ClientHandler.SHOW_NOTIFICATIONS, ClientHandler.USERNAME);
+        }
+        else if(this.client.isOauth) {
+            valueToRemove.push(ClientHandler.TOKEN);
+        }
+        await this.removeValues(valueToRemove);
     }
 
     async checkAuth() {

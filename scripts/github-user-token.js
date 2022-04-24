@@ -15,6 +15,10 @@ class GitHubUserToken extends window.GitHub {
         this.setToken(token);
     }
 
+    get isOauth() {
+        return false;
+    }
+
     async getToken() {
         return this.token;
     }

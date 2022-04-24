@@ -18,6 +18,10 @@ class GitHubEnterpriseUserToken extends window.GitHubEnterprise {
         this.setToken(token);
     }
 
+    get isOauth() {
+        return false;
+    }
+
     async getToken() {
         return this.token;
     }

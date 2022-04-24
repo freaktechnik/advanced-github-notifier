@@ -72,6 +72,10 @@ class GitLab {
         return true;
     }
 
+    get isOauth() {
+        return false;
+    }
+
     async getToken() {
         return this.token;
     }

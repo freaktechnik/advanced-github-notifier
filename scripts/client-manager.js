@@ -122,19 +122,19 @@ class ClientManager extends window.StorageManager {
         for(const handler of handlers) {
             const wrapper = await ClientManager.createClient(handler.type, handler.id, handler.details);
             const authValid = await wrapper.checkAuth();
-            if(authValid) {
-                this.addClient(wrapper);
-            }
+            this.addClient(wrapper, true);
         }
 
         return !!this.clients.size;
     }
 
-    addClient(client) {
+    addClient(client, noSave = false) {
         //TODO ensure no duplicates of accounts are added.
         if(client instanceof window.ClientHandler) {
             this.clients.add(client);
-            return this.saveFields();
+            if(!noSave) {
+                return this.saveFields();
+            }
         }
         return Promise.reject(new TypeError('Client is not a ClientHandler'));
     }

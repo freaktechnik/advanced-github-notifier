@@ -90,6 +90,10 @@ class GitHub {
         return this._username;
     }
 
+    get isOauth() {
+        return true;
+    }
+
     buildAPIURL(endpoint = '') {
         return GitHub.BASE_URI + endpoint;
     }
