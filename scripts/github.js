@@ -307,7 +307,7 @@ class GitHub {
     }
 
     async getNotificationDetails(notification) {
-        if(notification.subject.type === "RepositoryInvitation" || notification.subject.type === "RepositoryVulnerabilityAlert") {
+        if(notification.subject.type === "RepositoryInvitation" || notification.subject.type === "RepositoryVulnerabilityAlert" || !notification.subject.url) {
             return notification.repository;
         }
         const apiEndpoint = notification.subject.url;

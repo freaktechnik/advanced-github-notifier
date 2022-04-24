@@ -14,14 +14,16 @@ const TYPES = {
     Release: "release",
     RepositoryVulnerabilityAlert: "security",
     TeamDiscussion: "discussion",
-    Commit: "commit"
+    Commit: "commit",
+    CheckSuite: "ci"
 };
 const ICONS = {
     invite: "mail",
     release: "tag",
     security: "alert",
     discussion: "comment",
-    commit: "commit"
+    commit: "commit",
+    ci: "ci"
 };
 
 class ClientHandler extends window.Storage {
@@ -275,8 +277,11 @@ class ClientHandler extends window.Storage {
             if(notification.subject.type === "RepositoryInvitation") {
                 return `${notification.repository.html_url}/invitations`;
             }
-            else if(notification.subject.type === "RepositoryVulnerabilityAlert") {
+            if(notification.subject.type === "RepositoryVulnerabilityAlert") {
                 return `${notification.repository.html_url}/network/dependencies`;
+            }
+            if(!notification.subjectDetails.html_url) {
+                return notification.repository.html_url;
             }
             return notification.subjectDetails.html_url;
         }

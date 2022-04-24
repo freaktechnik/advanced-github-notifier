@@ -144,6 +144,7 @@ class AccountManager extends window.StorageManager {
         });
 
         this.form.addEventListener("submit", async (event) => {
+            //TODO disable form "during" submit
             event.preventDefault();
             if(!this.validateForm()) {
                 //TODO show error

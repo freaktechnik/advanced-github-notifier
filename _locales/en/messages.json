@@ -217,6 +217,9 @@
     "type_commit": {
         "message": "Commit"
     },
+    "type_ci": {
+        "message": "CI"
+    },
     "token_scopes_gitlab": {
         "message": "The token must at least have the \"read_api\" scope. For marking todos as done \"api\" is required."
     },
