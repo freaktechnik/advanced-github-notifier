@@ -121,7 +121,7 @@ class ClientManager extends window.StorageManager {
         const handlers = await this.getRecords();
         for(const handler of handlers) {
             const wrapper = await ClientManager.createClient(handler.type, handler.id, handler.details);
-            const authValid = await wrapper.checkAuth();
+            await wrapper.checkAuth();
             this.addClient(wrapper, true);
         }
 
