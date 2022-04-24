@@ -257,6 +257,9 @@ class ClientHandler extends window.Storage {
                 const githubID = this._getOriginalID(id);
                 await this.client.markNotificationRead(githubID);
             }
+            else if(this.client.shouldStayUnread) {
+                return;
+            }
             const notifications = await this._getNotifications();
             const notifs = notifications.filter((notification) => notification.id != id);
             await this.setValue(ClientHandler.NOTIFICATIONS, notifs);

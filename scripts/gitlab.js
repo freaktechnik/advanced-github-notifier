@@ -68,6 +68,10 @@ class GitLab {
         return this._username;
     }
 
+    get shouldStayUnread() {
+        return true;
+    }
+
     async getToken() {
         return this.token;
     }
