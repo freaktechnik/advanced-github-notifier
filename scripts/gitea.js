@@ -163,13 +163,41 @@ class Gitea {
                 json.merged = json.pull_request.merged;
             }
             if(notification.subject.latest_comment_url) {
-                json.html_url = notification.subject.latest_comment_url; // eslint-disable-line camelcase, xss/no-mixed-html
+                try {
+                    const comment = await fetch(notification.subject.latest_comment_url, {
+                        headers: this.headers
+                    });
+                    if(comment.ok) {
+                        const commentDetails = await comment.json();
+                        json.html_url = commentDetails.html_url; // eslint-disable-line camelcase, xss/no-mixed-html
+                    }
+                    else {
+                        throw new Error("could not fetch comment details");
+                    }
+                }
+                catch(error) {
+                    json.html_url = notification.subject.latest_comment_url; // eslint-disable-line camelcase, xss/no-mixed-html
+                }
             }
             return json;
         }
         let fallbackUrl = this.buildSiteURL();
         if(notification.subject.latest_comment_url) {
-            fallbackUrl = notification.subject.latest_comment_url;
+            try {
+                const comment = await fetch(notification.subject.latest_comment_url, {
+                    headers: this.headers
+                });
+                if(comment.ok) {
+                    const commentDetails = await comment.json();
+                    fallbackUrl = commentDetails.html_url; // eslint-disable-line xss/no-mixed-html
+                }
+                else {
+                    throw new Error("could not fetch comment details");
+                }
+            }
+            catch(error) {
+                fallbackUrl = notification.subject.latest_comment_url; // eslint-disable-line xss/no-mixed-html
+            }
         }
         else if(notification.subject.type === 'Issue' || notification.subject.type === 'PullRequest') {
             fallbackUrl = `${notification.subject.repository.html_url}/issues/${notification.subject.number}`; // eslint-disable-line xss/no-mixed-html
