@@ -13,6 +13,7 @@ const TYPES = {
     Tag: "release",
     Release: "release",
     RepositoryVulnerabilityAlert: "security",
+    RepositoryDependabotAlertsThread: "security",
     TeamDiscussion: "discussion",
     Commit: "commit",
     CheckSuite: "ci"
