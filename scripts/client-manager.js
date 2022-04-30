@@ -111,6 +111,7 @@ class ClientManager extends window.StorageManager {
     constructor() {
         super(window.ClientHandler);
         this.clients = new Set();
+        this.loadedInstances = false;
     }
 
     getClients() {
@@ -118,13 +119,18 @@ class ClientManager extends window.StorageManager {
     }
 
     async getInstances() {
+        if(this.loadedInstances) {
+            return !!this.clients.size;
+        }
         const handlers = await this.getRecords();
         for(const handler of handlers) {
-            const wrapper = await ClientManager.createClient(handler.type, handler.id, handler.details);
+            const wrapper = await this.createClient(handler.type, handler.id, handler.details);
             await wrapper.checkAuth();
-            this.addClient(wrapper, true);
+            this.addClient(wrapper, true)
+                .catch((error) => console.error("Error adding client", handler.type, handler.id, error));
         }
 
+        this.loadedInstances = true;
         return !!this.clients.size;
     }
 
@@ -135,6 +141,7 @@ class ClientManager extends window.StorageManager {
             if(!noSave) {
                 return this.saveFields();
             }
+            return Promise.resolve();
         }
         return Promise.reject(new TypeError('Client is not a ClientHandler'));
     }
