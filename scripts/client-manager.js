@@ -129,6 +129,7 @@ class ClientManager extends window.StorageManager {
             this.addClient(wrapper, true)
                 .catch((error) => console.error("Error adding client", handler.type, handler.id, error));
         }
+        await this.saveFields();
 
         this.loadedInstances = true;
         return !!this.clients.size;
