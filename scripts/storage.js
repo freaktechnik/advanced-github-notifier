@@ -30,7 +30,7 @@ class Storage { // eslint-disable-line no-redeclare
     }
 
     removeValues(keys) {
-        return browser.storage[this.area].remove(keys.map(this.getStorageKey, this));
+        return browser.storage[this.area].remove(keys.map((key) => this.getStorageKey(key)));
     }
 }
 window.Storage = Storage;

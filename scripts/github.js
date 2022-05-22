@@ -313,6 +313,7 @@ class GitHub {
     async getNotificationDetails(notification) {
         if(notification.subject.type === "RepositoryInvitation" || notification.subject.type === "RepositoryVulnerabilityAlert" || !notification.subject.url) {
             const details = { ...notification.repository };
+            /* eslint-disable camelcase */
             switch(notification.subject.type) {
             case "RepositoryInvitation":
                 details.html_url = `${notification.repository.html_url}/invitations`;
@@ -332,6 +333,7 @@ class GitHub {
                 break;
             default:
             }
+            /* eslint-enable camelcase */
             return details;
         }
         const apiEndpoint = notification.subject.url;
