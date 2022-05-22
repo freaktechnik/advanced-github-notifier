@@ -16,7 +16,8 @@ const TYPES = {
     RepositoryDependabotAlertsThread: "security",
     TeamDiscussion: "discussion",
     Commit: "commit",
-    CheckSuite: "ci"
+    CheckSuite: "ci",
+    Discussion: "discussion"
 };
 const ICONS = {
     invite: "mail",
