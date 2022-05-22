@@ -288,19 +288,24 @@ class ClientHandler extends window.Storage {
         const notification = notifications.find((n) => n.id == id);
         //TODO get anchor to events after last_read_at for issues/prs
         if(notification) {
-            //TODO normalize html_url in subjectDetails
-            if(notification.subject.type === "RepositoryInvitation") {
-                return `${notification.repository.html_url}/invitations`;
-            }
-            if(notification.subject.type === "RepositoryVulnerabilityAlert") {
-                return `${notification.repository.html_url}/network/dependencies`;
-            }
             if(!notification.subjectDetails.html_url) {
                 return notification.repository.html_url;
             }
             return notification.subjectDetails.html_url;
         }
         return "";
+    }
+
+    async willAutoMarkAsRead(id) {
+        if(this.client.shouldStayUnread) {
+            return false;
+        }
+        const notifications = await this._getNotifications();
+        const notification = notifications.find((n) => n.id == id);
+        if(notification?.willStayUnread) {
+            return false;
+        }
+        return true;
     }
 
     async getCount() {

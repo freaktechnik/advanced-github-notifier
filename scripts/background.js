@@ -78,7 +78,9 @@ const openNotification = async (id) => {
         await browser.windows.update(tab.windowId, {
             focused: true
         });
-        await handler.markAsRead(id, false);
+        if(await handler.willAutoMarkAsRead(id)) {
+            await handler.markAsRead(id, false);
+        }
         const newCount = await manager.getCount();
         await updateBadge(newCount);
     }

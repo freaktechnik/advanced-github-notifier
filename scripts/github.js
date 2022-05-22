@@ -312,7 +312,27 @@ class GitHub {
 
     async getNotificationDetails(notification) {
         if(notification.subject.type === "RepositoryInvitation" || notification.subject.type === "RepositoryVulnerabilityAlert" || !notification.subject.url) {
-            return notification.repository;
+            const details = { ...notification.repository };
+            switch(notification.subject.type) {
+            case "RepositoryInvitation":
+                details.html_url = `${notification.repository.html_url}/invitations`;
+                break;
+            case "RepositoryVulnerabilityAlert":
+                details.html_url = `${notification.repository.html_url}/network/dependencies`;
+                break;
+            case "RepositoryDependabotAlertsThread":
+                details.html_url = `${notification.repository.html_url}/security/dependabot`;
+                break;
+            case "CheckSuite":
+                details.html_url = `${notification.repository.html_url}/actions`;
+                details.willStayUnread = true;
+                break;
+            case "Discussion":
+                details.html_url = `${notification.repository.html_url}/discussions`;
+                break;
+            default:
+            }
+            return details;
         }
         const apiEndpoint = notification.subject.url;
         const response = await fetch(apiEndpoint, {
