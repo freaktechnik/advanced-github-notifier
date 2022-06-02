@@ -16,7 +16,7 @@ browser.notifications.onShown.addListener(() => {
 //TODO open latest comment?
 
 const updateBadge = async (count) => {
-    const { disableBadge = false } = browser.storage.local.get('disableBadge');
+    const { disableBadge = false } = await browser.storage.local.get('disableBadge');
     let text = MISSING_AUTH;
     if(count !== undefined) {
         if(disableBadge) {
