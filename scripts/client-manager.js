@@ -136,7 +136,12 @@ class ClientManager extends window.StorageManager {
     }
 
     addClient(client, noSave = false) {
-        //TODO ensure no duplicates of accounts are added.
+        for(const otherClient of this.clients) {
+            if(otherClient.id === client.id && otherClient.type === client.type) {
+                otherClient.checkAuth();
+                return Promise.resolve();
+            }
+        }
         if(client instanceof window.ClientHandler) {
             this.clients.add(client);
             if(!noSave) {

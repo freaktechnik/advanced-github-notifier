@@ -196,11 +196,12 @@ const init = async () => {
     browser.storage.onChanged.addListener((changes, area) => {
         if(area === 'local' && changes.disableBadge) {
             browser.menus.update('badge', {
+                type: 'checkbox',
                 checked: !changes.disableBadge.newValue
             })
                 .catch(console.error);
             Promise.all([
-                browser.browserAction.getBadgeText(),
+                browser.browserAction.getBadgeText({}),
                 manager.getCount()
             ])
                 .then(([

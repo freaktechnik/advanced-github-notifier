@@ -344,12 +344,42 @@ class GitHub {
             const json = await response.json();
 
             if(notification.subject.type === "Issue" || notification.subject.type === "PullRequest") {
-                const commentURL = await this.getOldestCommentURL(json, Date.parse(notification.last_read_at));
-                if(commentURL) {
-                    // eslint-disable-next-line camelcase, xss/no-mixed-html
-                    json.html_url = commentURL;
+                let gotComment = false;
+                try {
+                    const commentURL = await this.getOldestCommentURL(json, Date.parse(notification.last_read_at));
+                    if(commentURL) {
+                        // eslint-disable-next-line camelcase, xss/no-mixed-html
+                        json.html_url = commentURL;
+                        gotComment = true;
+                    }
+                }
+                catch(error) {
+                    // Ignore error.
+                }
+                if(!gotComment && notification.subject.latest_comment_url) {
+                    try {
+                        const commentInfo = await fetch(notification.subject.latest_comment_url, {
+                            headers: this.headers
+                        });
+                        if(commentInfo.ok) {
+                            const commentJson = await commentInfo.json();
+                            if(commentJson.html_url) {
+                                json.html_url = commentJson.html_url; // eslint-disable-line camelcase, xss/no-mixed-html
+                            }
+                        }
+                    }
+                    catch(error) {
+                        // Ignore error.
+                    }
                 }
             }
+
+            // Trying to trigger the notification shelf is hard. I think there's some session info where 018:NotificationThread is.
+            // const notificationUrl = new URL(json.html_url); // eslint-disable-line camelcase, xss/no-mixed-html
+            // const binaryBS = btoa(`018:NotificationThread${notificationID}:${this.id}`).replace(/=+$/, "");
+            // const referrerId = `NT_${binaryBS}`;
+            // notificationUrl.searchParams.append("notification_referrer_id", referrerId);
+            // json.html_url = notificationUrl.href; // eslint-disable-line camelcase, xss/no-mixed-html
 
             return json;
         }

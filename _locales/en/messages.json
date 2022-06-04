@@ -196,6 +196,9 @@
     "status_undefined": {
         "message": "Unknown"
     },
+    "status_notplanned": {
+        "message": "Closed as not planned"
+    },
     "type_invite": {
         "message": "Repository invitation"
     },

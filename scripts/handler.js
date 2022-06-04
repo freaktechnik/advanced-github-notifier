@@ -51,6 +51,9 @@ class ClientHandler extends window.Storage {
 
     static getNotificationState(notification) {
         if(notification.normalizedType === "issue") {
+            if(notification.subjectDetails.state_reason === "not_planned") {
+                return "notplanned";
+            }
             return notification.subjectDetails.state;
         }
         if(notification.normalizedType === "pull") {
@@ -160,7 +163,7 @@ class ClientHandler extends window.Storage {
     async check() {
         if(!this.client.authorized) {
             const authSuccess = await this.checkAuth();
-            if(!authSuccess) {
+            if(!authSuccess && !this.login(false)) {
                 return false;
             }
         }
@@ -176,7 +179,7 @@ class ClientHandler extends window.Storage {
         return Date.now() + (this.client.pollInterval * S_TO_MS);
     }
 
-    async login() {
+    async login(interactive = true) {
         // User Token Client.
         if(this.client.token) {
             await this.client.getUsername();
@@ -191,7 +194,7 @@ class ClientHandler extends window.Storage {
         try {
             const rawURL = await browser.identity.launchWebAuthFlow({
                 url: this.client.authURL(authState),
-                interactive: true
+                interactive
             });
             url = new URL(rawURL);
         }

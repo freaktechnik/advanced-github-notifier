@@ -194,6 +194,7 @@ class AccountManager extends window.StorageManager {
                     details
                 });
                 this.form.reset();
+                typeForm.value = "github"; // eslint-disable-line require-atomic-updates
             }
             catch(error) {
                 this.showError(error.message);
