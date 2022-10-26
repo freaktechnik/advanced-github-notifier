@@ -47,4 +47,4 @@ jobs:
           cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run test:js
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v3
