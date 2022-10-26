@@ -9,7 +9,7 @@ jobs:
   push-messages:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: docker://sergioisidoro/github-transifex-action:v0.2.0
       with:
         TX_TOKEN: ${{ secrets.TX_TOKEN }}
