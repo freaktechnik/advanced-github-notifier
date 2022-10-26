@@ -4,7 +4,7 @@ jobs:
   lint-js:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
@@ -14,7 +14,7 @@ jobs:
   lint-css:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
@@ -24,7 +24,7 @@ jobs:
   lint-editorconfig:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
@@ -34,13 +34,13 @@ jobs:
   lint-webext:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: freaktechnik/web-ext-lint@v1
   test:
     runs-on: ubuntu-latest
     needs: [ lint-js, lint-css, lint-editorconfig, lint-webext ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
