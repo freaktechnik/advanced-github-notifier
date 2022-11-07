@@ -44,7 +44,7 @@
     "jsdom": "^20.0.2",
     "mkdirp": "^1.0.4",
     "nyc": "^15.1.0",
-    "sinon": "^14.0.1",
+    "sinon": "^14.0.2",
     "sinon-chrome": "^3.0.1",
     "stylelint": "^14.14.1",
     "stylelint-config-standard": "^29.0.0",
