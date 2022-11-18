@@ -4,16 +4,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class GitHubEnterpriseUserToken extends window.GitHubEnterprise {
+import GitHub from "./github.mjs";
+
+export default class GitHubUserToken extends GitHub {
     static buildArgs(clientID, clientSecret, details) {
-        return [
-            details.token,
-            details.instanceURL
-        ];
+        return [ details.token ];
     }
 
-    constructor(token, instanceURL) {
-        super(undefined, undefined, instanceURL);
+    constructor(token) {
+        super();
         this.token = token;
         this.setToken(token);
     }
@@ -39,10 +38,7 @@ class GitHubEnterpriseUserToken extends window.GitHubEnterprise {
 
     getDetails() {
         return {
-            token: this.token,
-            instanceURL: this.instanceURL
+            token: this.token
         };
     }
 }
-
-window.GitHubEnterpriseUserToken = GitHubEnterpriseUserToken;

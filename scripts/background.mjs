@@ -4,7 +4,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global GitHub, ClientManager, MENU_SPEC */
+import MENU_SPEC from './menu-spec.mjs';
+import ClientManager from './client-manager.mjs';
+import GitHub from './github.mjs';
+
 const manager = new ClientManager(),
     MISSING_AUTH = '?',
     BASE = 10;
@@ -51,6 +54,7 @@ const getNotifications = async (alarm) => {
         }
     }
     else {
+        //TODO this one, too
         window.addEventListener('online', () => getNotifications(alarm), {
             once: true,
             capture: false,
@@ -193,38 +197,6 @@ browser.runtime.onInstalled.addListener(async (details) => {
 });
 
 const init = async () => {
-    browser.storage.onChanged.addListener((changes, area) => {
-        if(area === 'local' && changes.disableBadge) {
-            browser.menus.update('badge', {
-                type: 'checkbox',
-                checked: !changes.disableBadge.newValue
-            })
-                .catch(console.error);
-            Promise.all([
-                browser.browserAction.getBadgeText({}),
-                manager.getCount()
-            ])
-                .then(([
-                    currentText,
-                    count
-                ]) => {
-                    if(currentText === MISSING_AUTH) {
-                        return updateBadge();
-                    }
-                    return updateBadge(count);
-                })
-                .catch(console.error);
-        }
-    });
-    browser.menus.onClicked.addListener(({
-        menuItemId, checked
-    }) => {
-        if(menuItemId === 'badge') {
-            browser.storage.local.set({
-                disableBadge: !checked
-            });
-        }
-    });
     const count = await manager.getInstances();
     if(!count) {
         needsAuth();
@@ -234,6 +206,40 @@ const init = async () => {
     }
 };
 
+browser.storage.onChanged.addListener((changes, area) => {
+    if(area === 'local' && changes.disableBadge) {
+        browser.menus.update('badge', {
+            type: 'checkbox',
+            checked: !changes.disableBadge.newValue
+        })
+            .catch(console.error);
+        Promise.all([
+            browser.browserAction.getBadgeText({}),
+            manager.getCount()
+        ])
+            .then(([
+                currentText,
+                count
+            ]) => {
+                if(currentText === MISSING_AUTH) {
+                    return updateBadge();
+                }
+                return updateBadge(count);
+            })
+            .catch(console.error);
+    }
+});
+browser.menus.onClicked.addListener(({
+    menuItemId, checked
+}) => {
+    if(menuItemId === 'badge') {
+        browser.storage.local.set({
+            disableBadge: !checked
+        });
+    }
+});
+
+//TODO this needs to be called on startup/install
 window.requestIdleCallback(async () => {
     for(const [
         id,
@@ -268,6 +274,7 @@ window.requestIdleCallback(async () => {
             needsAuth();
         }
         else {
+            //TODO this event won't work in event pages :/
             window.addEventListener("online", () => {
                 init().catch(console.error);
             }, {

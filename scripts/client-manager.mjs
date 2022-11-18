@@ -3,10 +3,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global clientId, clientSecret */
+
+import StorageManager from './storage-manager.mjs';
+import {
+    clientSecret, clientId
+} from './config.mjs';
+import GitHubEnterpriseUserToken from './github-enterprise-pat.mjs';
+import GitHubEnterprise from './github-enterprise.mjs';
+import GitHubLight from './github-light.mjs';
+import GitHubUserToken from './github-user-token.mjs';
+import GitLab from './gitlab.mjs';
+import Gitea from './gitea.mjs';
+import GitHub from './github.mjs';
+import ClientHandler from './handler.mjs';
+
 //TODO some way to handle accounts that have failing logins instead of just removing them.
 
-class ClientManager extends window.StorageManager {
+export default class ClientManager extends StorageManager {
     static get GITHUB() {
         return "github";
     }
@@ -36,22 +49,22 @@ class ClientManager extends window.StorageManager {
     }
 
     static getTypeForClient(client) {
-        if(client instanceof window.GitHubEnterpriseUserToken) {
+        if(client instanceof GitHubEnterpriseUserToken) {
             return ClientManager.ENTERPRISE_PAT;
         }
-        if(client instanceof window.GitHubEnterprise) {
+        if(client instanceof GitHubEnterprise) {
             return ClientManager.ENTERPRISE;
         }
-        else if(client instanceof window.GitHubLight) {
+        else if(client instanceof GitHubLight) {
             return ClientManager.GITHUB_LIGHT;
         }
-        else if(client instanceof window.GitHubUserToken) {
+        else if(client instanceof GitHubUserToken) {
             return ClientManager.GITHUB_USER_TOKEN;
         }
-        else if(client instanceof window.GitLab) {
+        else if(client instanceof GitLab) {
             return ClientManager.GITLAB;
         }
-        else if(client instanceof window.Gitea) {
+        else if(client instanceof Gitea) {
             return ClientManager.GITEA;
         }
         return ClientManager.GITHUB;
@@ -61,37 +74,37 @@ class ClientManager extends window.StorageManager {
         let ClientFactory;
         switch(type) {
         case ClientManager.GITHUB:
-            ClientFactory = window.GitHub;
+            ClientFactory = GitHub;
             break;
         case ClientManager.GITHUB_LIGHT:
-            ClientFactory = window.GitHubLight;
+            ClientFactory = GitHubLight;
             break;
         case ClientManager.ENTERPRISE:
-            ClientFactory = window.GitHubEnterprise;
+            ClientFactory = GitHubEnterprise;
             if(!details) {
                 throw new Error("Details required to create enterprise client");
             }
             break;
         case ClientManager.GITHUB_USER_TOKEN:
-            ClientFactory = window.GitHubUserToken;
+            ClientFactory = GitHubUserToken;
             if(!details) {
                 throw new Error("Details required to create PAT client");
             }
             break;
         case ClientManager.ENTERPRISE_PAT:
-            ClientFactory = window.GitHubEnterpriseUserToken;
+            ClientFactory = GitHubEnterpriseUserToken;
             if(!details) {
                 throw new Error("Details required to create enterprise PAT client");
             }
             break;
         case ClientManager.GITLAB:
-            ClientFactory = window.GitLab;
+            ClientFactory = GitLab;
             if(!details) {
                 throw new Error("Details required to create new GitLab client");
             }
             break;
         case ClientManager.GITEA:
-            ClientFactory = window.Gitea;
+            ClientFactory = Gitea;
             if(!details) {
                 throw new Error("Details required to create new Gitea client");
             }
@@ -104,12 +117,12 @@ class ClientManager extends window.StorageManager {
         if(id) {
             client.id = id;
         }
-        const wrapper = new window.ClientHandler(client, this.area);
+        const wrapper = new ClientHandler(client, this.area);
         return wrapper;
     }
 
     constructor() {
-        super(window.ClientHandler);
+        super(ClientHandler);
         this.clients = new Set();
         this.loadedInstances = false;
     }
@@ -142,7 +155,7 @@ class ClientManager extends window.StorageManager {
                 return Promise.resolve();
             }
         }
-        if(client instanceof window.ClientHandler) {
+        if(client instanceof ClientHandler) {
             this.clients.add(client);
             if(!noSave) {
                 return this.saveFields();
@@ -160,7 +173,7 @@ class ClientManager extends window.StorageManager {
     saveFields() {
         const handlers = [];
         for(const client of this.getClients()) {
-            const object = window.StorageManager.createRecord(client);
+            const object = StorageManager.createRecord(client);
             object.type = ClientManager.getTypeForClient(client.client);
             object.notifications = client.NOTIFICATION_NAME;
             object.id = client.id;
@@ -194,4 +207,3 @@ class ClientManager extends window.StorageManager {
         throw new Error(`No client with the id ${id} is registered.`);
     }
 }
-window.ClientManager = ClientManager;

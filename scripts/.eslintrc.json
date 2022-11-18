@@ -1,4 +1,7 @@
 {
+    "parserOptions": {
+        "sourceType": "module"
+    },
     "env": {
         "es2021": true
     },

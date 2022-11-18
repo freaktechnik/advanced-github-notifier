@@ -3,7 +3,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global MENU_SPEC */
+
+import MENU_SPEC from './menu-spec.mjs';
+import Storage from './storage.mjs';
+import StorageManager from './storage-manager.mjs';
 
 const loaded = new Promise((resolve) => {
     window.addEventListener("DOMContentLoaded", resolve, {
@@ -231,7 +234,7 @@ const notificationList = {
     }
 };
 
-class Account extends window.Storage {
+class Account extends Storage {
     constructor(type, id, area, details = {}) {
         super(id, area);
         this.id = id;
@@ -255,7 +258,7 @@ class Account extends window.Storage {
     }
 }
 
-class AccountSelector extends window.StorageManager {
+class AccountSelector extends StorageManager {
     static get ALL_ACCOUNTS() {
         return "all";
     }
@@ -291,7 +294,7 @@ class AccountSelector extends window.StorageManager {
             this.root.hidden = true;
             this.root.disabled = true;
         }
-        return Promise.all(records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY], r.details)));
+        return Promise.all(records.map((r) => this.addAccount(r.type, r[StorageManager.ID_KEY], r.details)));
     }
 
     async addAccount(type, id, details) {

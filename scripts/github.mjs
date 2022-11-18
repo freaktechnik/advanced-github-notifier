@@ -6,29 +6,15 @@
 
 //TODO make the URIs overridable for Enterprise
 
+import { parseLinks } from './utils.mjs';
+
 const STATUS_OK = 200;
 const STATUS_RESET = 205;
 const MS_TO_S = 1000;
 const MIN_POLL_INTEVAL = 10;
 const AVOID_INFINITY = 1;
 
-const parseLinks = (links) => {
-    const linkInfo = links.split(",");
-    const linkObject = {};
-    for(const link of linkInfo) {
-        const [
-            match,
-            url,
-            relation
-        ] = link.match(/<([^>]+)>;\s+rel="([^"]+)"/) || [];
-        if(match && url && relation) {
-            linkObject[relation] = url;
-        }
-    }
-    return linkObject;
-};
-
-class GitHub {
+export default class GitHub {
     static get BASE_URI() {
         return 'https://api.github.com/';
     }
@@ -391,5 +377,3 @@ class GitHub {
         return {};
     }
 }
-
-window.GitHub = GitHub;

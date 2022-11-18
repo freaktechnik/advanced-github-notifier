@@ -4,6 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import Storage from './storage.mjs';
+import StorageManager from './storage-manager.mjs';
+
 const PASSIVE_EVENT = {
         capturing: false,
         passive: true
@@ -22,7 +25,7 @@ const PASSIVE_EVENT = {
         'gitea'
     ]);
 
-class Account extends window.Storage {
+class Account extends Storage {
     constructor(type, id, area, details = {}) {
         super(id, area);
         this.id = id;
@@ -96,7 +99,7 @@ class Account extends window.Storage {
     }
 }
 
-class AccountManager extends window.StorageManager {
+class AccountManager extends StorageManager {
     constructor(root) {
         super(Account);
         this.root = root;
@@ -124,15 +127,15 @@ class AccountManager extends window.StorageManager {
             if(areaName === "local" && "handlers" in changes) {
                 const handlerIds = new Set();
                 for(const handler of changes.handlers.newValue) {
-                    handlerIds.add(handler[window.StorageManager.ID_KEY]);
-                    if(!this.getAccountRoot(handler[window.StorageManager.ID_KEY])) {
-                        this.addAccount(handler.type, handler[window.StorageManager.ID_KEY], handler.details);
+                    handlerIds.add(handler[StorageManager.ID_KEY]);
+                    if(!this.getAccountRoot(handler[StorageManager.ID_KEY])) {
+                        this.addAccount(handler.type, handler[StorageManager.ID_KEY], handler.details);
                     }
                 }
                 if("oldValue" in changes.handlers && changes.handlers.oldValue) {
                     for(const oldHandler of changes.handlers.oldValue) {
-                        if(!handlerIds.has(oldHandler[window.StorageManager.ID_KEY])) {
-                            const node = this.getAccountRoot(oldHandler[window.StorageManager.ID_KEY]);
+                        if(!handlerIds.has(oldHandler[StorageManager.ID_KEY])) {
+                            const node = this.getAccountRoot(oldHandler[StorageManager.ID_KEY]);
                             if(node) {
                                 node.querySelector("button")
                                     .click();
@@ -216,7 +219,7 @@ class AccountManager extends window.StorageManager {
 
     async getInstances() {
         const records = await this.getRecords();
-        return records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY], r.details));
+        return records.map((r) => this.addAccount(r.type, r[StorageManager.ID_KEY], r.details));
     }
 
     addAccount(type, id, details) {

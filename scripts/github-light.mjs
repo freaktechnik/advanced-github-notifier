@@ -4,7 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class GitHubLight extends window.GitHub {
+import GitHub from './github.mjs';
+
+export default class GitHubLight extends GitHub {
     static get SCOPE() {
         return "notifications";
     }
@@ -13,5 +15,3 @@ class GitHubLight extends window.GitHub {
         return GitHubLight.SCOPE;
     }
 }
-
-window.GitHubLight = GitHubLight;

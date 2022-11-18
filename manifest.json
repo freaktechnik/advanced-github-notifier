@@ -7,22 +7,7 @@
     },
     "manifest_version": 2,
     "background": {
-        "scripts": [
-            "scripts/config.js",
-            "scripts/menu-spec.js",
-            "scripts/github.js",
-            "scripts/github-light.js",
-            "scripts/github-enterprise.js",
-            "scripts/github-user-token.js",
-            "scripts/github-enterprise-pat.js",
-            "scripts/gitlab.js",
-            "scripts/gitea.js",
-            "scripts/storage.js",
-            "scripts/storage-manager.js",
-            "scripts/handler.js",
-            "scripts/client-manager.js",
-            "scripts/background.js"
-        ]
+        "page": "background.html"
     },
     "browser_action": {
         "browser_style": true,

@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class Storage { // eslint-disable-line no-redeclare
+export default class Storage {
     constructor(storageId, area = "local") {
         this.storageId = storageId;
         this.area = area;
@@ -33,4 +33,3 @@ class Storage { // eslint-disable-line no-redeclare
         return browser.storage[this.area].remove(keys.map((key) => this.getStorageKey(key)));
     }
 }
-window.Storage = Storage;

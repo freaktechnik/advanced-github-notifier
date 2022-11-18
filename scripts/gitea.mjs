@@ -3,10 +3,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global STATUS_OK, STATUS_RESET */
+
+const STATUS_OK = 200;
+const STATUS_RESET = 205;
 const PAGE_SIZE = 100;
 
-class Gitea {
+export default class Gitea {
     static get TYPE_TO_GH() {
         return {
             Pull: 'PullRequest',
@@ -219,5 +221,3 @@ class Gitea {
         };
     }
 }
-
-window.Gitea = Gitea;

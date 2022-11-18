@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class StorageManager { // eslint-disable-line no-redeclare
+export default class StorageManager {
     static get KEY() {
         return "handlers";
     }
@@ -42,4 +42,3 @@ class StorageManager { // eslint-disable-line no-redeclare
         });
     }
 }
-window.StorageManager = StorageManager;
