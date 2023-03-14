@@ -41,7 +41,7 @@
     "eslint": "^8.36.0",
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-optimize-regex": "^1.2.1",
-    "jsdom": "^21.1.0",
+    "jsdom": "^21.1.1",
     "mkdirp": "^2.1.5",
     "nyc": "^15.1.0",
     "sinon": "^15.0.2",
