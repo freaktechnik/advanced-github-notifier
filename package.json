@@ -42,7 +42,7 @@
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-optimize-regex": "^1.2.1",
     "jsdom": "^21.1.1",
-    "mkdirp": "^2.1.5",
+    "mkdirp": "^2.1.6",
     "nyc": "^15.1.0",
     "sinon": "^15.0.2",
     "sinon-chrome": "^3.0.1",
