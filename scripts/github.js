@@ -50,7 +50,7 @@ class GitHub {
             "index": GitHub.SITE_URI,
             "unread": `${GitHub.SITE_URI}notifications?query=is%3Aunread`,
             "all": `${GitHub.SITE_URI}notifications?query=`,
-            "participating": `${GitHub.SITE_URI}notifications/participating`,
+            "participating": `${GitHub.SITE_URI}notifications?query=reason%3Aparticipating`,
             "watched": `${GitHub.SITE_URI}watching`
         };
     }
