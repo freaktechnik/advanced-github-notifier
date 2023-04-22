@@ -4,7 +4,7 @@ import {
 } from 'jsdom';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 import fs from 'node:fs';
 import util from 'node:util';
 import sinon from 'sinon';
