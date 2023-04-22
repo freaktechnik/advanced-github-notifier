@@ -179,7 +179,7 @@ class Gitea {
                         throw new Error("could not fetch comment details");
                     }
                 }
-                catch(error) {
+                catch{
                     json.html_url = notification.subject.latest_comment_url; // eslint-disable-line camelcase, xss/no-mixed-html
                 }
             }
@@ -199,7 +199,7 @@ class Gitea {
                     throw new Error("could not fetch comment details");
                 }
             }
-            catch(error) {
+            catch{
                 fallbackUrl = notification.subject.latest_comment_url; // eslint-disable-line xss/no-mixed-html
             }
         }

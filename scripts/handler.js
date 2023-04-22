@@ -213,7 +213,7 @@ class ClientHandler extends window.Storage {
                 await this.setValue(ClientHandler.TOKEN, token);
                 await this.setValue(ClientHandler.USERNAME, this.client._username);
             }
-            catch(error) {
+            catch{
                 throw new Error("Was not granted required permissions");
             }
             return true;
@@ -252,7 +252,7 @@ class ClientHandler extends window.Storage {
             await this.client.authorize(token);
             await this.setValue(ClientHandler.USERNAME, this.client._username);
         }
-        catch(error) {
+        catch{
             await this.logout();
             return false;
         }
@@ -260,13 +260,7 @@ class ClientHandler extends window.Storage {
     }
 
     async markAsRead(id, remote = true) {
-        if(!id) {
-            if(remote) {
-                await this.client.markNotificationsRead();
-            }
-            await this.setValue(ClientHandler.NOTIFICATIONS, []);
-        }
-        else {
+        if(id) {
             if(remote) {
                 const githubID = this._getOriginalID(id);
                 await this.client.markNotificationRead(githubID);
@@ -280,9 +274,15 @@ class ClientHandler extends window.Storage {
             try {
                 await browser.notifications.clear(id);
             }
-            catch(error) {
+            catch{
                 // Don't care about notification clear failing
             }
+        }
+        else {
+            if(remote) {
+                await this.client.markNotificationsRead();
+            }
+            await this.setValue(ClientHandler.NOTIFICATIONS, []);
         }
     }
 
@@ -372,7 +372,7 @@ class ClientHandler extends window.Storage {
                         const details = await this.client.getNotificationDetails(notification);
                         notification.subjectDetails = details;
                     }
-                    catch(error) {
+                    catch{
                         notification.subjectDetails = ClientHandler.buildNotificationDetails(notification);
                     }
                     notification.normalizedType = ClientHandler.getNormalizedType(notification);
@@ -380,7 +380,7 @@ class ClientHandler extends window.Storage {
                     notification.icon = ClientHandler.getNotificationIcon(notification);
                     /* eslint-enable require-atomic-updates */
                 }
-                catch(error) {
+                catch{
                     return null;
                 }
             }
@@ -416,7 +416,7 @@ ${typeMessage}${stateMessage}`;
                     try {
                         await browser.notifications.clear(existingNotification.id);
                     }
-                    catch(error) {
+                    catch{
                         // ignore clearing errors.
                     }
                 }

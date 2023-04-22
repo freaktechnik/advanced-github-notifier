@@ -117,52 +117,60 @@ const createHandler = async (type, details) => {
     }
 };
 
-browser.runtime.onMessage.addListener((message) => {
+/**
+ * A runtime.onMessage handler that runs asynchronously, without sending a response.
+ *
+ * @param {any} message - Message from another part of the extension.
+ * @returns {undefined}
+ */
+const handleMessage = async (message) => {
     switch(message.topic) {
     case "open-notification":
-        openNotification(message.notificationId).catch((error) => console.error(error));
+        await openNotification(message.notificationId);
         break;
-    case "open-notifications":
-        browser.storage.local.get({
+    case "open-notifications": {
+        const { footer } = await browser.storage.local.get({
             "footer": "all"
-        })
-            .then(({ footer }) => {
-                if(footer == "options") {
-                    return browser.runtime.openOptionsPage();
-                }
-                else if(footer in GitHub.FOOTER_URLS) {
-                    return browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
-                }
-                throw new Error(`No matching footer action implemented for '${footer}'`);
-            })
-            .catch(console.error);
-        break;
+        });
+        if(footer == "options") {
+            await browser.runtime.openOptionsPage();
+            break;
+        }
+        else if(footer in GitHub.FOOTER_URLS) {
+            await browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
+            break;
+        }
+        throw new Error(`No matching footer action implemented for '${footer}'`);
+    }
     case "mark-all-read":
-        Promise.all(Array.from(manager.getClients(), (handler) => handler.markAsRead()))
-            .then(() => updateBadge(''))
-            .catch((error) => console.error(error));
+        await Promise.all(Array.from(manager.getClients(), (handler) => handler.markAsRead()));
+        await updateBadge('');
         break;
     case "mark-notification-read": {
         const handler = manager.getClientForNotificationID(message.notificationId);
-        handler.markAsRead(message.notificationId)
-            .then(() => manager.getCount())
-            .then(updateBadge)
-            .catch((error) => console.error(error));
+        await handler.markAsRead(message.notificationId);
+        const count = await manager.getCount();
+        await updateBadge(count);
         break;
     }
     case "unsubscribe-notification": {
         const handler = manager.getClientForNotificationID(message.notificationId);
-        handler.unsubscribeNotification(message.notificationId).catch(console.error);
+        await handler.unsubscribeNotification(message.notificationId);
         break;
     }
     case "ignore-notification": {
         const handler = manager.getClientForNotificationID(message.notificationId);
-        handler.ignoreNotification(message.notificationId).catch(console.error);
+        await handler.ignoreNotification(message.notificationId);
         break;
     }
     case "logout": {
         const handler = manager.getClientById(message.handlerId);
-        handler.logout(true).catch(console.error);
+        try {
+            await handler.logout(true);
+        }
+        catch(error) {
+            console.error(error);
+        }
         manager.removeClient(handler);
         if(!manager.clients.size) {
             needsAuth();
@@ -173,6 +181,30 @@ browser.runtime.onMessage.addListener((message) => {
         return createHandler(message.type, message.details);
     default:
     }
+};
+
+const handleStorageChange = async (changes) => {
+    await browser.menus.update('badge', {
+        type: 'checkbox',
+        checked: !changes.disableBadge.newValue
+    });
+    const [
+        currentText,
+        count
+    ] = await Promise.all([
+        browser.browserAction.getBadgeText({}),
+        manager.getCount()
+    ]);
+    if(currentText === MISSING_AUTH) {
+        await updateBadge();
+    }
+    else {
+        await updateBadge(count);
+    }
+};
+
+browser.runtime.onMessage.addListener((message) => {
+    handleMessage(message).catch(console.error);
 });
 
 browser.runtime.onInstalled.addListener(async (details) => {
@@ -195,25 +227,12 @@ browser.runtime.onInstalled.addListener(async (details) => {
 const init = async () => {
     browser.storage.onChanged.addListener((changes, area) => {
         if(area === 'local' && changes.disableBadge) {
-            browser.menus.update('badge', {
-                type: 'checkbox',
-                checked: !changes.disableBadge.newValue
-            })
-                .catch(console.error);
-            Promise.all([
-                browser.browserAction.getBadgeText({}),
-                manager.getCount()
-            ])
-                .then(([
-                    currentText,
-                    count
-                ]) => {
-                    if(currentText === MISSING_AUTH) {
-                        return updateBadge();
-                    }
-                    return updateBadge(count);
-                })
-                .catch(console.error);
+            try {
+                handleStorageChange(changes);
+            }
+            catch(error) {
+                console.error(error);
+            }
         }
     });
     browser.menus.onClicked.addListener(({
@@ -226,11 +245,11 @@ const init = async () => {
         }
     });
     const count = await manager.getInstances();
-    if(!count) {
-        needsAuth();
+    if(count) {
+        await setupNotificationWorkers();
     }
     else {
-        await setupNotificationWorkers();
+        needsAuth();
     }
 };
 
@@ -264,10 +283,7 @@ window.requestIdleCallback(async () => {
             'foo',
             'bar'
         ]);
-        if(!records.length) {
-            needsAuth();
-        }
-        else {
+        if(records.length) {
             window.addEventListener("online", () => {
                 init().catch(console.error);
             }, {
@@ -275,6 +291,9 @@ window.requestIdleCallback(async () => {
                 capture: false,
                 once: true
             });
+        }
+        else {
+            needsAuth();
         }
     }
 });

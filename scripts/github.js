@@ -138,18 +138,14 @@ class GitHub {
             const {
                 access_token: accessToken, scope
             } = await response.json();
-            if(!scope.includes(this.scope)) {
-                throw new Error("Was not granted required permissions");
-            }
-            else {
+            if(scope.includes(this.scope)) {
                 this.setToken(accessToken);
                 await this.getUsername();
                 return accessToken;
             }
+            throw new Error("Was not granted required permissions");
         }
-        else {
-            throw response;
-        }
+        throw response;
     }
 
     async getUsername() {
@@ -353,7 +349,7 @@ class GitHub {
                         gotComment = true;
                     }
                 }
-                catch(error) {
+                catch{
                     // Ignore error.
                 }
                 if(!gotComment && notification.subject.latest_comment_url) {
@@ -368,7 +364,7 @@ class GitHub {
                             }
                         }
                     }
-                    catch(error) {
+                    catch{
                         // Ignore error.
                     }
                 }

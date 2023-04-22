@@ -3,8 +3,8 @@
  * Large parts of the logic are very similar to the SDK implmentation.
  * All you have to do to use this in a document is load it.
  *
- * @author Martin Giger
  * @license MPL-2.0
+ * @author Martin Giger
  */
 
 function translateElementAttributes(element) {
