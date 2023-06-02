@@ -10,12 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: docker://sergioisidoro/github-transifex-action:v0.2.0
+    - uses: transifex/cli-action@v2
       with:
-        TX_TOKEN: ${{ secrets.TX_TOKEN }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        pull_translations: false
-        pull_sources: false
-        push_translations: false
-        push_sources: true
-        translations_folder: ./_locales/
+        token: ${{ secrets.TX_TOKEN }}

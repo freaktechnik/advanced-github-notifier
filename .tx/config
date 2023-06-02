@@ -1,8 +1,9 @@
 [main]
 host = https://www.transifex.com
 
-[advanced-github-notifier.messages]
+[o:freaktechnik:p:advanced-github-notifier:r:messages]
+file_filter = _locales/<lang>/messages.json
 source_file = _locales/en/messages.json
 source_lang = en
-file_filter = _locales/<lang>/messages.json
-type = CHROME
+type        = CHROME
+
