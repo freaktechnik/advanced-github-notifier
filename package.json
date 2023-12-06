@@ -36,7 +36,7 @@
     "@freaktechnik/eslint-config-node": "^9.2.1",
     "@freaktechnik/eslint-config-test": "^9.2.1",
     "ava": "^6.0.0",
-    "eslint": "^8.54.0",
+    "eslint": "^8.55.0",
     "eslint-plugin-no-unsanitized": "^4.0.2",
     "eslint-plugin-optimize-regex": "^1.2.1",
     "jsdom": "^23.0.0",
