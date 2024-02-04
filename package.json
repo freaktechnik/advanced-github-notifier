@@ -55,7 +55,6 @@
       "stylelint-no-unsupported-browser-features"
     ],
     "rules": {
-      "indentation": 4,
       "color-named": "always-where-possible",
       "plugin/no-unsupported-browser-features": true
     }
