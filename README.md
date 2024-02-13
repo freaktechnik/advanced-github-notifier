@@ -1,7 +1,7 @@
 # ![](images/icon-48.png) Advanced GitHub Notifier
 
 [![Add-On Version](https://img.shields.io/amo/v/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=github&utm_content=version) [![AMO Rating](https://img.shields.io/amo/stars/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=github&utm_content=rating) [![AMO User Count](https://img.shields.io/amo/users/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=github&utm_content=users) [![AMO Download Count](https://img.shields.io/amo/d/advanced-github-notifier.svg)](https://addons.mozilla.org/addon/advanced-github-notifier/?utm_source=ghdownloads)<br>
-[![codecov](https://codecov.io/gh/freaktechnik/advanced-github-notifier/branch/master/graph/badge.svg)](https://codecov.io/gh/freaktechnik/advanced-github-notifier)
+[![codecov](https://codecov.io/gh/freaktechnik/advanced-github-notifier/graph/badge.svg?token=i1mW9Zwa89)](https://codecov.io/gh/freaktechnik/advanced-github-notifier)
 
 A Firefox extension, that not only shows a count of notifications, but also
 shows notification popups and has a popup that gives direct access to the
