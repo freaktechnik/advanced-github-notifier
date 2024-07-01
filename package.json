@@ -44,7 +44,7 @@
     "nyc": "^17.0.0",
     "sinon": "^18.0.0",
     "sinon-chrome": "^3.0.1",
-    "stylelint": "^16.5.0",
+    "stylelint": "^16.6.1",
     "stylelint-config-standard": "^36.0.1",
     "stylelint-no-unsupported-browser-features": "^8.0.1",
     "web-ext": "^8.2.0"
