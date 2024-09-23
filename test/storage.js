@@ -1,6 +1,6 @@
 import test from 'ava';
 import {
-    getEnvironment, cleanUp
+    getEnvironment, cleanUp,
 } from './_environment.js';
 
 test.beforeEach(async (t) => {
@@ -39,7 +39,7 @@ test('get default without default', async (t) => {
 
 test('get value', async (t) => {
     t.context.window.browser.storage.local.get.resolves({
-        'foo_test': 2
+        'foo_test': 2,
     });
     const storage = new t.context.window.Storage('foo');
     t.is(await storage.getValue('test', 1), 2);
@@ -50,7 +50,7 @@ test('set value', (t) => {
     storage.setValue('test', 1);
     t.true(t.context.window.browser.storage.local.set.calledOnce);
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
-        'foo_test': 1
+        'foo_test': 1,
     });
 });
 
@@ -58,11 +58,11 @@ test('reset values', (t) => {
     const storage = new t.context.window.Storage('foo');
     storage.removeValues([
         'lorem',
-        'ipsum'
+        'ipsum',
     ]);
     t.true(t.context.window.browser.storage.local.remove.calledOnce);
     t.deepEqual(t.context.window.browser.storage.local.remove.lastCall.args[0], [
         'foo_lorem',
-        'foo_ipsum'
+        'foo_ipsum',
     ]);
 });

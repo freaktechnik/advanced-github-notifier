@@ -18,12 +18,12 @@ function translateElementAttributes(element) {
         'content',
         'download',
         'srcdoc',
-        'value'
+        'value',
     ]);
     const ariaAttributeMap = {
         'aria-label': 'ariaLabel',
         'aria-value-text': 'ariaValueText',
-        'aria-moz-hint': 'ariaMozHint'
+        'aria-moz-hint': 'ariaMozHint',
     };
     const attributeSeparator = '_';
 
@@ -66,5 +66,5 @@ function translateElement(element = document) {
 document.addEventListener("DOMContentLoaded", () => translateElement(), {
     capture: false,
     passive: true,
-    once: true
+    once: true,
 });

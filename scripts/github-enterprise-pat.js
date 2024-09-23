@@ -8,7 +8,7 @@ class GitHubEnterpriseUserToken extends window.GitHubEnterprise {
     static buildArgs(clientID, clientSecret, details) {
         return [
             details.token,
-            details.instanceURL
+            details.instanceURL,
         ];
     }
 
@@ -40,7 +40,7 @@ class GitHubEnterpriseUserToken extends window.GitHubEnterprise {
     getDetails() {
         return {
             token: this.token,
-            instanceURL: this.instanceURL
+            instanceURL: this.instanceURL,
         };
     }
 }

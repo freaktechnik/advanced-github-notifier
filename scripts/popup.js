@@ -9,7 +9,7 @@ const loaded = new Promise((resolve) => {
     window.addEventListener("DOMContentLoaded", resolve, {
         capture: true,
         passive: true,
-        once: true
+        once: true,
     });
 });
 const idPrefix = "ghnotif";
@@ -20,20 +20,20 @@ const formatter = new Intl.DateTimeFormat(undefined, {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit"
+    second: "2-digit",
 });
 const HAS_INSTANCE_URL = new Set([
         'enterprise',
         'enterprise-pat',
         'gitlab',
-        'gitea'
+        'gitea',
     ]),
     SINGLE_ACCOUNT = 1;
 
 const clickListener = (id) => {
     browser.runtime.sendMessage({
         topic: "open-notification",
-        notificationId: id
+        notificationId: id,
     });
     window.close();
 };
@@ -46,7 +46,7 @@ const contextMenu = {
         //TODO maybe one can toggle shown/hidden from a contextmenu event, i.e. it's early enough?
         browser.menus.onClicked.addListener(({
             menuItemId,
-            targetElementId
+            targetElementId,
         }) => {
             const target = this.getTarget(targetElementId);
             this[menuItemId](target);
@@ -72,7 +72,7 @@ const contextMenu = {
                         enabled &&= canIgnore;
                     }
                     return browser.menus.update(id, {
-                        enabled
+                        enabled,
                     });
                 }))
                     .then(() => {
@@ -99,27 +99,27 @@ const contextMenu = {
     },
     open() {
         browser.menus.overrideContext({
-            showDefaults: true
+            showDefaults: true,
         });
     },
     markAsRead(notificationId) {
         browser.runtime.sendMessage({
             topic: "mark-notification-read",
-            notificationId
+            notificationId,
         });
     },
     unsubscribe(notificationId) {
         browser.runtime.sendMessage({
             topic: "unsubscribe-notification",
-            notificationId
+            notificationId,
         });
     },
     ignore(notificationId) {
         browser.runtime.sendMessage({
             topic: "ignore-notification",
-            notificationId
+            notificationId,
         });
-    }
+    },
 };
 
 const notificationList = {
@@ -136,7 +136,7 @@ const notificationList = {
             }
         }, {
             capture: false,
-            passive: true
+            passive: true,
         });
     },
     toggleEmpty(state) {
@@ -154,7 +154,7 @@ const notificationList = {
         let typeMessage = browser.i18n.getMessage(`type_${notification.normalizedType}`);
         if([
             "issue",
-            "pull"
+            "pull",
         ].includes(notification.normalizedType)) {
             const prefix = notification.subjectDetails.prefix ?? '#';
             typeMessage += ` ${prefix}${notification.subjectDetails.number}`;
@@ -189,10 +189,10 @@ const notificationList = {
         }
 
         root.addEventListener("click", () => clickListener(notification.id), {
-            passive: true
+            passive: true,
         });
         root.addEventListener("contextmenu", () => contextMenu.open(), {
-            passive: true
+            passive: true,
         });
         this.root.append(root);
 
@@ -219,7 +219,7 @@ const notificationList = {
 
         const notifications = Object.entries(storedNotifications).flatMap(([
             accountId,
-            notifs
+            notifs,
         ]) => notifs.map((n) => {
             n.accountId = accountId;
             return n;
@@ -228,7 +228,7 @@ const notificationList = {
         for(const notification of notifications) {
             this.create(notification, !Array.isArray(stores));
         }
-    }
+    },
 };
 
 class Account extends window.Storage {
@@ -248,7 +248,7 @@ class Account extends window.Storage {
         if(HAS_INSTANCE_URL.has(this.type)) {
             return browser.i18n.getMessage('username_instance', [
                 await this.getValue('username'),
-                this.details.instanceURL
+                this.details.instanceURL,
             ]);
         }
         return this.getValue('username');
@@ -267,7 +267,7 @@ class AccountSelector extends window.StorageManager {
             this.selectAccount(this.currentAccount);
         }, {
             passive: true,
-            capture: false
+            capture: false,
         });
         browser.storage.onChanged.addListener((changes, area) => {
             // Only listening for notification changes, since accounts shouldn't
@@ -326,7 +326,7 @@ loaded
         notificationList.init();
         new AccountSelector(document.getElementById("accounts"));
         return browser.storage.local.get({
-            "footer": "all"
+            "footer": "all",
         });
     })
     .then(({ footer }) => {
@@ -340,7 +340,7 @@ loaded
                 window.close();
             }, {
                 capture: false,
-                passive: true
+                passive: true,
             });
             open.textContent = browser.i18n.getMessage(`footer_${footer}`);
         }

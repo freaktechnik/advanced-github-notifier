@@ -1,6 +1,6 @@
 import test from 'ava';
 import {
-    getEnvironment, cleanUp
+    getEnvironment, cleanUp,
 } from './_environment.js';
 
 test.beforeEach(async (t) => {
@@ -16,7 +16,7 @@ test.afterEach.always((t) => {
 const STATIC_STRING_CONSTANTS = [
     'BASE_URI',
     'SITE_URI',
-    'SCOPE'
+    'SCOPE',
 ];
 
 const testStaticConstants = (t, property) => {
@@ -47,7 +47,7 @@ test('footer urls', (t) => {
         'unread',
         'all',
         'participating',
-        'watched'
+        'watched',
     ];
     for(const p of properties) {
         t.true(p in GitHub.FOOTER_URLS);
@@ -67,7 +67,7 @@ test('construction', (t) => {
     t.is(client.pollInterval, 60);
     t.is(client._username, '');
     t.deepEqual(client.headers, {
-        Accept: "application/vnd.github.v3+json"
+        Accept: "application/vnd.github.v3+json",
     });
 });
 

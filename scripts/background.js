@@ -28,7 +28,7 @@ const updateBadge = async (count) => {
     }
 
     return browser.browserAction.setBadgeText({
-        text
+        text,
     });
 };
 
@@ -46,7 +46,7 @@ const getNotifications = async (alarm) => {
         }
         finally {
             browser.alarms.create(handler.STORE_PREFIX, {
-                when: handler.getNextCheckTime()
+                when: handler.getNextCheckTime(),
             });
         }
     }
@@ -54,7 +54,7 @@ const getNotifications = async (alarm) => {
         window.addEventListener('online', () => getNotifications(alarm), {
             once: true,
             capture: false,
-            passive: true
+            passive: true,
         });
     }
 };
@@ -62,7 +62,7 @@ const getNotifications = async (alarm) => {
 const setupNotificationWorker = (handler) => {
     browser.alarms.onAlarm.addListener(getNotifications);
     return getNotifications({
-        name: handler.STORE_PREFIX
+        name: handler.STORE_PREFIX,
     });
 };
 
@@ -73,10 +73,10 @@ const openNotification = async (id) => {
     const url = await handler.getNotificationURL(id);
     if(url) {
         const tab = await browser.tabs.create({
-            url
+            url,
         });
         await browser.windows.update(tab.windowId, {
-            focused: true
+            focused: true,
         });
         if(await handler.willAutoMarkAsRead(id)) {
             await handler.markAsRead(id, false);
@@ -89,7 +89,7 @@ browser.notifications.onClicked.addListener(openNotification);
 
 const needsAuth = () => {
     browser.browserAction.setPopup({
-        popup: ""
+        popup: "",
     });
     updateBadge();
     browser.browserAction.onClicked.addListener(() => {
@@ -103,7 +103,7 @@ const afterAdd = async (handler) => {
     const popupURL = await browser.browserAction.getPopup({});
     if(popupURL === "") {
         browser.browserAction.setPopup({
-            popup: browser.runtime.getURL('popup.html')
+            popup: browser.runtime.getURL('popup.html'),
         });
         await updateBadge();
     }
@@ -130,7 +130,7 @@ const handleMessage = async (message) => {
         break;
     case "open-notifications": {
         const { footer } = await browser.storage.local.get({
-            "footer": "all"
+            "footer": "all",
         });
         if(footer == "options") {
             await browser.runtime.openOptionsPage();
@@ -186,14 +186,14 @@ const handleMessage = async (message) => {
 const handleStorageChange = async (changes) => {
     await browser.menus.update('badge', {
         type: 'checkbox',
-        checked: !changes.disableBadge.newValue
+        checked: !changes.disableBadge.newValue,
     });
     const [
         currentText,
-        count
+        count,
     ] = await Promise.all([
         browser.browserAction.getBadgeText({}),
-        manager.getCount()
+        manager.getCount(),
     ]);
     if(currentText === MISSING_AUTH) {
         await updateBadge();
@@ -236,11 +236,11 @@ const init = async () => {
         }
     });
     browser.menus.onClicked.addListener(({
-        menuItemId, checked
+        menuItemId, checked,
     }) => {
         if(menuItemId === 'badge') {
             browser.storage.local.set({
-                disableBadge: !checked
+                disableBadge: !checked,
             });
         }
     });
@@ -256,14 +256,14 @@ const init = async () => {
 window.requestIdleCallback(async () => {
     for(const [
         id,
-        messageId
+        messageId,
     ] of Object.entries(MENU_SPEC)) {
         browser.menus.create({
             viewTypes: [ 'popup' ],
             documentUrlPatterns: [ browser.runtime.getURL('popup.html') ],
             id,
             title: browser.i18n.getMessage(messageId),
-            enabled: false
+            enabled: false,
         });
     }
     const { disableBadge = false } = await browser.storage.local.get('disableBadge');
@@ -272,7 +272,7 @@ window.requestIdleCallback(async () => {
         title: browser.i18n.getMessage('showBadge'),
         type: 'checkbox',
         id: 'badge',
-        checked: !disableBadge
+        checked: !disableBadge,
     });
     if(navigator.onLine) {
         await init().catch(console.error);
@@ -281,7 +281,7 @@ window.requestIdleCallback(async () => {
         // If we can't retrieve the accounts, wait for internet and try again.
         const records = await manager.getRecords().catch(() => [
             'foo',
-            'bar'
+            'bar',
         ]);
         if(records.length) {
             window.addEventListener("online", () => {
@@ -289,7 +289,7 @@ window.requestIdleCallback(async () => {
             }, {
                 passive: true,
                 capture: false,
-                once: true
+                once: true,
             });
         }
         else {

@@ -6,20 +6,20 @@
 
 const PASSIVE_EVENT = {
         capturing: false,
-        passive: true
+        passive: true,
     },
     MIN_OAUTH_VERSION = 60,
     HAS_INSTANCE_URL = new Set([
         'enterprise',
         'enterprise-pat',
         'gitlab',
-        'gitea'
+        'gitea',
     ]),
     IS_TOKEN = new Set([
         'enterprise-pat',
         'github-user',
         'gitlab',
-        'gitea'
+        'gitea',
     ]);
 
 class Account extends window.Storage {
@@ -90,7 +90,7 @@ class Account extends window.Storage {
     logout() {
         browser.runtime.sendMessage({
             topic: "logout",
-            handlerId: this.id
+            handlerId: this.id,
         });
         this.root.remove();
     }
@@ -167,7 +167,7 @@ class AccountManager extends window.StorageManager {
                 }
                 permissionURL += 'login/oauth/access_token';
                 const granted = await browser.permissions.request({
-                    origins: [ permissionURL ]
+                    origins: [ permissionURL ],
                 });
                 if(!granted) {
                     this.showError(browser.i18n.getMessage("error_host_enterprise"));
@@ -180,7 +180,7 @@ class AccountManager extends window.StorageManager {
                     permissionURL += '/';
                 }
                 const granted = await browser.permissions.request({
-                    origins: [ permissionURL ]
+                    origins: [ permissionURL ],
                 });
                 if(!granted) {
                     this.showError(browser.i18n.getMessage("error_host_gitea"));
@@ -191,7 +191,7 @@ class AccountManager extends window.StorageManager {
                 await browser.runtime.sendMessage({
                     topic: "login",
                     type,
-                    details
+                    details,
                 });
                 this.form.reset();
                 typeForm.value = "github"; // eslint-disable-line require-atomic-updates
@@ -200,14 +200,14 @@ class AccountManager extends window.StorageManager {
                 this.showError(error.message);
             }
         }, {
-            passive: false
+            passive: false,
         });
 
         typeForm.addEventListener("change", () => {
             this.validateForm();
         }, {
             passive: true,
-            capture: false
+            capture: false,
         });
 
         // Ensure the corect things are shown
@@ -323,7 +323,7 @@ window.addEventListener("DOMContentLoaded", () => {
     browser.storage.local.get([
         "hide",
         "disableBadge",
-        "footer"
+        "footer",
     ])
         .then((result) => {
             if(result.hide) {

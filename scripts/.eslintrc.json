@@ -1,9 +1,0 @@
-{
-    "env": {
-        "es2021": true
-    },
-    "rules": {
-        "one-var": 0
-    },
-    "extends": "@freaktechnik/eslint-config-extension"
-}

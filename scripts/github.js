@@ -19,7 +19,7 @@ const parseLinks = (links) => {
         const [
             match,
             url,
-            relation
+            relation,
         ] = link.match(/<([^>]+)>;\s+rel="([^"]+)"/) || [];
         if(match && url && relation) {
             linkObject[relation] = url;
@@ -51,14 +51,14 @@ class GitHub {
             "unread": `${GitHub.SITE_URI}notifications?query=is%3Aunread`,
             "all": `${GitHub.SITE_URI}notifications?query=`,
             "participating": `${GitHub.SITE_URI}notifications?query=reason%3Aparticipating`,
-            "watched": `${GitHub.SITE_URI}watching`
+            "watched": `${GitHub.SITE_URI}watching`,
         };
     }
 
     static buildArgs(clientID, clientSecret) {
         return [
             clientID,
-            clientSecret
+            clientSecret,
         ];
     }
 
@@ -70,7 +70,7 @@ class GitHub {
         this.pollInterval = 60;
         this._username = "";
         this.headers = {
-            Accept: "application/vnd.github.v3+json"
+            Accept: "application/vnd.github.v3+json",
         };
     }
 
@@ -130,13 +130,13 @@ class GitHub {
             method: "POST",
             body: parameters,
             headers: {
-                Accept: "application/json"
-            }
+                Accept: "application/json",
+            },
         });
         //TODO requeue on network errors
         if(response.ok) {
             const {
-                access_token: accessToken, scope
+                access_token: accessToken, scope,
             } = await response.json();
             if(scope.includes(this.scope)) {
                 this.setToken(accessToken);
@@ -150,7 +150,7 @@ class GitHub {
 
     async getUsername() {
         const response = await fetch(this.buildAPIURL('user'), {
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok && response.status === STATUS_OK) {
             const json = await response.json();
@@ -163,12 +163,12 @@ class GitHub {
         const response = await fetch(this.buildAPIURL(`applications/${this.clientID}/token`), {
             method,
             body: JSON.stringify({
-                'access_token': token
+                'access_token': token,
             }),
             headers: {
                 Authorization: `Basic ${window.btoa(`${this.clientID}:${this.clientSecret}`)}`,
-                Accept: 'application/vnd.github.doctor-strange-preview+json'
-            }
+                Accept: 'application/vnd.github.doctor-strange-preview+json',
+            },
         });
         if(method == "POST") {
             if(response.ok && response.status === STATUS_OK) {
@@ -202,7 +202,7 @@ class GitHub {
             const response = await fetch(this.buildAPIURL('notifications'), {
                 headers: this.headers,
                 method: "PUT",
-                body
+                body,
             });
             if(response.ok && response.status == STATUS_RESET) {
                 return true;
@@ -216,7 +216,7 @@ class GitHub {
     async markNotificationRead(notificationID) {
         const response = await fetch(this.buildAPIURL(`notifications/threads/${notificationID}`), {
             method: "PATCH",
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok) {
             return true;
@@ -228,7 +228,7 @@ class GitHub {
         const response = await fetch(this.buildAPIURL(`notifications/threads/${notificationId}/subscription`), {
             method: "PUT",
             headers: this.headers,
-            body: `{"subscribed":false}`
+            body: `{"subscribed":false}`,
         });
 
         if(!response.ok) {
@@ -240,7 +240,7 @@ class GitHub {
         const response = await fetch(this.buildAPIURL(`notifications/threads/${notificationId}/subscription`), {
             method: "PUT",
             headers: this.headers,
-            body: `{"subscribed":false,"ignored":true}`
+            body: `{"subscribed":false,"ignored":true}`,
         });
 
         if(!response.ok) {
@@ -253,7 +253,7 @@ class GitHub {
             headers: this.headers,
             // Have to bypass cache when there are notifications, as the Etag doesn't
             // change when notifications are read.
-            cache: this.forceRefresh ? "reload" : "no-cache"
+            cache: this.forceRefresh ? "reload" : "no-cache",
         });
 
         if(response.ok) {
@@ -264,7 +264,7 @@ class GitHub {
             this.pollInterval = Math.max(
                 pollInterval,
                 Math.ceil((ratelimitReset - nowS) / ratelimitRemaining),
-                MIN_POLL_INTEVAL
+                MIN_POLL_INTEVAL,
             );
 
             const now = new Date();
@@ -294,7 +294,7 @@ class GitHub {
 
     async getOldestCommentURL(issue, date) {
         const comments = await fetch(issue.comments_url, {
-            headers: this.headers
+            headers: this.headers,
         });
         if(comments.ok) {
             const commentData = await comments.json();
@@ -334,7 +334,7 @@ class GitHub {
         }
         const apiEndpoint = notification.subject.url;
         const response = await fetch(apiEndpoint, {
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok) {
             const json = await response.json();
@@ -344,7 +344,7 @@ class GitHub {
                 try {
                     const commentURL = await this.getOldestCommentURL(json, Date.parse(notification.last_read_at));
                     if(commentURL) {
-                        // eslint-disable-next-line camelcase, xss/no-mixed-html
+                        // eslint-disable-next-line camelcase
                         json.html_url = commentURL;
                         gotComment = true;
                     }
@@ -355,12 +355,12 @@ class GitHub {
                 if(!gotComment && notification.subject.latest_comment_url) {
                     try {
                         const commentInfo = await fetch(notification.subject.latest_comment_url, {
-                            headers: this.headers
+                            headers: this.headers,
                         });
                         if(commentInfo.ok) {
                             const commentJson = await commentInfo.json();
                             if(commentJson.html_url) {
-                                json.html_url = commentJson.html_url; // eslint-disable-line camelcase, xss/no-mixed-html
+                                json.html_url = commentJson.html_url; // eslint-disable-line camelcase
                             }
                         }
                     }

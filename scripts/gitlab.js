@@ -15,7 +15,7 @@ class GitLab {
             Commit: 'Commit',
             Epic: 'Issue',
             'DesignManagement::Design': 'TeamDiscussion',
-            'AlertManagement::Alert': 'RepositoryVulnerabilityAlert'
+            'AlertManagement::Alert': 'RepositoryVulnerabilityAlert',
         };
     }
     static get STATE_TO_GH() {
@@ -23,21 +23,21 @@ class GitLab {
             opened: 'open',
             closed: 'closed',
             merged: 'closed',
-            locked: 'undefined'
+            locked: 'undefined',
         };
     }
     static get PREFIX_BY_TYPE() {
         return {
             Issue: '#',
             MergeRequest: '!',
-            Epic: '&'
+            Epic: '&',
         };
     }
 
     static buildArgs(clientID, clientSecret, details) {
         return [
             details.token,
-            details.instanceURL
+            details.instanceURL,
         ];
     }
 
@@ -51,7 +51,7 @@ class GitLab {
         this.pollInterval = 60;
         this._username = "";
         this.headers = {
-            Accept: "application/json"
+            Accept: "application/json",
         };
         this.headers['PRIVATE-TOKEN'] = token;
     }
@@ -82,7 +82,7 @@ class GitLab {
 
     async getUsername() {
         const response = await fetch(this.buildAPIURL('user'), {
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok && response.status === STATUS_OK) {
             const json = await response.json();
@@ -114,7 +114,7 @@ class GitLab {
     getDetails() {
         return {
             token: this.token,
-            instanceURL: this.instanceURL
+            instanceURL: this.instanceURL,
         };
     }
 
@@ -122,7 +122,7 @@ class GitLab {
         if(this.lastUpdate !== undefined && this.authorized) {
             const response = await fetch(this.buildAPIURL('todos/mark_as_done'), {
                 headers: this.headers,
-                method: 'POST'
+                method: 'POST',
             });
             if(response.ok && response.status == STATUS_RESET) {
                 return true;
@@ -136,7 +136,7 @@ class GitLab {
     async markNotificationRead(notificationID) {
         const response = await fetch(this.buildAPIURL(`todos/${notificationID}/mark_as_done`, {
             headers: this.headers,
-            method: 'POST'
+            method: 'POST',
         }));
         if(response.ok && response.status == STATUS_RESET) {
             return true;
@@ -153,7 +153,7 @@ class GitLab {
 
     async getNotifications(url = this.buildAPIURL('todos?per_page=100')) {
         const response = await fetch(url, {
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok) {
             this.lastUpdate = new Date().toISOString();
@@ -165,12 +165,12 @@ class GitLab {
                         state: todo.target.state,
                         originalTarget: todo.target,
                         originalType: todo.target_type,
-                        title: todo.body
+                        title: todo.body,
                     };
                     if(todo.project) {
                         subject.repository = {
                             'html_url': this.buildSiteURL(todo.project.path_with_namespace),
-                            'full_name': todo.project.path_with_namespace
+                            'full_name': todo.project.path_with_namespace,
                         };
                     }
                     return {
@@ -178,7 +178,7 @@ class GitLab {
                         subject,
                         'updated_at': todo.updated_at,
                         unread: todo.state === 'pending',
-                        repository: subject.repository
+                        repository: subject.repository,
                     };
                 });
 
@@ -206,7 +206,7 @@ class GitLab {
             number: notification.subject.originalTarget.iid,
             prefix: GitLab.PREFIX_BY_TYPE[notification.subject.originalType] ?? '',
             canUnsubscribe: false,
-            canIgnore: false
+            canIgnore: false,
         };
     }
 }

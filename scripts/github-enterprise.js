@@ -9,7 +9,7 @@ class GitHubEnterprise extends window.GitHub {
         return [
             details.clientId,
             details.clientSecret,
-            details.instanceURL
+            details.instanceURL,
         ];
     }
 
@@ -33,7 +33,7 @@ class GitHubEnterprise extends window.GitHub {
         return {
             clientId: this.clientID,
             clientSecret: this.clientSecret,
-            instanceURL: this.instanceURL
+            instanceURL: this.instanceURL,
         };
     }
 }

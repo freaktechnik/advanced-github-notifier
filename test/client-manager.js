@@ -1,6 +1,6 @@
 import test from 'ava';
 import {
-    getEnvironment, cleanUp
+    getEnvironment, cleanUp,
 } from './_environment.js';
 import { FakeClient } from './_mocks.js';
 
@@ -16,7 +16,7 @@ test.beforeEach(async (t) => {
         '../scripts/github-enterprise-pat.js',
         '../scripts/gitlab.js',
         '../scripts/gitea.js',
-        '../scripts/client-manager.js'
+        '../scripts/client-manager.js',
     ]);
     t.context.window = dom.window;
 });
@@ -33,7 +33,7 @@ test('constructor', (t) => {
 test('add non-handler Client', (t) => {
     const manager = new t.context.window.ClientManager();
     return t.throwsAsync(manager.addClient({}), {
-        instanceOf: t.context.window.TypeError
+        instanceOf: t.context.window.TypeError,
     });
 });
 
@@ -50,8 +50,8 @@ test('add handler client', async (t) => {
             type: t.context.window.ClientManager.GITHUB,
             notifications: handler.NOTIFICATION_NAME,
             id: handler.id,
-            handlerId: handler.STORE_PREFIX
-        } ]
+            handlerId: handler.STORE_PREFIX,
+        } ],
     });
 });
 
@@ -61,7 +61,7 @@ test('saveNotificationFields', async (t) => {
     await manager.saveFields();
     t.true(t.context.window.browser.storage.local.set.calledOnce);
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
-        handlers: []
+        handlers: [],
     });
 });
 
@@ -83,6 +83,6 @@ test('removeClient', async (t) => {
     t.is(manager.clients.size, 0);
     t.true(t.context.window.browser.storage.local.set.calledTwice);
     t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
-        handlers: []
+        handlers: [],
     });
 });

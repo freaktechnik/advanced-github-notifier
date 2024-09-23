@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class StorageManager { // eslint-disable-line no-redeclare
+class StorageManager {
     static get KEY() {
         return "handlers";
     }
@@ -15,7 +15,7 @@ class StorageManager { // eslint-disable-line no-redeclare
 
     static createRecord(storageInstance) {
         return {
-            [StorageManager.ID_KEY]: storageInstance.storageId
+            [StorageManager.ID_KEY]: storageInstance.storageId,
         };
     }
 
@@ -31,14 +31,14 @@ class StorageManager { // eslint-disable-line no-redeclare
 
     async getRecords() {
         const results = await browser.storage[this.area].get({
-            [StorageManager.KEY]: []
+            [StorageManager.KEY]: [],
         });
         return results[StorageManager.KEY];
     }
 
     setRecords(array) {
         return browser.storage[this.area].set({
-            [StorageManager.KEY]: array
+            [StorageManager.KEY]: array,
         });
     }
 }

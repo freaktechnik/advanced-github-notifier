@@ -36,7 +36,7 @@ class GitHubUserToken extends window.GitHub {
 
     getDetails() {
         return {
-            token: this.token
+            token: this.token,
         };
     }
 }

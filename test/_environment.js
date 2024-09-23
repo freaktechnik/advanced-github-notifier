@@ -1,6 +1,6 @@
 import {
     JSDOM,
-    VirtualConsole
+    VirtualConsole,
 } from 'jsdom';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
@@ -33,10 +33,10 @@ const instrument = async (sourcePath) => {
             const instrumented = await ef(process.execPath, [
                 './node_modules/.bin/nyc',
                 'instrument',
-                sourcePath.pathname
+                sourcePath.pathname,
             ], {
                 cwd: process.cwd(),
-                env: process.env
+                env: process.env,
             });
             instrumentCache.set(sourcePath.href, instrumented.stdout.toString('utf8'));
         }
@@ -51,7 +51,7 @@ const instrument = async (sourcePath) => {
 export const getEnvironment = async (files, html = aboutBlank) => {
     const dom = new JSDOM(html, {
         runScripts: 'outside-only',
-        virtualConsole
+        virtualConsole,
     });
     dom.window.fetch = stub();
     const require = createRequire(import.meta.url);

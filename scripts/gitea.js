@@ -12,14 +12,14 @@ class Gitea {
             Pull: 'PullRequest',
             Issue: 'Issue',
             Commit: 'Commit',
-            Repository: 'Repository'
+            Repository: 'Repository',
         };
     }
 
     static buildArgs(clientID, clientSecret, details) {
         return [
             details.token,
-            details.instanceURL
+            details.instanceURL,
         ];
     }
 
@@ -33,7 +33,7 @@ class Gitea {
         this.pollInterval = 60;
         this._username = "";
         this.headers = {
-            Accept: "application/json"
+            Accept: "application/json",
         };
         this.headers.Authorization = `token ${token}`;
     }
@@ -60,7 +60,7 @@ class Gitea {
 
     async getUsername() {
         const response = await fetch(this.buildAPIURL('user'), {
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok && response.status === STATUS_OK) {
             const json = await response.json();
@@ -92,7 +92,7 @@ class Gitea {
     getDetails() {
         return {
             token: this.token,
-            instanceURL: this.instanceURL
+            instanceURL: this.instanceURL,
         };
     }
 
@@ -107,7 +107,7 @@ class Gitea {
         if(this.lastUpdate !== undefined && this.authorized) {
             const response = await fetch(this.buildAPIURL(`notifications?last_read_at=${this.lastUpdate}`), {
                 headers: this.headers,
-                method: 'PUT'
+                method: 'PUT',
             });
             if(response.ok && response.status == STATUS_RESET) {
                 return true;
@@ -121,7 +121,7 @@ class Gitea {
     async markNotificationRead(notificationID) {
         const response = await fetch(this.buildAPIURL(`notifications/threads/${notificationID}`, {
             headers: this.headers,
-            method: 'PATCH'
+            method: 'PATCH',
         }));
         if(response.ok && response.status == STATUS_RESET) {
             return true;
@@ -131,7 +131,7 @@ class Gitea {
 
     async getNotifications(url = this.buildAPIURL(`notifications?limit=${PAGE_SIZE}`)) {
         const response = await fetch(url, {
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok) {
             this.lastUpdate = new Date().toISOString();
@@ -157,7 +157,7 @@ class Gitea {
 
     async getNotificationDetails(notification) {
         const response = await fetch(notification.subject.url, {
-            headers: this.headers
+            headers: this.headers,
         });
         if(response.ok) {
             const json = await response.json();
@@ -169,18 +169,18 @@ class Gitea {
             if(notification.subject.latest_comment_url) {
                 try {
                     const comment = await fetch(notification.subject.latest_comment_url, {
-                        headers: this.headers
+                        headers: this.headers,
                     });
                     if(comment.ok) {
                         const commentDetails = await comment.json();
-                        json.html_url = commentDetails.html_url; // eslint-disable-line camelcase, xss/no-mixed-html
+                        json.html_url = commentDetails.html_url; // eslint-disable-line camelcase
                     }
                     else {
                         throw new Error("could not fetch comment details");
                     }
                 }
                 catch{
-                    json.html_url = notification.subject.latest_comment_url; // eslint-disable-line camelcase, xss/no-mixed-html
+                    json.html_url = notification.subject.latest_comment_url; // eslint-disable-line camelcase
                 }
             }
             return json;
@@ -189,25 +189,25 @@ class Gitea {
         if(notification.subject.latest_comment_url) {
             try {
                 const comment = await fetch(notification.subject.latest_comment_url, {
-                    headers: this.headers
+                    headers: this.headers,
                 });
                 if(comment.ok) {
                     const commentDetails = await comment.json();
-                    fallbackUrl = commentDetails.html_url; // eslint-disable-line xss/no-mixed-html
+                    fallbackUrl = commentDetails.html_url;
                 }
                 else {
                     throw new Error("could not fetch comment details");
                 }
             }
             catch{
-                fallbackUrl = notification.subject.latest_comment_url; // eslint-disable-line xss/no-mixed-html
+                fallbackUrl = notification.subject.latest_comment_url;
             }
         }
         else if(notification.subject.type === 'Issue' || notification.subject.type === 'PullRequest') {
-            fallbackUrl = `${notification.subject.repository.html_url}/issues/${notification.subject.number}`; // eslint-disable-line xss/no-mixed-html
+            fallbackUrl = `${notification.subject.repository.html_url}/issues/${notification.subject.number}`;
         }
         else if(notification.repository?.html_url) {
-            fallbackUrl = notification.repository.html_url; // eslint-disable-line xss/no-mixed-html
+            fallbackUrl = notification.repository.html_url;
         }
         return {
             'html_url': fallbackUrl,
@@ -215,7 +215,7 @@ class Gitea {
             title: notification.subject.title,
             number: Number.parseInt(notification.subject.url.split('/').pop(), 10),
             canUnsubscribe: false,
-            canIgnore: false
+            canIgnore: false,
         };
     }
 }

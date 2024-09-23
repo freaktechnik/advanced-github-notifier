@@ -1,12 +1,12 @@
 import test from 'ava';
 import {
-    getEnvironment, cleanUp
+    getEnvironment, cleanUp,
 } from './_environment.js';
 
 test.beforeEach(async (t) => {
     const dom = await getEnvironment([
         '../scripts/storage.js',
-        '../scripts/storage-manager.js'
+        '../scripts/storage-manager.js',
     ]);
     t.context.window = dom.window;
 });
@@ -17,7 +17,7 @@ test.afterEach.always((t) => {
 
 const STATIC_MEMBERS = [
     'KEY',
-    'ID_KEY'
+    'ID_KEY',
 ];
 
 const testStaticMember = (t, property) => {
@@ -33,7 +33,7 @@ for(const property of STATIC_MEMBERS) {
 test('create record', (t) => {
     const storageId = 'lorem ipsum';
     const record = t.context.window.StorageManager.createRecord({
-        storageId
+        storageId,
     });
 
     t.true(t.context.window.StorageManager.ID_KEY in record);
@@ -67,42 +67,42 @@ test('set records', async (t) => {
 
     const instances = [
         'foo',
-        'bar'
+        'bar',
     ];
     await storageManager.setRecords(instances);
 
     t.true(t.context.window.browser.storage.local.set.calledWithMatch({
-        [t.context.window.StorageManager.KEY]: instances
+        [t.context.window.StorageManager.KEY]: instances,
     }));
 });
 
 test('get records', async (t) => {
     const {
         StorageManager,
-        browser
+        browser,
     } = t.context.window;
 
     const storageManager = new StorageManager();
     const data = [
         'foo',
-        'bar'
+        'bar',
     ];
     browser.storage.local.get.resolves({
-        [StorageManager.KEY]: data
+        [StorageManager.KEY]: data,
     });
 
     const results = await storageManager.getRecords();
 
     t.deepEqual(results, data);
     t.true(browser.storage.local.get.calledWithMatch({
-        [StorageManager.KEY]: []
+        [StorageManager.KEY]: [],
     }));
 });
 
 test('get instances', async (t) => {
     const {
         StorageManager,
-        browser
+        browser,
     } = t.context.window;
 
     const Instance = class {
@@ -116,8 +116,8 @@ test('get instances', async (t) => {
     const storageId = 'foo';
     browser.storage.local.get.resolves({
         [StorageManager.KEY]: [ {
-            [StorageManager.ID_KEY]: storageId
-        } ]
+            [StorageManager.ID_KEY]: storageId,
+        } ],
     });
 
     const results = await storageManager.getInstances();

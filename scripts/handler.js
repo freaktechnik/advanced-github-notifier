@@ -17,7 +17,7 @@ const TYPES = {
     TeamDiscussion: "discussion",
     Commit: "commit",
     CheckSuite: "ci",
-    Discussion: "discussion"
+    Discussion: "discussion",
 };
 const ICONS = {
     invite: "mail",
@@ -25,7 +25,7 @@ const ICONS = {
     security: "alert",
     discussion: "comment",
     commit: "commit",
-    ci: "ci"
+    ci: "ci",
 };
 
 class ClientHandler extends window.Storage {
@@ -97,7 +97,7 @@ class ClientHandler extends window.Storage {
     static buildNotificationDetails(notification) {
         // Try to build the details as good as we can
         const subjectDetails = {
-            "html_url": this.client.buildSiteURL()
+            "html_url": this.client.buildSiteURL(),
         };
 
         /* eslint-disable camelcase */
@@ -194,7 +194,7 @@ class ClientHandler extends window.Storage {
         try {
             const rawURL = await browser.identity.launchWebAuthFlow({
                 url: this.client.authURL(authState),
-                interactive
+                interactive,
             });
             url = new URL(rawURL);
         }
@@ -342,7 +342,7 @@ class ClientHandler extends window.Storage {
 
     async _processNewNotifications(json) {
         const { hide } = await browser.storage.local.get({
-            hide: false
+            hide: false,
         });
         const notifications = await this._getNotifications();
         const showNotifications = await this.getValue(ClientHandler.SHOW_NOTIFICATIONS, true);
@@ -401,7 +401,7 @@ ${typeMessage}${stateMessage}`;
                         title: notification.subject.title,
                         message,
                         eventTime: Date.parse(notification.updated_at),
-                        iconUrl: `images/large/${notification.icon}png`
+                        iconUrl: `images/large/${notification.icon}png`,
                     });
                 }
                 delete notification.new;
