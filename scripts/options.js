@@ -22,7 +22,7 @@ const PASSIVE_EVENT = {
         'gitea',
     ]);
 
-class Account extends window.Storage {
+class Account extends globalThis.Storage {
     constructor(type, id, area, details = {}) {
         super(id, area);
         this.id = id;
@@ -96,7 +96,7 @@ class Account extends window.Storage {
     }
 }
 
-class AccountManager extends window.StorageManager {
+class AccountManager extends globalThis.StorageManager {
     constructor(root) {
         super(Account);
         this.root = root;
@@ -124,15 +124,15 @@ class AccountManager extends window.StorageManager {
             if(areaName === "local" && "handlers" in changes) {
                 const handlerIds = new Set();
                 for(const handler of changes.handlers.newValue) {
-                    handlerIds.add(handler[window.StorageManager.ID_KEY]);
-                    if(!this.getAccountRoot(handler[window.StorageManager.ID_KEY])) {
-                        this.addAccount(handler.type, handler[window.StorageManager.ID_KEY], handler.details);
+                    handlerIds.add(handler[globalThis.StorageManager.ID_KEY]);
+                    if(!this.getAccountRoot(handler[globalThis.StorageManager.ID_KEY])) {
+                        this.addAccount(handler.type, handler[globalThis.StorageManager.ID_KEY], handler.details);
                     }
                 }
                 if("oldValue" in changes.handlers && changes.handlers.oldValue) {
                     for(const oldHandler of changes.handlers.oldValue) {
-                        if(!handlerIds.has(oldHandler[window.StorageManager.ID_KEY])) {
-                            const node = this.getAccountRoot(oldHandler[window.StorageManager.ID_KEY]);
+                        if(!handlerIds.has(oldHandler[globalThis.StorageManager.ID_KEY])) {
+                            const node = this.getAccountRoot(oldHandler[globalThis.StorageManager.ID_KEY]);
                             if(node) {
                                 node.querySelector("button")
                                     .click();
@@ -216,7 +216,7 @@ class AccountManager extends window.StorageManager {
 
     async getInstances() {
         const records = await this.getRecords();
-        return records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY], r.details));
+        return records.map((r) => this.addAccount(r.type, r[globalThis.StorageManager.ID_KEY], r.details));
     }
 
     addAccount(type, id, details) {
@@ -288,7 +288,7 @@ class AccountManager extends window.StorageManager {
     }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+globalThis.addEventListener("DOMContentLoaded", () => {
     document.getElementById("enterprise-redirect").textContent = browser.i18n.getMessage("enterprise_redirect", `${browser.identity.getRedirectURL()}login`);
     const notifications = document.getElementById("notifications");
     const badge = document.getElementById("badge");

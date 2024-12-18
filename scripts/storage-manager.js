@@ -19,7 +19,7 @@ class StorageManager {
         };
     }
 
-    constructor(storageConstructor = window.Storage, area = "local") {
+    constructor(storageConstructor = globalThis.Storage, area = "local") {
         this.StorageInstance = storageConstructor;
         this.area = area;
     }
@@ -42,4 +42,4 @@ class StorageManager {
         });
     }
 }
-window.StorageManager = StorageManager;
+globalThis.StorageManager = StorageManager;

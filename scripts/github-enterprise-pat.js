@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class GitHubEnterpriseUserToken extends window.GitHubEnterprise {
+class GitHubEnterpriseUserToken extends globalThis.GitHubEnterprise {
     static buildArgs(clientID, clientSecret, details) {
         return [
             details.token,
@@ -45,4 +45,4 @@ class GitHubEnterpriseUserToken extends window.GitHubEnterprise {
     }
 }
 
-window.GitHubEnterpriseUserToken = GitHubEnterpriseUserToken;
+globalThis.GitHubEnterpriseUserToken = GitHubEnterpriseUserToken;

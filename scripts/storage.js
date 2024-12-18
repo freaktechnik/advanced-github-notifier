@@ -33,4 +33,4 @@ class Storage {
         return browser.storage[this.area].remove(keys.map((key) => this.getStorageKey(key)));
     }
 }
-window.Storage = Storage;
+globalThis.Storage = Storage;

@@ -211,4 +211,4 @@ class GitLab {
     }
 }
 
-window.GitLab = GitLab;
+globalThis.GitLab = GitLab;

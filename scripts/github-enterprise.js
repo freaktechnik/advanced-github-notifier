@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class GitHubEnterprise extends window.GitHub {
+class GitHubEnterprise extends globalThis.GitHub {
     static buildArgs(clientID, clientSecret, details) {
         return [
             details.clientId,
@@ -38,4 +38,4 @@ class GitHubEnterprise extends window.GitHub {
     }
 }
 
-window.GitHubEnterprise = GitHubEnterprise;
+globalThis.GitHubEnterprise = GitHubEnterprise;

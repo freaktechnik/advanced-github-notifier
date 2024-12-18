@@ -166,7 +166,7 @@ class GitHub {
                 'access_token': token,
             }),
             headers: {
-                Authorization: `Basic ${window.btoa(`${this.clientID}:${this.clientSecret}`)}`,
+                Authorization: `Basic ${globalThis.btoa(`${this.clientID}:${this.clientSecret}`)}`,
                 Accept: 'application/vnd.github.doctor-strange-preview+json',
             },
         });
@@ -388,4 +388,4 @@ class GitHub {
     }
 }
 
-window.GitHub = GitHub;
+globalThis.GitHub = GitHub;

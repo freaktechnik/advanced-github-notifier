@@ -51,7 +51,7 @@ const getNotifications = async (alarm) => {
         }
     }
     else {
-        window.addEventListener('online', () => getNotifications(alarm), {
+        globalThis.addEventListener('online', () => getNotifications(alarm), {
             once: true,
             capture: false,
             passive: true,
@@ -253,7 +253,7 @@ const init = async () => {
     }
 };
 
-window.requestIdleCallback(async () => {
+globalThis.requestIdleCallback(async () => {
     for(const [
         id,
         messageId,
@@ -284,7 +284,7 @@ window.requestIdleCallback(async () => {
             'bar',
         ]);
         if(records.length) {
-            window.addEventListener("online", () => {
+            globalThis.addEventListener("online", () => {
                 init().catch(console.error);
             }, {
                 passive: true,

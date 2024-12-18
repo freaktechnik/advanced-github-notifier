@@ -6,7 +6,7 @@
 /* global clientId, clientSecret */
 //TODO some way to handle accounts that have failing logins instead of just removing them.
 
-class ClientManager extends window.StorageManager {
+class ClientManager extends globalThis.StorageManager {
     static get GITHUB() {
         return "github";
     }
@@ -36,22 +36,22 @@ class ClientManager extends window.StorageManager {
     }
 
     static getTypeForClient(client) {
-        if(client instanceof window.GitHubEnterpriseUserToken) {
+        if(client instanceof globalThis.GitHubEnterpriseUserToken) {
             return ClientManager.ENTERPRISE_PAT;
         }
-        if(client instanceof window.GitHubEnterprise) {
+        if(client instanceof globalThis.GitHubEnterprise) {
             return ClientManager.ENTERPRISE;
         }
-        else if(client instanceof window.GitHubLight) {
+        else if(client instanceof globalThis.GitHubLight) {
             return ClientManager.GITHUB_LIGHT;
         }
-        else if(client instanceof window.GitHubUserToken) {
+        else if(client instanceof globalThis.GitHubUserToken) {
             return ClientManager.GITHUB_USER_TOKEN;
         }
-        else if(client instanceof window.GitLab) {
+        else if(client instanceof globalThis.GitLab) {
             return ClientManager.GITLAB;
         }
-        else if(client instanceof window.Gitea) {
+        else if(client instanceof globalThis.Gitea) {
             return ClientManager.GITEA;
         }
         return ClientManager.GITHUB;
@@ -61,37 +61,37 @@ class ClientManager extends window.StorageManager {
         let ClientFactory;
         switch(type) {
         case ClientManager.GITHUB:
-            ClientFactory = window.GitHub;
+            ClientFactory = globalThis.GitHub;
             break;
         case ClientManager.GITHUB_LIGHT:
-            ClientFactory = window.GitHubLight;
+            ClientFactory = globalThis.GitHubLight;
             break;
         case ClientManager.ENTERPRISE:
-            ClientFactory = window.GitHubEnterprise;
+            ClientFactory = globalThis.GitHubEnterprise;
             if(!details) {
                 throw new Error("Details required to create enterprise client");
             }
             break;
         case ClientManager.GITHUB_USER_TOKEN:
-            ClientFactory = window.GitHubUserToken;
+            ClientFactory = globalThis.GitHubUserToken;
             if(!details) {
                 throw new Error("Details required to create PAT client");
             }
             break;
         case ClientManager.ENTERPRISE_PAT:
-            ClientFactory = window.GitHubEnterpriseUserToken;
+            ClientFactory = globalThis.GitHubEnterpriseUserToken;
             if(!details) {
                 throw new Error("Details required to create enterprise PAT client");
             }
             break;
         case ClientManager.GITLAB:
-            ClientFactory = window.GitLab;
+            ClientFactory = globalThis.GitLab;
             if(!details) {
                 throw new Error("Details required to create new GitLab client");
             }
             break;
         case ClientManager.GITEA:
-            ClientFactory = window.Gitea;
+            ClientFactory = globalThis.Gitea;
             if(!details) {
                 throw new Error("Details required to create new Gitea client");
             }
@@ -104,12 +104,12 @@ class ClientManager extends window.StorageManager {
         if(id) {
             client.id = id;
         }
-        const wrapper = new window.ClientHandler(client, this.area);
+        const wrapper = new globalThis.ClientHandler(client, this.area);
         return wrapper;
     }
 
     constructor() {
-        super(window.ClientHandler);
+        super(globalThis.ClientHandler);
         this.clients = new Set();
         this.loadedInstances = false;
     }
@@ -142,7 +142,7 @@ class ClientManager extends window.StorageManager {
                 return Promise.resolve();
             }
         }
-        if(client instanceof window.ClientHandler) {
+        if(client instanceof globalThis.ClientHandler) {
             this.clients.add(client);
             if(!noSave) {
                 return this.saveFields();
@@ -160,7 +160,7 @@ class ClientManager extends window.StorageManager {
     saveFields() {
         const handlers = [];
         for(const client of this.getClients()) {
-            const object = window.StorageManager.createRecord(client);
+            const object = globalThis.StorageManager.createRecord(client);
             object.type = ClientManager.getTypeForClient(client.client);
             object.notifications = client.NOTIFICATION_NAME;
             object.id = client.id;
@@ -194,4 +194,4 @@ class ClientManager extends window.StorageManager {
         throw new Error(`No client with the id ${id} is registered.`);
     }
 }
-window.ClientManager = ClientManager;
+globalThis.ClientManager = ClientManager;

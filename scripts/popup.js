@@ -6,7 +6,7 @@
 /* global MENU_SPEC */
 
 const loaded = new Promise((resolve) => {
-    window.addEventListener("DOMContentLoaded", resolve, {
+    globalThis.addEventListener("DOMContentLoaded", resolve, {
         capture: true,
         passive: true,
         once: true,
@@ -231,7 +231,7 @@ const notificationList = {
     },
 };
 
-class Account extends window.Storage {
+class Account extends globalThis.Storage {
     constructor(type, id, area, details = {}) {
         super(id, area);
         this.id = id;
@@ -255,7 +255,7 @@ class Account extends window.Storage {
     }
 }
 
-class AccountSelector extends window.StorageManager {
+class AccountSelector extends globalThis.StorageManager {
     static get ALL_ACCOUNTS() {
         return "all";
     }
@@ -291,7 +291,7 @@ class AccountSelector extends window.StorageManager {
             this.root.hidden = true;
             this.root.disabled = true;
         }
-        return Promise.all(records.map((r) => this.addAccount(r.type, r[window.StorageManager.ID_KEY], r.details)));
+        return Promise.all(records.map((r) => this.addAccount(r.type, r[globalThis.StorageManager.ID_KEY], r.details)));
     }
 
     async addAccount(type, id, details) {

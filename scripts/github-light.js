@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class GitHubLight extends window.GitHub {
+class GitHubLight extends globalThis.GitHub {
     static get SCOPE() {
         return "notifications";
     }
@@ -14,4 +14,4 @@ class GitHubLight extends window.GitHub {
     }
 }
 
-window.GitHubLight = GitHubLight;
+globalThis.GitHubLight = GitHubLight;

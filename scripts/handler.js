@@ -28,7 +28,7 @@ const ICONS = {
     ci: "ci",
 };
 
-class ClientHandler extends window.Storage {
+class ClientHandler extends globalThis.Storage {
     static get NOTIFICATIONS() {
         return "notifications";
     }
@@ -427,4 +427,4 @@ ${typeMessage}${stateMessage}`;
         return notifs;
     }
 }
-window.ClientHandler = ClientHandler;
+globalThis.ClientHandler = ClientHandler;

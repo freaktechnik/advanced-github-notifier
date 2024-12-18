@@ -220,4 +220,4 @@ class Gitea {
     }
 }
 
-window.Gitea = Gitea;
+globalThis.Gitea = Gitea;
