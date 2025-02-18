@@ -34,7 +34,7 @@
     "@freaktechnik/eslint-config-extension": "^10.1.6",
     "@freaktechnik/eslint-config-test": "^10.1.6",
     "ava": "^6.2.0",
-    "eslint": "^9.18.0",
+    "eslint": "^9.20.1",
     "jsdom": "^26.0.0",
     "mkdirp": "^3.0.1",
     "nyc": "^17.1.0",
