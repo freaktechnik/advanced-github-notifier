@@ -28,5 +28,5 @@ button.panel-section-footer-button {
     border: none;
     margin: 0;
     box-shadow: none;
-    background-color: none;
+    background-color: unset;
 }
