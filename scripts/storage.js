@@ -16,11 +16,17 @@ class Storage {
 
     async getValue(key, defaultValue) {
         const storageKey = this.getStorageKey(key);
-        const result = await browser.storage[this.area].get(storageKey);
-        if(defaultValue !== undefined && (!(storageKey in result) || result[storageKey] === undefined)) {
+        try {
+            const result = await browser.storage[this.area].get(storageKey);
+            if(defaultValue !== undefined && (!(storageKey in result) || result[storageKey] === undefined)) {
+                return defaultValue;
+            }
+            return result[storageKey];
+        }
+        catch(error) {
+            console.warn("Error reading", key, error);
             return defaultValue;
         }
-        return result[storageKey];
     }
 
     setValue(key, value) {
