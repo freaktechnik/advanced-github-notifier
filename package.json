@@ -78,7 +78,8 @@
       "node_modules",
       ".*",
       "web-ext-artifacts",
-      "*.md"
+      "*.md",
+      "eslint.config.js"
     ]
   },
   "ava": {
