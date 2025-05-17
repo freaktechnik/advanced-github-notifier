@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, eslint-comments/disable-enable-pair */
-const clientId = "",
+export const clientId = "",
     clientSecret = "",
-    redirectUri = new URL("");
+    redirectUri = new URL("https://example.com");
