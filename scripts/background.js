@@ -228,25 +228,6 @@ browser.runtime.onInstalled.addListener(async (details) => {
 });
 
 const init = async () => {
-    browser.storage.onChanged.addListener((changes, area) => {
-        if(area === 'local' && changes.disableBadge) {
-            try {
-                handleStorageChange(changes);
-            }
-            catch(error) {
-                console.error(error);
-            }
-        }
-    });
-    browser.menus.onClicked.addListener(({
-        menuItemId, checked,
-    }) => {
-        if(menuItemId === 'badge') {
-            browser.storage.local.set({
-                disableBadge: !checked,
-            });
-        }
-    });
     const count = await manager.getInstances();
     if(count) {
         await setupNotificationWorkers();
@@ -255,6 +236,27 @@ const init = async () => {
         needsAuth();
     }
 };
+
+browser.storage.onChanged.addListener((changes, area) => {
+    if(area === 'local' && changes.disableBadge) {
+        try {
+            handleStorageChange(changes);
+        }
+        catch(error) {
+            console.error(error);
+        }
+    }
+});
+
+browser.menus.onClicked.addListener(({
+    menuItemId, checked,
+}) => {
+    if(menuItemId === 'badge') {
+        browser.storage.local.set({
+            disableBadge: !checked,
+        });
+    }
+});
 
 globalThis.requestIdleCallback(async () => {
     for(const [
