@@ -72,7 +72,8 @@ test('construction', (t) => {
     t.is(client.pollInterval, 60);
     t.is(client._username, '');
     t.deepEqual(client.headers, {
-        Accept: "application/vnd.github.v3+json",
+        Accept: "application/vnd.github+json",
+        'X-GitHub-Api-Version': '2022-11-28',
     });
 });
 
