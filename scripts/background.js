@@ -4,7 +4,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global GitHub, ClientManager, MENU_SPEC */
+import ClientManager from "./client-manager.js";
+import { MENU_SPEC } from "./menu-spec.js";
+import GitHub from "./github.js";
+
 const manager = new ClientManager(),
     MISSING_AUTH = '?',
     BASE = 10;

@@ -125,7 +125,7 @@
         "message": "GitLab (Token)"
     },
     "account_gitea": {
-        "message": "Gitea (Token)"
+        "message": "Gitea/Forgejo (Token)"
     },
     "addAccount": {
         "message": "Add account"

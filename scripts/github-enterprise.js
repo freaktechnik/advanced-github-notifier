@@ -4,7 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class GitHubEnterprise extends globalThis.GitHub {
+import GitHub from "./github.js";
+
+export default class GitHubEnterprise extends GitHub {
     static buildArgs(clientID, clientSecret, details) {
         return [
             details.clientId,
@@ -37,5 +39,3 @@ class GitHubEnterprise extends globalThis.GitHub {
         };
     }
 }
-
-globalThis.GitHubEnterprise = GitHubEnterprise;

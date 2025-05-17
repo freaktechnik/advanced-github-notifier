@@ -4,8 +4,5 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const MENU_SPEC = {
-    markAsRead: "markAsRead",
-    unsubscribe: "unwatch",
-    ignore: "ignore",
-};
+export const STATUS_OK = 200,
+    STATUS_RESET = 205;

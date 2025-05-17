@@ -1,16 +1,22 @@
 import test from 'ava';
-import {
-    getEnvironment, cleanUp,
-} from './_environment.js';
+import { default as browser } from "sinon-chrome/webextensions/index.js";
+import GitHub from '../scripts/github.js';
+import { stub } from "sinon";
 
-test.beforeEach(async (t) => {
-    const dom = await getEnvironment([ '../scripts/github.js' ]);
-    t.context.window = dom.window;
-    dom.window.browser.identity.getRedirectURL.returns('https://example.com');
+test.before((t) => {
+    globalThis.browser = browser;
+    t.context.originalFetch = fetch;
+    globalThis.fetch = stub();
+    browser.identity.getRedirectURL.returns('https://example.com');
 });
 
-test.afterEach.always((t) => {
-    cleanUp(t.context.window);
+test.after((t) => {
+    globalThis.browser = undefined;
+    globalThis.fetch = t.context.originalFetch;
+});
+
+test.serial.afterEach.always(() => {
+    browser.flush();
 });
 
 const STATIC_STRING_CONSTANTS = [
@@ -20,8 +26,8 @@ const STATIC_STRING_CONSTANTS = [
 ];
 
 const testStaticConstants = (t, property) => {
-    t.true(property in t.context.window.GitHub);
-    t.is(typeof t.context.window.GitHub[property], 'string');
+    t.true(property in GitHub);
+    t.is(typeof GitHub[property], 'string');
 };
 testStaticConstants.title = (title, property) => `${title} ${property}`;
 
@@ -30,14 +36,13 @@ for(const property of STATIC_STRING_CONSTANTS) {
 }
 
 test('redirect URI', (t) => {
-    t.true(t.context.window.GitHub.REDIRECT_URI instanceof t.context.window.URL);
+    t.true(GitHub.REDIRECT_URI instanceof URL);
 
-    const redirectUri = new t.context.window.URL(`${t.context.window.browser.identity.getRedirectURL()}login`);
-    t.deepEqual(t.context.window.GitHub.REDIRECT_URI.toString(), redirectUri.toString());
+    const redirectUri = new URL(`${browser.identity.getRedirectURL()}login`);
+    t.deepEqual(GitHub.REDIRECT_URI.toString(), redirectUri.toString());
 });
 
 test('footer urls', (t) => {
-    const { GitHub } = t.context.window;
     t.true("FOOTER_URLS" in GitHub);
 
     t.is(typeof GitHub.FOOTER_URLS, 'object');
@@ -58,7 +63,7 @@ test('footer urls', (t) => {
 test('construction', (t) => {
     const clientId = 'foo';
     const clientSecret = 'bar';
-    const client = new t.context.window.GitHub(clientId, clientSecret);
+    const client = new GitHub(clientId, clientSecret);
 
     t.is(client.clientID, clientId);
     t.is(client.clientSecret, clientSecret);
@@ -72,13 +77,13 @@ test('construction', (t) => {
 });
 
 test('not authorized', (t) => {
-    const client = new t.context.window.GitHub();
+    const client = new GitHub();
 
     t.false(client.authorized);
 });
 
 test('authorized', (t) => {
-    const client = new t.context.window.GitHub();
+    const client = new GitHub();
     client.headers.Authorization = 'lorem upsum';
 
     t.true(client.authorized);
@@ -86,13 +91,13 @@ test('authorized', (t) => {
 
 test('info url', (t) => {
     const clientId = 'foo';
-    const client = new t.context.window.GitHub(clientId);
+    const client = new GitHub(clientId);
 
-    t.is(client.infoURL, `${t.context.window.GitHub.SITE_URI}settings/connections/applications/${clientId}`);
+    t.is(client.infoURL, `${GitHub.SITE_URI}settings/connections/applications/${clientId}`);
 });
 
 test('username', (t) => {
-    const client = new t.context.window.GitHub();
+    const client = new GitHub();
 
     t.is(client.username, '');
 
@@ -101,7 +106,6 @@ test('username', (t) => {
 });
 
 test('auth url', (t) => {
-    const { GitHub } = t.context.window;
     const clientId = 'foo bar';
     const client = new GitHub(clientId);
     const authState = 'lorem ipsum';
@@ -109,7 +113,7 @@ test('auth url', (t) => {
 });
 
 test('set token', (t) => {
-    const client = new t.context.window.GitHub();
+    const client = new GitHub();
 
     const token = 'baz';
     client.setToken(token);
@@ -119,7 +123,7 @@ test('set token', (t) => {
 });
 
 test('unset token', (t) => {
-    const client = new t.context.window.GitHub();
+    const client = new GitHub();
     client.setToken('lorem ipsum');
 
     client.unsetToken();

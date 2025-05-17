@@ -4,7 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class GitHubUserToken extends globalThis.GitHub {
+import GitHub from "./github.js";
+
+export default class GitHubUserToken extends GitHub {
     static buildArgs(clientID, clientSecret, details) {
         return [ details.token ];
     }
@@ -40,5 +42,3 @@ class GitHubUserToken extends globalThis.GitHub {
         };
     }
 }
-
-globalThis.GitHubUserToken = GitHubUserToken;

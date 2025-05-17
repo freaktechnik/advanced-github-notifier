@@ -4,6 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import Storage from "./storage.js";
+
 const S_TO_MS = 1000;
 const HEX = 16;
 const TYPES = {
@@ -28,7 +30,7 @@ const ICONS = {
     ci: "ci",
 };
 
-class ClientHandler extends globalThis.Storage {
+export default class ClientHandler extends Storage {
     static get NOTIFICATIONS() {
         return "notifications";
     }
@@ -427,4 +429,3 @@ ${typeMessage}${stateMessage}`;
         return notifs;
     }
 }
-globalThis.ClientHandler = ClientHandler;

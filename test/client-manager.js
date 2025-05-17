@@ -1,53 +1,44 @@
 import test from 'ava';
-import {
-    getEnvironment, cleanUp,
-} from './_environment.js';
 import { FakeClient } from './_mocks.js';
+import ClientManager from '../scripts/client-manager.js';
+import ClientHandler from '../scripts/handler.js';
+import browser from "sinon-chrome/webextensions/index.js";
 
-test.beforeEach(async (t) => {
-    const dom = await getEnvironment([
-        '../scripts/storage.js',
-        '../scripts/storage-manager.js',
-        '../scripts/handler.js',
-        '../scripts/github.js',
-        '../scripts/github-enterprise.js',
-        '../scripts/github-light.js',
-        '../scripts/github-user-token.js',
-        '../scripts/github-enterprise-pat.js',
-        '../scripts/gitlab.js',
-        '../scripts/gitea.js',
-        '../scripts/client-manager.js',
-    ]);
-    t.context.window = dom.window;
+test.before(() => {
+    globalThis.browser = browser;
 });
 
-test.afterEach.always((t) => {
-    cleanUp(t.context.window);
+test.after(() => {
+    globalThis.browser = undefined;
+});
+
+test.serial.afterEach.always(() => {
+    browser.flush();
 });
 
 test('constructor', (t) => {
-    const manager = new t.context.window.ClientManager();
+    const manager = new ClientManager();
     t.is(manager.clients.size, 0);
 });
 
 test('add non-handler Client', (t) => {
-    const manager = new t.context.window.ClientManager();
+    const manager = new ClientManager();
     return t.throwsAsync(manager.addClient({}), {
-        instanceOf: t.context.window.TypeError,
+        instanceOf: TypeError,
     });
 });
 
-test('add handler client', async (t) => {
-    const handler = new t.context.window.ClientHandler(new FakeClient());
-    const manager = new t.context.window.ClientManager();
+test.serial('add handler client', async (t) => {
+    const handler = new ClientHandler(new FakeClient());
+    const manager = new ClientManager();
 
     await manager.addClient(handler);
     t.is(manager.clients.size, 1);
-    t.true(t.context.window.browser.storage.local.set.calledOnce);
-    t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
+    t.true(browser.storage.local.set.calledOnce);
+    t.deepEqual(browser.storage.local.set.lastCall.args[0], {
         handlers: [ {
             details: {},
-            type: t.context.window.ClientManager.GITHUB,
+            type: ClientManager.GITHUB,
             notifications: handler.NOTIFICATION_NAME,
             id: handler.id,
             handlerId: handler.STORE_PREFIX,
@@ -55,34 +46,34 @@ test('add handler client', async (t) => {
     });
 });
 
-test('saveNotificationFields', async (t) => {
-    const manager = new t.context.window.ClientManager();
+test.serial('saveNotificationFields', async (t) => {
+    const manager = new ClientManager();
 
     await manager.saveFields();
-    t.true(t.context.window.browser.storage.local.set.calledOnce);
-    t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
+    t.true(browser.storage.local.set.calledOnce);
+    t.deepEqual(browser.storage.local.set.lastCall.args[0], {
         handlers: [],
     });
 });
 
 test('getCount', async (t) => {
-    const manager = new t.context.window.ClientManager();
+    const manager = new ClientManager();
 
     const count = await manager.getCount();
     t.is(count, 0);
 });
 
-test('removeClient', async (t) => {
-    const handler = new t.context.window.ClientHandler(new FakeClient());
-    const manager = new t.context.window.ClientManager();
+test.serial('removeClient', async (t) => {
+    const handler = new ClientHandler(new FakeClient());
+    const manager = new ClientManager();
 
     await manager.addClient(handler);
     t.is(manager.clients.size, 1);
 
     await manager.removeClient(handler);
     t.is(manager.clients.size, 0);
-    t.true(t.context.window.browser.storage.local.set.calledTwice);
-    t.deepEqual(t.context.window.browser.storage.local.set.lastCall.args[0], {
+    t.true(browser.storage.local.set.calledTwice);
+    t.deepEqual(browser.storage.local.set.lastCall.args[0], {
         handlers: [],
     });
 });

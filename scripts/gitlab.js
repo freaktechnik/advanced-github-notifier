@@ -3,11 +3,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global STATUS_OK, STATUS_RESET, parseLinks */
+
+import {
+    STATUS_OK,
+    STATUS_RESET,
+} from "./http-constants.js";
+import { parseLinks } from "./link-utils.js";
 
 // https://docs.gitlab.com/ee/api/todos.html
 
-class GitLab {
+export default class GitLab {
     static get TYPE_TO_GH() {
         return {
             Issue: 'Issue',
@@ -210,5 +215,3 @@ class GitLab {
         };
     }
 }
-
-globalThis.GitLab = GitLab;

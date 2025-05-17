@@ -37,6 +37,7 @@ jobs:
           cache: 'npm'
       - run: npm ci --no-audit
       - run: npm run test:js
+      - run: npm run coverage
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

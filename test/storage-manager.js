@@ -1,18 +1,18 @@
 import test from 'ava';
-import {
-    getEnvironment, cleanUp,
-} from './_environment.js';
+import { default as browser } from "sinon-chrome/webextensions/index.js";
+import StorageManager from '../scripts/storage-manager.js';
+import Storage from '../scripts/storage.js';
 
-test.beforeEach(async (t) => {
-    const dom = await getEnvironment([
-        '../scripts/storage.js',
-        '../scripts/storage-manager.js',
-    ]);
-    t.context.window = dom.window;
+test.before(() => {
+    globalThis.browser = browser;
 });
 
-test.afterEach.always((t) => {
-    cleanUp(t.context.window);
+test.after(() => {
+    globalThis.browser = undefined;
+});
+
+test.serial.afterEach.always(() => {
+    browser.flush();
 });
 
 const STATIC_MEMBERS = [
@@ -21,8 +21,8 @@ const STATIC_MEMBERS = [
 ];
 
 const testStaticMember = (t, property) => {
-    t.true(property in t.context.window.StorageManager);
-    t.is(typeof t.context.window.StorageManager[property], 'string');
+    t.true(property in StorageManager);
+    t.is(typeof StorageManager[property], 'string');
 };
 testStaticMember.title = (title, property) => `${title} ${property}`;
 
@@ -30,29 +30,29 @@ for(const property of STATIC_MEMBERS) {
     test('static', testStaticMember, property);
 }
 
-test('create record', (t) => {
+test.serial('create record', (t) => {
     const storageId = 'lorem ipsum';
-    const record = t.context.window.StorageManager.createRecord({
+    const record = StorageManager.createRecord({
         storageId,
     });
 
-    t.true(t.context.window.StorageManager.ID_KEY in record);
-    t.is(record[t.context.window.StorageManager.ID_KEY], storageId);
+    t.true(StorageManager.ID_KEY in record);
+    t.is(record[StorageManager.ID_KEY], storageId);
 });
 
 test('construction with default arguments', (t) => {
-    const storageManager = new t.context.window.StorageManager();
+    const storageManager = new StorageManager();
     t.true("StorageInstance" in storageManager);
     t.true("area" in storageManager);
 
-    t.is(storageManager.StorageInstance, t.context.window.Storage);
+    t.is(storageManager.StorageInstance, Storage);
     t.is(storageManager.area, 'local');
 });
 
 test('construction with arguments', (t) => {
     const storageConstructor = class Test {};
     const area = 'managed';
-    const storageManager = new t.context.window.StorageManager(storageConstructor, area);
+    const storageManager = new StorageManager(storageConstructor, area);
 
     t.true("StorageInstance" in storageManager);
     t.true("area" in storageManager);
@@ -61,9 +61,9 @@ test('construction with arguments', (t) => {
     t.is(storageManager.area, area);
 });
 
-test('set records', async (t) => {
-    t.context.window.browser.storage.local.set.resolves();
-    const storageManager = new t.context.window.StorageManager();
+test.serial('set records', async (t) => {
+    browser.storage.local.set.resolves();
+    const storageManager = new StorageManager();
 
     const instances = [
         'foo',
@@ -71,17 +71,12 @@ test('set records', async (t) => {
     ];
     await storageManager.setRecords(instances);
 
-    t.true(t.context.window.browser.storage.local.set.calledWithMatch({
-        [t.context.window.StorageManager.KEY]: instances,
+    t.true(browser.storage.local.set.calledWithMatch({
+        [StorageManager.KEY]: instances,
     }));
 });
 
-test('get records', async (t) => {
-    const {
-        StorageManager,
-        browser,
-    } = t.context.window;
-
+test.serial('get records', async (t) => {
     const storageManager = new StorageManager();
     const data = [
         'foo',
@@ -99,12 +94,7 @@ test('get records', async (t) => {
     }));
 });
 
-test('get instances', async (t) => {
-    const {
-        StorageManager,
-        browser,
-    } = t.context.window;
-
+test.serial('get instances', async (t) => {
     const Instance = class {
         constructor(storageId, area) {
             this.storageId = storageId;

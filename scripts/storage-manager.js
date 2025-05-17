@@ -4,7 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class StorageManager {
+import Storage from "./storage.js";
+
+export default class StorageManager {
     static get KEY() {
         return "handlers";
     }
@@ -19,7 +21,7 @@ class StorageManager {
         };
     }
 
-    constructor(storageConstructor = globalThis.Storage, area = "local") {
+    constructor(storageConstructor = Storage, area = "local") {
         this.StorageInstance = storageConstructor;
         this.area = area;
     }
@@ -42,4 +44,3 @@ class StorageManager {
         });
     }
 }
-globalThis.StorageManager = StorageManager;

@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-class Storage {
+export default class Storage {
     constructor(storageId, area = "local") {
         this.storageId = storageId;
         this.area = area;
@@ -39,4 +39,3 @@ class Storage {
         return browser.storage[this.area].remove(keys.map((key) => this.getStorageKey(key)));
     }
 }
-globalThis.Storage = Storage;

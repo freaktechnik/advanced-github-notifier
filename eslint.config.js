@@ -2,12 +2,14 @@ import freaktechnikConfigExtension from "@freaktechnik/eslint-config-extension";
 import freaktechnikConfigTest from "@freaktechnik/eslint-config-test";
 import freaktechnikConfigNode from "@freaktechnik/eslint-config-node";
 
+const LAST_ITEM = -1;
+
 export default [
     ...freaktechnikConfigExtension,
     ...freaktechnikConfigTest,
-    freaktechnikConfigNode.at(-1),
+    freaktechnikConfigNode.at(LAST_ITEM),
     {
-        files: ["scripts/**/*.js"],
+        files: [ "scripts/**/*.js" ],
         rules: {
             "one-var": "off",
         },
@@ -15,4 +17,4 @@ export default [
     {
         ignores: [ "scripts/config.js" ],
     },
-]
+];
