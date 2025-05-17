@@ -155,7 +155,8 @@ export default class GitHub {
             }),
             headers: {
                 Authorization: `Basic ${globalThis.btoa(`${this.clientID}:${this.clientSecret}`)}`,
-                Accept: 'application/vnd.github.doctor-strange-preview+json',
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
             },
         });
         if(method == "POST") {
