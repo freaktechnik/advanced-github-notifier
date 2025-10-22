@@ -1,5 +1,5 @@
 import test from 'ava';
-import { default as browser } from "sinon-chrome/webextensions/index.js";
+import browser from "sinon-chrome/webextensions/index.js";
 import GitHub from '../scripts/github.js';
 import { stub } from "sinon";
 

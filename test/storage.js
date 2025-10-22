@@ -1,5 +1,5 @@
 import test from 'ava';
-import { default as browser } from "sinon-chrome/webextensions/index.js";
+import browser from "sinon-chrome/webextensions/index.js";
 import Storage from '../scripts/storage.js';
 
 test.before(() => {
