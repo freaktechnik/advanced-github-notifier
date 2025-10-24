@@ -4,7 +4,10 @@
             "strict_min_version": "112.0",
             "id": "{8d4b86c5-64bf-4780-b029-0112386735ab}",
             "data_collection_permissions": {
-                "required": ["authenticationInfo", "technicalAndInteraction"]
+                "required": [
+                    "authenticationInfo",
+                    "technicalAndInteraction"
+                ]
             }
         }
     },
