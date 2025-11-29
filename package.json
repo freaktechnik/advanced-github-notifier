@@ -39,7 +39,7 @@
     "eslint": "^9.39.1",
     "sinon": "^21.0.0",
     "sinon-chrome": "^3.0.1",
-    "stylelint": "^16.25.0",
+    "stylelint": "^16.26.1",
     "stylelint-config-standard": "^39.0.1",
     "stylelint-no-unsupported-browser-features": "^8.0.5",
     "web-ext": "^9.2.0"
