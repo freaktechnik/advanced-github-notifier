@@ -36,8 +36,10 @@ export default class GitHub {
     static get FOOTER_URLS() {
         return {
             "index": GitHub.SITE_URI,
+            // eslint-disable-next-line no-secrets/no-secrets
             "unread": `${GitHub.SITE_URI}notifications?query=is%3Aunread`,
             "all": `${GitHub.SITE_URI}notifications?query=`,
+            // eslint-disable-next-line no-secrets/no-secrets
             "participating": `${GitHub.SITE_URI}notifications?query=reason%3Aparticipating`,
             "watched": `${GitHub.SITE_URI}watching`,
         };
