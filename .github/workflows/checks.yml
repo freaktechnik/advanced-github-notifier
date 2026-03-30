@@ -38,6 +38,6 @@ jobs:
       - run: npm ci --no-audit
       - run: npm run test:js
       - run: npm run coverage
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
