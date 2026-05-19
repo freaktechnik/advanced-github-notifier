@@ -34,7 +34,7 @@
   "devDependencies": {
     "@freaktechnik/eslint-config-extension": "^13.0.0",
     "@freaktechnik/eslint-config-test": "^13.0.0",
-    "ava": "^8.0.0",
+    "ava": "^8.0.1",
     "c8": "^11.0.0",
     "eslint": "^10.3.0",
     "sinon": "^22.0.0",
