@@ -23,7 +23,8 @@ const PASSIVE_EVENT = {
         'github-user',
         'gitlab',
         'gitea',
-    ]);
+    ]),
+    SINGLE_SEGMENT = 1;
 
 class Account extends Storage {
     constructor(type, id, area, details = {}) {
@@ -110,36 +111,39 @@ class AccountManager extends StorageManager {
 
         browser.runtime.getBrowserInfo()
             .then(({ version }) => {
-                const [ major ] = version.split('.');
-                if(parseInt(major, 10) >= MIN_OAUTH_VERSION) {
-                    const disabledOptions = typeForm.querySelectorAll('option[disabled]');
-                    for(const option of disabledOptions) {
-                        option.disabled = false;
-                    }
-                    // Default selection
-                    typeForm.value = "github";
-                    typeForm.dispatchEvent(new Event("change"));
+                const [ major ] = version.split('.', SINGLE_SEGMENT);
+                if(parseInt(major, 10) < MIN_OAUTH_VERSION) {
+                    return;
                 }
+                const disabledOptions = typeForm.querySelectorAll('option[disabled]');
+                for(const option of disabledOptions) {
+                    option.disabled = false;
+                }
+                // Default selection
+                typeForm.value = "github";
+                typeForm.dispatchEvent(new Event("change"));
             })
             .catch(console.error);
 
         browser.storage.onChanged.addListener((changes, areaName) => {
-            if(areaName === "local" && "handlers" in changes) {
-                const handlerIds = new Set();
-                for(const handler of changes.handlers.newValue) {
-                    handlerIds.add(handler[StorageManager.ID_KEY]);
-                    if(!this.getAccountRoot(handler[StorageManager.ID_KEY])) {
-                        this.addAccount(handler.type, handler[StorageManager.ID_KEY], handler.details);
-                    }
+            if(!(areaName === "local" && "handlers" in changes)) {
+                return;
+            }
+
+            const handlerIds = new Set();
+            for(const handler of changes.handlers.newValue) {
+                handlerIds.add(handler[StorageManager.ID_KEY]);
+                if(!this.getAccountRoot(handler[StorageManager.ID_KEY])) {
+                    this.addAccount(handler.type, handler[StorageManager.ID_KEY], handler.details);
                 }
-                if("oldValue" in changes.handlers && changes.handlers.oldValue) {
-                    for(const oldHandler of changes.handlers.oldValue) {
-                        if(!handlerIds.has(oldHandler[StorageManager.ID_KEY])) {
-                            const node = this.getAccountRoot(oldHandler[StorageManager.ID_KEY]);
-                            if(node) {
-                                node.querySelector("button")
-                                    .click();
-                            }
+            }
+            if("oldValue" in changes.handlers && changes.handlers.oldValue) {
+                for(const oldHandler of changes.handlers.oldValue) {
+                    if(!handlerIds.has(oldHandler[StorageManager.ID_KEY])) {
+                        const node = this.getAccountRoot(oldHandler[StorageManager.ID_KEY]);
+                        if(node) {
+                            node.querySelector("button")
+                                .click();
                         }
                     }
                 }
@@ -291,7 +295,7 @@ class AccountManager extends StorageManager {
     }
 }
 
-globalThis.addEventListener("DOMContentLoaded", () => {
+addEventListener("DOMContentLoaded", () => {
     document.getElementById("enterprise-redirect").textContent = browser.i18n.getMessage("enterprise_redirect", `${browser.identity.getRedirectURL()}login`);
     const notifications = document.getElementById("notifications");
     const badge = document.getElementById("badge");

@@ -18,7 +18,7 @@ export default class Storage {
         const storageKey = this.getStorageKey(key);
         try {
             const result = await browser.storage[this.area].get(storageKey);
-            if(defaultValue !== undefined && (!(storageKey in result) || result[storageKey] === undefined)) {
+            if(defaultValue !== undefined && (!Object.hasOwn(result, storageKey) || result[storageKey] === undefined)) {
                 return defaultValue;
             }
             return result[storageKey];

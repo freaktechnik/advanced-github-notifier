@@ -36,7 +36,7 @@ function translateElementAttributes(element) {
             data = browser.i18n.getMessage(element.dataset.l10nId + attributeSeparator + attribute);
         }
         // Translate ARIA attributes
-        else if(attribute in ariaAttributeMap) {
+        else if(Object.hasOwn(ariaAttributeMap, attribute)) {
             data = browser.i18n.getMessage(element.dataset.l10nId + attributeSeparator + ariaAttributeMap[attribute]);
         }
 

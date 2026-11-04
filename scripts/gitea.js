@@ -67,11 +67,12 @@ export default class Gitea {
         const response = await fetch(this.buildAPIURL('user'), {
             headers: this.headers,
         });
-        if(response.ok && response.status === STATUS_OK) {
-            const json = await response.json();
-            this._username = json.login;
-            this.id = json.id;
+        if(!response.ok || response.status !== STATUS_OK) {
+            return;
         }
+        const json = await response.json();
+        this._username = json.login;
+        this.id = json.id;
     }
 
     async authorize(token, method = "POST") {

@@ -51,60 +51,60 @@ export default class ClientManager extends StorageManager {
 
     static getTypeForClient(client) {
         if(client instanceof GitHubEnterpriseUserToken) {
-            return ClientManager.ENTERPRISE_PAT;
+            return this.ENTERPRISE_PAT;
         }
         if(client instanceof GitHubEnterprise) {
-            return ClientManager.ENTERPRISE;
+            return this.ENTERPRISE;
         }
-        else if(client instanceof GitHubLight) {
-            return ClientManager.GITHUB_LIGHT;
+        if(client instanceof GitHubLight) {
+            return this.GITHUB_LIGHT;
         }
-        else if(client instanceof GitHubUserToken) {
-            return ClientManager.GITHUB_USER_TOKEN;
+        if(client instanceof GitHubUserToken) {
+            return this.GITHUB_USER_TOKEN;
         }
-        else if(client instanceof GitLab) {
-            return ClientManager.GITLAB;
+        if(client instanceof GitLab) {
+            return this.GITLAB;
         }
-        else if(client instanceof Gitea) {
-            return ClientManager.GITEA;
+        if(client instanceof Gitea) {
+            return this.GITEA;
         }
-        return ClientManager.GITHUB;
+        return this.GITHUB;
     }
 
     static async createClient(type, id, details) {
         let ClientFactory;
         switch(type) {
-        case ClientManager.GITHUB:
+        case this.GITHUB:
             ClientFactory = GitHub;
             break;
-        case ClientManager.GITHUB_LIGHT:
+        case this.GITHUB_LIGHT:
             ClientFactory = GitHubLight;
             break;
-        case ClientManager.ENTERPRISE:
+        case this.ENTERPRISE:
             ClientFactory = GitHubEnterprise;
             if(!details) {
                 throw new Error("Details required to create enterprise client");
             }
             break;
-        case ClientManager.GITHUB_USER_TOKEN:
+        case this.GITHUB_USER_TOKEN:
             ClientFactory = GitHubUserToken;
             if(!details) {
                 throw new Error("Details required to create PAT client");
             }
             break;
-        case ClientManager.ENTERPRISE_PAT:
+        case this.ENTERPRISE_PAT:
             ClientFactory = GitHubEnterpriseUserToken;
             if(!details) {
                 throw new Error("Details required to create enterprise PAT client");
             }
             break;
-        case ClientManager.GITLAB:
+        case this.GITLAB:
             ClientFactory = GitLab;
             if(!details) {
                 throw new Error("Details required to create new GitLab client");
             }
             break;
-        case ClientManager.GITEA:
+        case this.GITEA:
             ClientFactory = Gitea;
             if(!details) {
                 throw new Error("Details required to create new Gitea client");

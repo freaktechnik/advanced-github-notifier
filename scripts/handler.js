@@ -58,19 +58,21 @@ export default class ClientHandler extends Storage {
             }
             return notification.subjectDetails.state;
         }
-        if(notification.normalizedType === "pull") {
-            if(notification.subjectDetails.merged) {
-                return "merged";
-            }
-            if(notification.subjectDetails.draft && notification.subjectDetails.state === "open") {
-                return "wip";
-            }
-            return notification.subjectDetails.state;
+        if(notification.normalizedType !== "pull") {
+            return;
         }
+
+        if(notification.subjectDetails.merged) {
+            return "merged";
+        }
+        if(notification.subjectDetails.draft && notification.subjectDetails.state === "open") {
+            return "wip";
+        }
+        return notification.subjectDetails.state;
     }
 
     static getNotificationIcon(notification) {
-        if(ICONS[notification.normalizedType]) {
+        if(Object.hasOwn(ICONS, notification.normalizedType)) {
             return `${ICONS[notification.normalizedType]}.`;
         }
         if(notification.normalizedType == "issue") {
@@ -171,7 +173,7 @@ export default class ClientHandler extends Storage {
         }
         const notifications = await this.client.getNotifications();
         if(notifications) {
-            await this._processNewNotifications(notifications);
+            await this.#processNewNotifications(notifications);
             return true;
         }
         return false;
@@ -220,7 +222,7 @@ export default class ClientHandler extends Storage {
             }
             return true;
         }
-        else if(url.searchParams.get('error') !== 'access_denied') {
+        if(url.searchParams.get('error') !== 'access_denied') {
             throw new Error(`An error occurred during authorization: "${url.searchParams.get("error_description")}". See ${url.searchParams.get("error_uri")}`);
         }
         // Access denied
@@ -264,13 +266,13 @@ export default class ClientHandler extends Storage {
     async markAsRead(id, remote = true) {
         if(id) {
             if(remote) {
-                const githubID = this._getOriginalID(id);
+                const githubID = this.#getOriginalID(id);
                 await this.client.markNotificationRead(githubID);
             }
             else if(this.client.shouldStayUnread) {
                 return;
             }
-            const notifications = await this._getNotifications();
+            const notifications = await this.#getNotifications();
             const notifs = notifications.filter((notification) => notification.id != id);
             await this.setValue(ClientHandler.NOTIFICATIONS, notifs);
             try {
@@ -289,7 +291,7 @@ export default class ClientHandler extends Storage {
     }
 
     async getNotificationURL(id) {
-        const notifications = await this._getNotifications();
+        const notifications = await this.#getNotifications();
         const notification = notifications.find((n) => n.id == id);
         //TODO get anchor to events after last_read_at for issues/prs
         if(notification) {
@@ -305,52 +307,49 @@ export default class ClientHandler extends Storage {
         if(this.client.shouldStayUnread) {
             return false;
         }
-        const notifications = await this._getNotifications();
+        const notifications = await this.#getNotifications();
         const notification = notifications.find((n) => n.id == id);
-        if(notification?.willStayUnread) {
-            return false;
-        }
-        return true;
+        return !notification?.willStayUnread;
     }
 
     async getCount() {
-        const notifications = await this._getNotifications();
+        const notifications = await this.#getNotifications();
         return notifications.length;
     }
 
     ignoreNotification(id) {
-        return this.client.ignoreNotification(this._getOriginalID(id));
+        return this.client.ignoreNotification(this.#getOriginalID(id));
     }
 
     unsubscribeNotification(id) {
-        return this.client.unsubscribeNotification(this._getOriginalID(id));
+        return this.client.unsubscribeNotification(this.#getOriginalID(id));
     }
 
     getDetails() {
         return this.client.getDetails();
     }
 
-    _getNotifications() {
+    #getNotifications() {
         return this.getValue(ClientHandler.NOTIFICATIONS, []);
     }
 
-    _getNotificationID(githubID) {
+    #getNotificationID(githubID) {
         return this.NOTIFICATION_PREFIX + githubID;
     }
 
-    _getOriginalID(id) {
+    #getOriginalID(id) {
         return id.slice(this.NOTIFICATION_PREFIX.length);
     }
 
-    async _processNewNotifications(json) {
+    async #processNewNotifications(json) {
         const { hide } = await browser.storage.local.get({
             hide: false,
         });
-        const notifications = await this._getNotifications();
+        const notifications = await this.#getNotifications();
         const showNotifications = await this.getValue(ClientHandler.SHOW_NOTIFICATIONS, true);
         const stillNotificationIds = [];
         let notifs = await Promise.all(json.filter((n) => n.unread).map(async (notification) => {
-            notification.id = this._getNotificationID(notification.id);
+            notification.id = this.#getNotificationID(notification.id);
             const existingNotif = notifications.find((n) => n.id == notification.id);
             if(existingNotif) {
                 stillNotificationIds.push(notification.id);
@@ -395,8 +394,8 @@ export default class ClientHandler extends Storage {
                         const stateMessageId = `status_${notification.detailState}`;
                         stateMessage = ` (${browser.i18n.getMessage(stateMessageId)})`;
                     }
-                    const repoName = notification.repository?.full_name ?? '';
-                    const message = `${repoName}
+                    const repositoryName = notification.repository?.full_name ?? '';
+                    const message = `${repositoryName}
 ${typeMessage}${stateMessage}`;
                     await browser.notifications.create(notification.id, {
                         type: "basic",

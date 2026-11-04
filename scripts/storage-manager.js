@@ -17,7 +17,7 @@ export default class StorageManager {
 
     static createRecord(storageInstance) {
         return {
-            [StorageManager.ID_KEY]: storageInstance.storageId,
+            [this.ID_KEY]: storageInstance.storageId,
         };
     }
 

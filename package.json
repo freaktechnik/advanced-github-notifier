@@ -1,10 +1,20 @@
 {
   "name": "advanced-github-notifier",
   "version": "1.10.1",
+  "private": true,
   "description": "A Firefox extension, that not only shows a count of notifications, but also shows notification popups and has a popup that gives direct access to the notifications.",
-  "main": "manifest.json",
+  "license": "MPL-2.0",
+  "repository": "github:freaktechnik/advanced-github-notifier",
+  "homepage": "https://github.com/freaktechnik/advanced-github-notifier#readme",
+  "bugs": "https://github.com/freaktechnik/advanced-github-notifier/issues",
+  "author": "Martin Giger",
+  "type": "module",
+  "main": "./manifest.json",
+  "engines": {
+    "node": ">= 21"
+  },
   "scripts": {
-    "lint:js": "eslint scripts/ test/ manifest.json",
+    "lint:js": "eslint scripts/ test/ manifest.json package.json",
     "lint:css": "stylelint \"styles/*.css\"",
     "lint:webext": "web-ext lint",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:webext",
@@ -12,25 +22,15 @@
     "test": "npm run lint && npm run test:js",
     "start": "web-ext run",
     "build": "tx pull && web-ext build",
-    "coverage": "c8 report -r lcov"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/freaktechnik/advanced-github-notifier.git"
-  },
-  "author": "Martin Giger",
-  "license": "MPL-2.0",
-  "bugs": {
-    "url": "https://github.com/freaktechnik/advanced-github-notifier/issues"
+    "coverage": "c8 report --reporter lcov"
   },
   "files": [
-    "scripts/*",
-    "styles/*",
-    "images/*",
     "manifest.json",
-    "*.html"
+    "*.html",
+    "images/*",
+    "scripts/*",
+    "styles/*"
   ],
-  "homepage": "https://github.com/freaktechnik/advanced-github-notifier#readme",
   "devDependencies": {
     "@freaktechnik/eslint-config-extension": "^14.1.0",
     "@freaktechnik/eslint-config-test": "^14.1.0",
@@ -60,10 +60,6 @@
       "text"
     ]
   },
-  "engines": {
-    "node": ">= 21"
-  },
-  "private": true,
   "browserslist": [
     "last 1 Firefox versions",
     "last 1 FirefoxAndroid versions"
@@ -82,6 +78,5 @@
   },
   "ava": {
     "timeout": "2m"
-  },
-  "type": "module"
+  }
 }

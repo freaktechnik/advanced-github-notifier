@@ -89,11 +89,12 @@ export default class GitLab {
         const response = await fetch(this.buildAPIURL('user'), {
             headers: this.headers,
         });
-        if(response.ok && response.status === STATUS_OK) {
-            const json = await response.json();
-            this._username = json.username;
-            this.id = json.id;
+        if(!response.ok || response.status !== STATUS_OK) {
+            return;
         }
+        const json = await response.json();
+        this._username = json.username;
+        this.id = json.id;
     }
 
     async authorize(token, method = "POST") {
@@ -205,11 +206,11 @@ export default class GitLab {
     async getNotificationDetails(notification) {
         return {
             'html_url': notification.subject.url,
-            state: GitLab.STATE_TO_GH[notification.subject.state],
+            state: this.constructor.STATE_TO_GH[notification.subject.state],
             merged: notification.subject.state === "merged",
             draft: notification.subject.originalTarget.draft,
             number: notification.subject.originalTarget.iid,
-            prefix: GitLab.PREFIX_BY_TYPE[notification.subject.originalType] ?? '',
+            prefix: this.constructor.PREFIX_BY_TYPE[notification.subject.originalType] ?? '',
             canUnsubscribe: false,
             canIgnore: false,
         };

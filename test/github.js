@@ -26,7 +26,7 @@ const STATIC_STRING_CONSTANTS = [
 ];
 
 const testStaticConstants = (t, property) => {
-    t.true(property in GitHub);
+    t.true(Object.hasOwn(GitHub, property));
     t.is(typeof GitHub[property], 'string');
 };
 testStaticConstants.title = (title, property) => `${title} ${property}`;
@@ -39,7 +39,7 @@ test('redirect URI', (t) => {
     t.true(GitHub.REDIRECT_URI instanceof URL);
 
     const redirectUri = new URL(`${browser.identity.getRedirectURL()}login`);
-    t.deepEqual(GitHub.REDIRECT_URI.toString(), redirectUri.toString());
+    t.deepEqual(GitHub.REDIRECT_URI.toString(), redirectUri.href);
 });
 
 test('footer urls', (t) => {
@@ -54,9 +54,9 @@ test('footer urls', (t) => {
         'participating',
         'watched',
     ];
-    for(const p of properties) {
-        t.true(p in GitHub.FOOTER_URLS);
-        t.true(GitHub.FOOTER_URLS[p].includes(GitHub.SITE_URI));
+    for(const property of properties) {
+        t.true(Object.hasOwn(GitHub.FOOTER_URLS, property));
+        t.true(GitHub.FOOTER_URLS[property].includes(GitHub.SITE_URI));
     }
 });
 

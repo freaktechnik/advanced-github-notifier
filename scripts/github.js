@@ -35,13 +35,13 @@ export default class GitHub {
 
     static get FOOTER_URLS() {
         return {
-            "index": GitHub.SITE_URI,
+            "index": this.SITE_URI,
             // eslint-disable-next-line no-secrets/no-secrets
-            "unread": `${GitHub.SITE_URI}notifications?query=is%3Aunread`,
-            "all": `${GitHub.SITE_URI}notifications?query=`,
+            "unread": `${this.SITE_URI}notifications?query=is%3Aunread`,
+            "all": `${this.SITE_URI}notifications?query=`,
             // eslint-disable-next-line no-secrets/no-secrets
-            "participating": `${GitHub.SITE_URI}notifications?query=reason%3Aparticipating`,
-            "watched": `${GitHub.SITE_URI}watching`,
+            "participating": `${this.SITE_URI}notifications?query=reason%3Aparticipating`,
+            "watched": `${this.SITE_URI}watching`,
         };
     }
 
@@ -143,11 +143,12 @@ export default class GitHub {
         const response = await fetch(this.buildAPIURL('user'), {
             headers: this.headers,
         });
-        if(response.ok && response.status === STATUS_OK) {
-            const json = await response.json();
-            this._username = json.login;
-            this.id = json.id;
+        if(!response.ok || response.status !== STATUS_OK) {
+            return;
         }
+        const json = await response.json();
+        this._username = json.login;
+        this.id = json.id;
     }
 
     async authorize(token, method = "POST") {
@@ -158,7 +159,7 @@ export default class GitHub {
             }),
             headers: {
                 ...this.headers,
-                Authorization: `Basic ${globalThis.btoa(`${this.clientID}:${this.clientSecret}`)}`,
+                Authorization: `Basic ${btoa(`${this.clientID}:${this.clientSecret}`)}`,
             },
         });
         if(method == "POST") {
@@ -173,11 +174,9 @@ export default class GitHub {
 
                 throw new Error("Not all required scopes given");
             }
-            else {
-                throw new Error("Token invalid");
-            }
+            throw new Error("Token invalid");
         }
-        else if(method == "PATCH") {
+        if(method == "PATCH") {
             this.unsetToken();
         }
         return "Token updated";
@@ -287,12 +286,13 @@ export default class GitHub {
         const comments = await fetch(issue.comments_url, {
             headers: this.headers,
         });
-        if(comments.ok) {
-            const commentData = await comments.json();
-            for(const comment of commentData) {
-                if(Date.parse(comment.created_at) > date) {
-                    return comment.html_url;
-                }
+        if(!comments.ok) {
+            return;
+        }
+        const commentData = await comments.json();
+        for(const comment of commentData) {
+            if(Date.parse(comment.created_at) > date) {
+                return comment.html_url;
             }
         }
     }

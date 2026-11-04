@@ -21,7 +21,7 @@ const STATIC_MEMBERS = [
 ];
 
 const testStaticMember = (t, property) => {
-    t.true(property in StorageManager);
+    t.true(Object.hasOwn(StorageManager, property));
     t.is(typeof StorageManager[property], 'string');
 };
 testStaticMember.title = (title, property) => `${title} ${property}`;
@@ -36,7 +36,7 @@ test.serial('create record', (t) => {
         storageId,
     });
 
-    t.true(StorageManager.ID_KEY in record);
+    t.true(Object.hasOwn(record, StorageManager.ID_KEY));
     t.is(record[StorageManager.ID_KEY], storageId);
 });
 

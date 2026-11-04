@@ -9,7 +9,7 @@ import Storage from "./storage.js";
 import StorageManager from "./storage-manager.js";
 
 const loaded = new Promise((resolve) => {
-    globalThis.addEventListener("DOMContentLoaded", resolve, {
+    addEventListener("DOMContentLoaded", resolve, {
         capture: true,
         passive: true,
         once: true,
@@ -58,6 +58,9 @@ const contextMenu = {
             const notificationId = this.getTarget(targetElementId),
                 isNotification = notificationId !== undefined,
                 { menuId } = this;
+            if(this.areVisible === isNotification && !isNotification) {
+                return;
+            }
             let canUnsubscribe = false,
                 canIgnore = false;
             if(isNotification) {
@@ -65,27 +68,26 @@ const contextMenu = {
                 canUnsubscribe = notifElement.dataset.canUnsubscribe == "true";
                 canIgnore = notifElement.dataset.canIgnore == "true";
             }
-            if(this.areVisible !== isNotification || isNotification) {
-                Promise.all(this.items.map((id) => {
-                    let enabled = isNotification;
-                    if(id == "unsubscribe") {
-                        enabled &&= canUnsubscribe;
+
+            Promise.all(this.items.map((id) => {
+                let enabled = isNotification;
+                if(id == "unsubscribe") {
+                    enabled &&= canUnsubscribe;
+                }
+                if(id == "ignore") {
+                    enabled &&= canIgnore;
+                }
+                return browser.menus.update(id, {
+                    enabled,
+                });
+            }))
+                .then(() => {
+                    if(menuId === this.menuId) {
+                        browser.menus.refresh();
                     }
-                    if(id == "ignore") {
-                        enabled &&= canIgnore;
-                    }
-                    return browser.menus.update(id, {
-                        enabled,
-                    });
-                }))
-                    .then(() => {
-                        if(menuId === this.menuId) {
-                            browser.menus.refresh();
-                        }
-                    })
-                    .catch(console.error);
-                this.areVisible = isNotification;
-            }
+                })
+                .catch(console.error);
+            this.areVisible = isNotification;
         });
         browser.menus.onHidden.addListener(() => {
             ++this.menuId;
@@ -185,10 +187,10 @@ const notificationList = {
 
         root.append(image, title);
         if(notification.repository) {
-            const repo = document.createElement("span");
-            repo.classList.add("text-shortcut");
-            repo.textContent = notification.repository.full_name;
-            root.append(repo);
+            const repository = document.createElement("span");
+            repository.classList.add("text-shortcut");
+            repository.textContent = notification.repository.full_name;
+            root.append(repository);
         }
 
         root.addEventListener("click", () => clickListener(notification.id), {
@@ -275,7 +277,7 @@ class AccountSelector extends StorageManager {
         browser.storage.onChanged.addListener((changes, area) => {
             // Only listening for notification changes, since accounts shouldn't
             // change while the popup is open.
-            if(area === "local" && (this.currentAccount === AccountSelector.ALL_ACCOUNTS || this.currentAccount in changes)) {
+            if(area === "local" && (this.currentAccount === AccountSelector.ALL_ACCOUNTS || Object.hasOwn(changes, this.currentAccount))) {
                 this.selectAccount(this.currentAccount);
             }
         });
@@ -323,29 +325,29 @@ class AccountSelector extends StorageManager {
     }
 }
 
-loaded
-    .then(() => {
-        contextMenu.init();
-        notificationList.init();
-        new AccountSelector(document.getElementById("accounts"));
-        return browser.storage.local.get({
-            "footer": "all",
+const init = async () => {
+    await loaded;
+    contextMenu.init();
+    notificationList.init();
+    new AccountSelector(document.getElementById("accounts"));
+    const { footer } = browser.storage.local.get({
+        "footer": "all",
+    });
+    const open = document.getElementById("open");
+    if(footer == "hidden") {
+        open.parentNode.hidden = true;
+    }
+    else {
+        open.addEventListener("click", () => {
+            browser.runtime.sendMessage({ topic: "open-notifications" });
+            window.close();
+        }, {
+            capture: false,
+            passive: true,
         });
-    })
-    .then(({ footer }) => {
-        const open = document.getElementById("open");
-        if(footer == "hidden") {
-            open.parentNode.hidden = true;
-        }
-        else {
-            open.addEventListener("click", () => {
-                browser.runtime.sendMessage({ topic: "open-notifications" });
-                window.close();
-            }, {
-                capture: false,
-                passive: true,
-            });
-            open.textContent = browser.i18n.getMessage(`footer_${footer}`);
-        }
-    })
+        open.textContent = browser.i18n.getMessage(`footer_${footer}`);
+    }
+};
+
+init()
     .catch(console.error);

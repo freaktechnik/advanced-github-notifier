@@ -54,7 +54,7 @@ const getNotifications = async (alarm) => {
         }
     }
     else {
-        globalThis.addEventListener('online', () => getNotifications(alarm), {
+        addEventListener('online', () => getNotifications(alarm), {
             once: true,
             capture: false,
             passive: true,
@@ -74,19 +74,20 @@ const setupNotificationWorkers = () => Promise.all(Array.from(manager.getClients
 const openNotification = async (id) => {
     const handler = manager.getClientForNotificationID(id);
     const url = await handler.getNotificationURL(id);
-    if(url) {
-        const tab = await browser.tabs.create({
-            url,
-        });
-        await browser.windows.update(tab.windowId, {
-            focused: true,
-        });
-        if(await handler.willAutoMarkAsRead(id)) {
-            await handler.markAsRead(id, false);
-        }
-        const newCount = await manager.getCount();
-        await updateBadge(newCount);
+    if(!url) {
+        return;
     }
+    const tab = await browser.tabs.create({
+        url,
+    });
+    await browser.windows.update(tab.windowId, {
+        focused: true,
+    });
+    if(await handler.willAutoMarkAsRead(id)) {
+        await handler.markAsRead(id, false);
+    }
+    const newCount = await manager.getCount();
+    await updateBadge(newCount);
 };
 browser.notifications.onClicked.addListener(openNotification);
 
@@ -104,20 +105,24 @@ const afterAdd = async (handler) => {
     setupNotificationWorker(handler);
 
     const popupURL = await browser.browserAction.getPopup({});
-    if(popupURL === "") {
-        browser.browserAction.setPopup({
-            popup: browser.runtime.getURL('popup.html'),
-        });
-        await updateBadge();
+    if(popupURL !== "") {
+        return;
     }
+
+    browser.browserAction.setPopup({
+        popup: browser.runtime.getURL('popup.html'),
+    });
+    await updateBadge();
 };
 
 const createHandler = async (type, details) => {
     const handler = await ClientManager.createClient(type, undefined, details);
-    if(await handler.login()) {
-        manager.addClient(handler);
-        await afterAdd(handler);
+    if(!await handler.login()) {
+        return;
     }
+
+    manager.addClient(handler);
+    await afterAdd(handler);
 };
 
 /**
@@ -139,7 +144,7 @@ const handleMessage = async (message) => {
             await browser.runtime.openOptionsPage();
             break;
         }
-        else if(footer in GitHub.FOOTER_URLS) {
+        if(Object.hasOwn(GitHub.FOOTER_URLS, footer)) {
             await browser.tabs.create({ url: GitHub.FOOTER_URLS[footer] });
             break;
         }
@@ -211,20 +216,23 @@ browser.runtime.onMessage.addListener((message) => {
 });
 
 browser.runtime.onInstalled.addListener(async (details) => {
-    if(details.reason === "update") {
-        const { token } = await browser.storage.local.get("token");
-        if(token) {
-            const handler = ClientManager.createClient(ClientManager.GITHUB);
-            await handler.setValue("token", token);
-            const authValid = await handler.checkAuth();
-            if(authValid) {
-                manager.addClient(handler);
-                await afterAdd(handler);
-            }
-
-            await browser.storage.local.remove("token");
-        }
+    if(details.reason !== "update") {
+        return;
     }
+
+    const { token } = await browser.storage.local.get("token");
+    if(!token) {
+        return;
+    }
+    const handler = ClientManager.createClient(ClientManager.GITHUB);
+    await handler.setValue("token", token);
+    const authValid = await handler.checkAuth();
+    if(authValid) {
+        manager.addClient(handler);
+        await afterAdd(handler);
+    }
+
+    await browser.storage.local.remove("token");
 });
 
 const init = async () => {
@@ -258,7 +266,7 @@ browser.menus.onClicked.addListener(({
     }
 });
 
-globalThis.requestIdleCallback(async () => {
+requestIdleCallback(async () => {
     for(const [
         id,
         messageId,
@@ -289,7 +297,7 @@ globalThis.requestIdleCallback(async () => {
             'bar',
         ]);
         if(records.length) {
-            globalThis.addEventListener("online", () => {
+            addEventListener("online", () => {
                 init().catch(console.error);
             }, {
                 passive: true,
